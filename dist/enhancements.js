@@ -6,8 +6,10 @@
   function decorateLinks(root = document) {
     root.querySelectorAll('a[href]').forEach((link) => {
       if (link.querySelector('.source-icon')) return;
-      let url = link.href;
-      if (link.getAttribute('href').startsWith('#/company/')) { const company = D.companies.find((entry) => slug(entry[0]) === link.getAttribute('href').split('/').pop()); if (company) url = company[5]; }
+      const href = link.getAttribute('href'); let url = link.href;
+      const companyRoute = href.startsWith('#/company/');
+      if (companyRoute) { const company = D.companies.find((entry) => slug(entry[0]) === href.split('/').pop()); if (company) url = company[5]; }
+      if (!companyRoute && new URL(url).origin === location.origin) return;
       if (!/^https?:/.test(url)) return;
       const image = document.createElement('img'); image.className = 'source-icon'; image.src = favicon(url); image.alt = ''; image.loading = 'lazy'; image.referrerPolicy = 'no-referrer'; link.prepend(image);
     });
