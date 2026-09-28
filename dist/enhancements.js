@@ -62,12 +62,12 @@
   window.people = () => { originalPeople(); addPeopleMap(); const list = document.querySelector('.people-list'); if (list) list.innerHTML = D.people.map(peopleCard).join(''); decorateLinks(); };
   function sourceDirectory() {
     const entries = new Map();
-    D.companies.forEach((company) => entries.set(company[5], { label: `${company[0]} careers`, url: company[5] }));
-    D.news.forEach((news) => { if (!entries.has(news[4])) entries.set(news[4], { label: new URL(news[4]).hostname.replace('www.', ''), url: news[4] }); });
-    entries.set('https://www.linkedin.com/', { label: 'linkedin.com', url: 'https://www.linkedin.com/' });
+    D.companies.forEach((company) => entries.set(company[5], { label: `${company[0]} careers`, url: company[5], scope: 'Company + Jobs' }));
+    D.news.forEach((news) => { if (!entries.has(news[4])) entries.set(news[4], { label: new URL(news[4]).hostname.replace('www.', ''), url: news[4], scope: 'News' }); });
+    entries.set('https://www.linkedin.com/', { label: 'linkedin.com', url: 'https://www.linkedin.com/', scope: 'People' });
     return [...entries.values()].sort((a, b) => a.label.localeCompare(b.label));
   }
-  function sourceEntries() { return sourceDirectory().map((source) => `<a class="source-entry" href="${source.url}" target="_blank" rel="noreferrer"><span>${source.label}</span></a>`).join(''); }
+  function sourceEntries() { return sourceDirectory().map((source) => `<div class="source-entry"><a href="${source.url}" target="_blank" rel="noreferrer"><span>${source.label}</span></a><button type="button" onclick="requestSourceRefresh('${source.label.replace(/'/g, '&#39;')}', '${source.url}', '${source.scope}')">Request update</button><small>${source.scope} · Last indexed: ${D.updated}</small></div>`).join(''); }
   function learningBlogs() {
     const reading = [
       ['RP Photonics Encyclopedia', 'A technical reference for laser, fiber, and photonics concepts.', 'https://www.rp-photonics.com/encyclopedia.html'],
@@ -77,11 +77,41 @@
     app.innerHTML = `${header('Blogs', 'A small reading shelf for learning optics, imaging, photonics, and engineering foundations.')}<section class="news-list">${reading.map((item) => `<a class="blog-row" href="${item[2]}" target="_blank" rel="noreferrer"><div class="blog-date">Reading<br><strong>Link</strong></div><div><h3>${item[0]}</h3><p>${item[1]}</p><span class="tag">Learning resource</span></div><div class="blog-source">Open source &rarr;</div></a>`).join('')}</section>`;
     decorateLinks();
   }
-  function industryNews() {
-    app.innerHTML = `${header('News', 'A chronological, link-first index of optics technology, company, and industry sources.')}<div class="filters"><button class="filter active" onclick="filterNews('')">All sources</button>${D.technologies.slice(0, 7).map((technology) => `<button class="filter" onclick="filterNews('${technology}')">${technology}</button>`).join('')}</div><section id="news-list" class="news-list">${D.news.map((news) => `<a class="blog-row" href="${news[4]}" target="_blank" rel="noreferrer"><div class="blog-date">Indexed<br><strong>${news[2]}</strong></div><div><h3>${news[0]}</h3><p>${news[1]}. This index stores the source link and a short descriptor, not the article body.</p><span class="tag">${news[3]}</span></div><div class="blog-source">${new URL(news[4]).hostname.replace('www.', '')}<br>Open source &rarr;</div></a>`).join('')}</section>`;
-    decorateLinks();
+  const calendarState = { view: 'month', cursor: new Date(`${D.updated}T12:00:00`), filter: '' };
+  const newsMatches = (news) => !calendarState.filter || news.join('|').toLowerCase().includes(calendarState.filter.toLowerCase());
+  const newsMarkup = (news) => `<a class="blog-row" href="${news[4]}" target="_blank" rel="noreferrer"><div class="blog-date">Indexed<br><strong>${news[2]}</strong></div><div><h3>${news[0]}</h3><p>${news[1]}. This index stores the source link and a short descriptor, not the article body.</p><span class="tag">${news[3]}</span></div><div class="blog-source">${new URL(news[4]).hostname.replace('www.', '')}<br>Open source &rarr;</div></a>`;
+  const countFor = (start, end) => D.news.filter((news) => { const date = new Date(`${news[2]}T12:00:00`); return newsMatches(news) && date >= start && date < end; }).length;
+  const heat = (count, max) => count ? Math.min(4, Math.ceil((count / Math.max(1, max)) * 4)) : 0;
+  const dateKey = (date) => date.toISOString().slice(0, 10);
+  function calendarCell(label, start, end, max, extra = '') { const count = countFor(start, end); return `<button class="calendar-cell heat-${heat(count, max)} ${extra}" title="${count} indexed update${count === 1 ? '' : 's'}"><time>${label}</time><b>${count || ''}${count ? ' update' + (count === 1 ? '' : 's') : ''}</b></button>`; }
+  function renderNewsCalendar() {
+    const root = document.querySelector('#news-calendar'); if (!root) return;
+    const cursor = calendarState.cursor, view = calendarState.view;
+    let cells = '', title = '', gridClass = '';
+    if (view === 'month') {
+      const start = new Date(cursor.getFullYear(), cursor.getMonth(), 1), end = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+      const values = Array.from({ length: end.getDate() - 1 }, (_, index) => countFor(new Date(cursor.getFullYear(), cursor.getMonth(), index + 1), new Date(cursor.getFullYear(), cursor.getMonth(), index + 2)));
+      cells = '<span class="calendar-cell empty"></span>'.repeat((start.getDay() + 6) % 7) + values.map((count, index) => { const day = new Date(cursor.getFullYear(), cursor.getMonth(), index + 1); return calendarCell(String(index + 1), day, new Date(cursor.getFullYear(), cursor.getMonth(), index + 2), Math.max(...values)); }).join('');
+      title = start.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    } else if (view === 'week') {
+      const start = new Date(cursor); start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+      const values = Array.from({ length: 7 }, (_, index) => countFor(new Date(start.getFullYear(), start.getMonth(), start.getDate() + index), new Date(start.getFullYear(), start.getMonth(), start.getDate() + index + 1)));
+      cells = values.map((count, index) => { const day = new Date(start.getFullYear(), start.getMonth(), start.getDate() + index); return calendarCell(day.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }), day, new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1), Math.max(...values)); }).join('');
+      title = `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`; gridClass = 'compact';
+    } else {
+      const values = Array.from({ length: 12 }, (_, index) => countFor(new Date(cursor.getFullYear(), index, 1), new Date(cursor.getFullYear(), index + 1, 1)));
+      cells = values.map((count, index) => calendarCell(new Date(cursor.getFullYear(), index, 1).toLocaleDateString('en-US', { month: 'long' }), new Date(cursor.getFullYear(), index, 1), new Date(cursor.getFullYear(), index + 1, 1), Math.max(...values))).join('');
+      title = String(cursor.getFullYear()); gridClass = 'year';
+    }
+    root.innerHTML = `<div class="calendar-top"><strong class="calendar-title">${title}</strong><div class="calendar-controls"><button type="button" title="Previous period" aria-label="Previous period" onclick="shiftNewsCalendar(-1)">&larr;</button><select aria-label="Calendar view" onchange="setNewsCalendarView(this.value)"><option value="week" ${view === 'week' ? 'selected' : ''}>Week</option><option value="month" ${view === 'month' ? 'selected' : ''}>Month</option><option value="year" ${view === 'year' ? 'selected' : ''}>Year</option></select><button type="button" title="Next period" aria-label="Next period" onclick="shiftNewsCalendar(1)">&rarr;</button></div></div><div class="calendar-key"><i></i> Fewer updates <i></i> More updates</div>${view !== 'year' ? '<div class="calendar-weekdays"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>' : ''}<div class="calendar-grid ${gridClass}">${cells}</div>`;
   }
-  window.filterNews = (query) => { const list = document.querySelector('#news-list'); if (!list) return; list.innerHTML = D.news.filter((news) => !query || news.join('|').toLowerCase().includes(query.toLowerCase())).map((news) => `<a class="blog-row" href="${news[4]}" target="_blank" rel="noreferrer"><div class="blog-date">Indexed<br><strong>${news[2]}</strong></div><div><h3>${news[0]}</h3><p>${news[1]}. This index stores the source link and a short descriptor, not the article body.</p><span class="tag">${news[3]}</span></div><div class="blog-source">${new URL(news[4]).hostname.replace('www.', '')}<br>Open source &rarr;</div></a>`).join(''); decorateLinks(list); };
+  window.setNewsCalendarView = (view) => { calendarState.view = view; renderNewsCalendar(); };
+  window.shiftNewsCalendar = (direction) => { const cursor = calendarState.cursor; if (calendarState.view === 'week') cursor.setDate(cursor.getDate() + direction * 7); else if (calendarState.view === 'month') cursor.setMonth(cursor.getMonth() + direction); else cursor.setFullYear(cursor.getFullYear() + direction); renderNewsCalendar(); };
+  function industryNews() {
+    app.innerHTML = `${header('News', 'A chronological, link-first index of optics technology, company, and industry sources.')}<div class="filters"><button class="filter active" onclick="filterNews('')">All sources</button>${D.technologies.slice(0, 7).map((technology) => `<button class="filter" onclick="filterNews('${technology}')">${technology}</button>`).join('')}</div><section id="news-calendar" class="news-calendar" aria-label="News activity calendar"></section><section id="news-list" class="news-list">${D.news.filter(newsMatches).map(newsMarkup).join('')}</section>`;
+    renderNewsCalendar(); decorateLinks();
+  }
+  window.filterNews = (query) => { calendarState.filter = query; const list = document.querySelector('#news-list'); if (!list) return; list.innerHTML = D.news.filter(newsMatches).map(newsMarkup).join(''); renderNewsCalendar(); decorateLinks(list); };
   window.news = industryNews;
   window.blogs = learningBlogs;
   async function loadRequestedSources() {
@@ -89,8 +119,8 @@
     try {
       const response = await fetch('https://api.github.com/repos/changlaplace/optics-industry-intelligence/issues?state=open&per_page=50');
       if (!response.ok) throw new Error('Request queue unavailable');
-      const items = (await response.json()).filter((item) => item.title.startsWith('[Source / '));
-      target.innerHTML = items.length ? items.map((item) => `<a class="requested-item" href="${item.html_url}" target="_blank" rel="noreferrer"><strong>${item.title}</strong><small>Requested by ${item.user.login} · ${new Date(item.created_at).toLocaleDateString()}</small></a>`).join('') : '<p class="meta">No open source requests yet.</p>';
+      const items = (await response.json()).filter((item) => item.title.startsWith('[Source / ') || item.title.startsWith('[Refresh / '));
+      target.innerHTML = items.length ? items.map((item) => { const type = item.title.match(/^\[(Source|Refresh) \/ ([^\]]+)\]/); return `<a class="requested-item" href="${item.html_url}" target="_blank" rel="noreferrer"><span class="requested-type">${type ? type[1] : 'Request'} · ${type ? type[2] : 'Other'}</span><strong>${item.title.replace(/^\[[^\]]+\]\s*/, '')}</strong><small>Requested by ${item.user.login} · ${new Date(item.created_at).toLocaleDateString()}</small></a>`; }).join('') : '<p class="meta">No open source or update requests yet.</p>';
     } catch { target.innerHTML = '<p class="meta">The public request queue is available on GitHub.</p>'; }
   }
   function bindRequestForm() {
@@ -102,8 +132,15 @@
       window.open(destination, '_blank', 'noopener');
     });
   }
+  function openRefreshRequest(scope, label, url) {
+    const destination = new URL('https://github.com/changlaplace/optics-industry-intelligence/issues/new');
+    destination.searchParams.set('template', 'update-request.md'); destination.searchParams.set('title', `[Refresh / ${scope}] ${label}`); destination.searchParams.set('body', `### Requested refresh scope\n${scope}\n\n### Source\n${label}\n${url}\n\n### Last indexed\n${D.updated}\n\n### Notes\n`);
+    window.open(destination, '_blank', 'noopener');
+  }
+  window.requestSourceRefresh = (label, url, scope) => openRefreshRequest(scope, label, url);
+  window.requestFullRefresh = () => openRefreshRequest('All tracked sources', 'All tracked sources', 'https://github.com/changlaplace/optics-industry-intelligence/blob/main/data/sources.json');
   window.about = () => {
-    app.innerHTML = `<div class="eyebrow">Optics Industry Intelligence / About this website</div><h1 class="page-title">About this website</h1><section class="about-grid"><div><details open><summary>Source directory (${sourceDirectory().length})</summary><div class="source-directory">${sourceEntries()}</div></details><details><summary>Requested sources</summary><div id="requested-sources" class="requested-list"><p class="meta">Loading public requests...</p></div></details><details open><summary>Request a source</summary><form id="source-request-form" class="request-form"><select name="category" aria-label="Requested area"><option>People</option><option>Company</option><option>Job</option><option>News</option><option>Blog</option></select><input name="name" required placeholder="Your name" aria-label="Your name" /><input name="url" type="url" required placeholder="Public source URL" aria-label="Public source URL" /><button type="submit">Open source request</button></form><p class="request-help">Requests are submitted as public GitHub issues. Your GitHub account is the visible requester identity.</p></details></div><aside class="motto"><div class="eyebrow" style="color:#76e2dc">Conviction</div><blockquote>In the AI era, career advantage comes from a clearer map of the world.</blockquote><p>Build context. Follow real signals. Move with the field.</p><p>Created by an independent optics observer. <a href="https://github.com/changlaplace" target="_blank" rel="noreferrer" style="color:#fff;text-decoration:underline">GitHub profile</a></p></aside></section>`;
+    app.innerHTML = `<div class="eyebrow">Optics Industry Intelligence / About this website</div><h1 class="page-title">About this website</h1><section class="about-grid"><div><details open><summary>Source directory (${sourceDirectory().length})</summary><p class="request-help"><button class="refresh-all" type="button" onclick="requestFullRefresh()">Request full refresh</button> Every request opens a public GitHub issue for the update queue.</p><div class="source-directory">${sourceEntries()}</div></details><details><summary>Requested sources and updates</summary><div id="requested-sources" class="requested-list"><p class="meta">Loading public requests...</p></div></details><details open><summary>Request a source</summary><form id="source-request-form" class="request-form"><select name="category" aria-label="Requested area"><option>People</option><option>Company</option><option>Job</option><option>News</option><option>Blog</option></select><input name="name" required placeholder="Your name" aria-label="Your name" /><input name="url" type="url" required placeholder="Public source URL" aria-label="Public source URL" /><button type="submit">Submit request</button></form><p class="request-help">Requests are submitted as public GitHub issues. Your GitHub account is the visible requester identity.</p></details></div><aside class="motto"><div class="eyebrow" style="color:#76e2dc">Conviction</div><blockquote>In the AI era, career advantage comes from a clearer map of the world.</blockquote><p>Build context. Follow real signals. Move with the field.</p><p>Created by an independent optics observer. <a href="https://github.com/changlaplace" target="_blank" rel="noreferrer" style="color:#fff;text-decoration:underline">GitHub profile</a></p></aside></section>`;
     bindRequestForm(); loadRequestedSources(); decorateLinks();
   };
   function enhancedRouter() {
