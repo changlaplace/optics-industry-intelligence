@@ -89,8 +89,8 @@
     const cursor = calendarState.cursor, view = calendarState.view;
     let cells = '', title = '', gridClass = '';
     if (view === 'month') {
-      const start = new Date(cursor.getFullYear(), cursor.getMonth(), 1), end = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
-      const values = Array.from({ length: end.getDate() - 1 }, (_, index) => countFor(new Date(cursor.getFullYear(), cursor.getMonth(), index + 1), new Date(cursor.getFullYear(), cursor.getMonth(), index + 2)));
+      const start = new Date(cursor.getFullYear(), cursor.getMonth(), 1), end = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1), days = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0).getDate();
+      const values = Array.from({ length: days }, (_, index) => countFor(new Date(cursor.getFullYear(), cursor.getMonth(), index + 1), new Date(cursor.getFullYear(), cursor.getMonth(), index + 2)));
       cells = '<span class="calendar-cell empty"></span>'.repeat((start.getDay() + 6) % 7) + values.map((count, index) => { const day = new Date(cursor.getFullYear(), cursor.getMonth(), index + 1); return calendarCell(String(index + 1), day, new Date(cursor.getFullYear(), cursor.getMonth(), index + 2), Math.max(...values)); }).join('');
       title = start.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     } else if (view === 'week') {
