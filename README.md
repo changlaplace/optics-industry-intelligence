@@ -2,6 +2,8 @@
 
 OpticSignal is a public, static MVP for tracking optics and photonics companies, people, hiring signals, technology areas, and source-linked industry reading.
 
+**Live site:** [optics-industry-intelligence.yubbie.chatgpt.site](https://optics-industry-intelligence.yubbie.chatgpt.site)
+
 ## Architecture
 
 - `dist/`: dependency-free static application, deployable to any static host.
