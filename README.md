@@ -24,6 +24,8 @@ Open `dist/index.html` in a browser, or serve `site` with any static server. Run
 3. For jobs, record first/last-seen dates and never silently overwrite a disappearance.
 4. Run the validator and visually check the relevant page.
 
+Public source suggestions use GitHub Issues through the `Source request` template. They remain link-only requests until reviewed and added to the curated index.
+
 ## Future ingestion
 
 Use company career portals, public ATS feeds, company newsrooms, and public academic/company bios. Store the raw source URL, capture time, and parser version. Do not use aggressive scraping or treat a search result as a lasting fact.

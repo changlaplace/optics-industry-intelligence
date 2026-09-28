@@ -37,13 +37,55 @@
   }
   const originalPeople = window.people;
   window.people = () => { originalPeople(); const list = document.querySelector('.people-list'); if (list) list.innerHTML = D.people.map(peopleCard).join(''); decorateLinks(); };
-  window.about = () => {
-    app.innerHTML = `${header('About this page', 'A compact, source-linked intelligence index for the optics and photonics industry. It helps visitors notice changes, then go to the original source.')}<section class="about-grid"><div><details open><summary>What this site stores</summary><p>Entries contain compact metadata, a source URL, and observed dates where applicable. News articles, job descriptions, account cookies, and credentials are not copied into this database.</p></details><details><summary>Source stack and update order</summary><ol><li>Official company career pages, newsrooms, and corporate sites.</li><li>Public applicant-tracking portals such as Greenhouse, Lever, and Ashby where a public endpoint is available.</li><li>Public university, company bio, and academic profile pages for professional affiliations.</li><li>Industry reporting and professional platforms, including LinkedIn, for discovery and manual verification.</li></ol><p>LinkedIn is used only as a discovery or manual-review source. This project does not store login credentials or automate access to restricted content.</p></details><details><summary>How records become optics-specific</summary><p>An AI-assisted review filters source links for optics, photonics, imaging, lasers, sensing, lithography, quantum photonics, and closely related roles. It normalizes companies, technologies, locations, and dates, then preserves the source link. Uncertain facts are left blank until a public source supports them.</p></details><details><summary>People and relationship policy</summary><p>Person records reserve fields for current affiliations, prior roles, education, research areas, and evidence links. The public view only represents professional relationships with explicit public documentation; it does not infer private or social relationships.</p></details><details><summary>Maintaining the index</summary><p>The source registry is versioned in the repository so future update runs can follow the same provenance rules. See <a href="https://github.com/changlaplace/optics-industry-intelligence/blob/main/data/sources.json" target="_blank" rel="noreferrer">the source registry on GitHub</a>.</p></details></div><aside class="motto"><div class="eyebrow" style="color:#76e2dc">Conviction</div><blockquote>In the AI era, career advantage comes from a clearer map of the world.</blockquote><p>Build context. Follow real signals. Move with the field.</p><p>Created by an independent optics observer. <a href="https://github.com/changlaplace" target="_blank" rel="noreferrer" style="color:#fff;text-decoration:underline">GitHub profile</a></p></aside></section>`;
+  function sourceDirectory() {
+    const entries = new Map();
+    D.companies.forEach((company) => entries.set(company[5], { label: `${company[0]} careers`, url: company[5] }));
+    D.news.forEach((news) => { if (!entries.has(news[4])) entries.set(news[4], { label: new URL(news[4]).hostname.replace('www.', ''), url: news[4] }); });
+    entries.set('https://www.linkedin.com/', { label: 'linkedin.com', url: 'https://www.linkedin.com/' });
+    return [...entries.values()].sort((a, b) => a.label.localeCompare(b.label));
+  }
+  function sourceEntries() { return sourceDirectory().map((source) => `<a class="source-entry" href="${source.url}" target="_blank" rel="noreferrer"><span>${source.label}</span></a>`).join(''); }
+  function learningBlogs() {
+    const reading = [
+      ['RP Photonics Encyclopedia', 'A technical reference for laser, fiber, and photonics concepts.', 'https://www.rp-photonics.com/encyclopedia.html'],
+      ['Edmund Optics Knowledge Center', 'Practical optics and imaging learning resources.', 'https://www.edmundoptics.com/knowledge-center/'],
+      ['Optica Publishing Group', 'Research and review articles across optics and photonics.', 'https://opg.optica.org/']
+    ];
+    app.innerHTML = `${header('Blogs', 'A small reading shelf for learning optics, imaging, photonics, and engineering foundations.')}<section class="news-list">${reading.map((item) => `<a class="blog-row" href="${item[2]}" target="_blank" rel="noreferrer"><div class="blog-date">Reading<br><strong>Link</strong></div><div><h3>${item[0]}</h3><p>${item[1]}</p><span class="tag">Learning resource</span></div><div class="blog-source">Open source &rarr;</div></a>`).join('')}</section>`;
     decorateLinks();
+  }
+  function industryNews() {
+    app.innerHTML = `${header('News', 'A chronological, link-first index of optics technology, company, and industry sources.')}<div class="filters"><button class="filter active" onclick="filterNews('')">All sources</button>${D.technologies.slice(0, 7).map((technology) => `<button class="filter" onclick="filterNews('${technology}')">${technology}</button>`).join('')}</div><section id="news-list" class="news-list">${D.news.map((news) => `<a class="blog-row" href="${news[4]}" target="_blank" rel="noreferrer"><div class="blog-date">Indexed<br><strong>${news[2]}</strong></div><div><h3>${news[0]}</h3><p>${news[1]}. This index stores the source link and a short descriptor, not the article body.</p><span class="tag">${news[3]}</span></div><div class="blog-source">${new URL(news[4]).hostname.replace('www.', '')}<br>Open source &rarr;</div></a>`).join('')}</section>`;
+    decorateLinks();
+  }
+  window.filterNews = (query) => { const list = document.querySelector('#news-list'); if (!list) return; list.innerHTML = D.news.filter((news) => !query || news.join('|').toLowerCase().includes(query.toLowerCase())).map((news) => `<a class="blog-row" href="${news[4]}" target="_blank" rel="noreferrer"><div class="blog-date">Indexed<br><strong>${news[2]}</strong></div><div><h3>${news[0]}</h3><p>${news[1]}. This index stores the source link and a short descriptor, not the article body.</p><span class="tag">${news[3]}</span></div><div class="blog-source">${new URL(news[4]).hostname.replace('www.', '')}<br>Open source &rarr;</div></a>`).join(''); decorateLinks(list); };
+  window.news = industryNews;
+  window.blogs = learningBlogs;
+  async function loadRequestedSources() {
+    const target = document.querySelector('#requested-sources'); if (!target) return;
+    try {
+      const response = await fetch('https://api.github.com/repos/changlaplace/optics-industry-intelligence/issues?state=open&per_page=50');
+      if (!response.ok) throw new Error('Request queue unavailable');
+      const items = (await response.json()).filter((item) => item.title.startsWith('[Source / '));
+      target.innerHTML = items.length ? items.map((item) => `<a class="requested-item" href="${item.html_url}" target="_blank" rel="noreferrer"><strong>${item.title}</strong><small>Requested by ${item.user.login} · ${new Date(item.created_at).toLocaleDateString()}</small></a>`).join('') : '<p class="meta">No open source requests yet.</p>';
+    } catch { target.innerHTML = '<p class="meta">The public request queue is available on GitHub.</p>'; }
+  }
+  function bindRequestForm() {
+    const form = document.querySelector('#source-request-form'); if (!form) return;
+    form.addEventListener('submit', (event) => {
+      event.preventDefault(); const data = new FormData(form), category = data.get('category'), url = data.get('url'), name = data.get('name');
+      const destination = new URL('https://github.com/changlaplace/optics-industry-intelligence/issues/new');
+      destination.searchParams.set('template', 'source-request.md'); destination.searchParams.set('title', `[Source / ${category}] ${url}`); destination.searchParams.set('body', `### Requested area\n${category}\n\n### Source URL\n${url}\n\n### Your name\n${name}\n\n### Why this link belongs in the index\n`);
+      window.open(destination, '_blank', 'noopener');
+    });
+  }
+  window.about = () => {
+    app.innerHTML = `<div class="eyebrow">Optics Industry Intelligence / About this website</div><h1 class="page-title">About this website</h1><section class="about-grid"><div><details open><summary>Source directory (${sourceDirectory().length})</summary><div class="source-directory">${sourceEntries()}</div></details><details><summary>Requested sources</summary><div id="requested-sources" class="requested-list"><p class="meta">Loading public requests...</p></div></details><details open><summary>Request a source</summary><form id="source-request-form" class="request-form"><select name="category" aria-label="Requested area"><option>People</option><option>Company</option><option>Job</option><option>News</option><option>Blog</option></select><input name="name" required placeholder="Your name" aria-label="Your name" /><input name="url" type="url" required placeholder="Public source URL" aria-label="Public source URL" /><button type="submit">Open source request</button></form><p class="request-help">Requests are submitted as public GitHub issues. Your GitHub account is the visible requester identity.</p></details></div><aside class="motto"><div class="eyebrow" style="color:#76e2dc">Conviction</div><blockquote>In the AI era, career advantage comes from a clearer map of the world.</blockquote><p>Build context. Follow real signals. Move with the field.</p><p>Created by an independent optics observer. <a href="https://github.com/changlaplace" target="_blank" rel="noreferrer" style="color:#fff;text-decoration:underline">GitHub profile</a></p></aside></section>`;
+    bindRequestForm(); loadRequestedSources(); decorateLinks();
   };
   function enhancedRouter() {
     const [route, id] = (location.hash.slice(2) || '').split('/');
-    if (route === 'companies') return window.companies(); if (route === 'company') return window.company(id); if (route === 'people') return window.people(); if (route === 'about') return window.about(); if (route === 'blogs') return window.blogs(); if (route === 'jobs') return window.jobs(); if (route === 'news') return window.news(); if (route === 'market') return window.market(); if (route === 'sources') return window.sources(); return window.home();
+    if (route === 'companies') return window.companies(); if (route === 'company') return window.company(id); if (route === 'people') return window.people(); if (route === 'about') return window.about(); if (route === 'blogs') return window.blogs(); if (route === 'jobs') return window.jobs(); if (route === 'news') return window.news(); if (route === 'market') return window.market(); if (route === 'sources') return window.about(); return window.home();
   }
   window.addEventListener('hashchange', enhancedRouter); new MutationObserver(() => decorateLinks()).observe(app, { childList: true, subtree: true }); enhancedRouter();
 })();

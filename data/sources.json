@@ -1,11 +1,38 @@
 {
-  "version": 1,
-  "policy": "Store only the minimum metadata needed to route visitors to primary public sources. Do not store article bodies or account credentials.",
-  "source_groups": [
-    {"name":"Official company sites","uses":["company descriptions","locations","career links","newsrooms"],"examples":["Apple Careers","Meta Careers","ASML News"]},
-    {"name":"Public ATS portals","uses":["job availability checks","first-seen and last-seen snapshots"],"examples":["Greenhouse","Lever","Ashby"],"access":"Use documented public endpoints where available; otherwise retain the career URL for review."},
-    {"name":"Professional and academic public pages","uses":["current affiliations","education and past roles when explicitly documented","research areas"],"examples":["university faculty pages","company bios","ORCID"]},
-    {"name":"Industry reporting and professional platforms","uses":["source discovery","news links","manual verification"],"examples":["Optica","SPIE","Photonics Media","LinkedIn"],"access":"LinkedIn is a discovery and manual-review source only; no credentials are stored."}
+  "version": 2,
+  "policy": "Store only the minimum metadata needed to route visitors to public primary sources. Do not store article bodies, user submissions, account credentials, or restricted content.",
+  "update_order": ["official company careers and news pages", "public ATS endpoints when available", "public academic and organization bios", "industry reporting and professional platforms for discovery"],
+  "tracked_urls": [
+    {"name":"Apple Careers","url":"https://www.apple.com/careers/","type":"company"},
+    {"name":"Meta Careers","url":"https://www.metacareers.com/","type":"company"},
+    {"name":"Google Careers","url":"https://www.google.com/about/careers/","type":"company"},
+    {"name":"Microsoft Careers","url":"https://jobs.careers.microsoft.com/","type":"company"},
+    {"name":"NVIDIA Careers","url":"https://www.nvidia.com/en-us/about-nvidia/careers/","type":"company"},
+    {"name":"Amazon Jobs","url":"https://www.amazon.jobs/","type":"company"},
+    {"name":"Snap Careers","url":"https://careers.snap.com/","type":"company"},
+    {"name":"ASML Careers","url":"https://www.asml.com/en/careers","type":"company"},
+    {"name":"ZEISS Careers","url":"https://www.zeiss.com/careers.html","type":"company"},
+    {"name":"KLA Careers","url":"https://careers.kla.com/","type":"company"},
+    {"name":"Applied Materials Careers","url":"https://careers.appliedmaterials.com/","type":"company"},
+    {"name":"Coherent Careers","url":"https://www.coherent.com/company/careers","type":"company"},
+    {"name":"Lumentum Careers","url":"https://careers.lumentum.com/","type":"company"},
+    {"name":"Luminar Careers","url":"https://www.luminartech.com/careers","type":"company"},
+    {"name":"Lightmatter Careers","url":"https://lightmatter.co/careers/","type":"company"},
+    {"name":"Lightelligence Careers","url":"https://lightelligence.ai/careers/","type":"company"},
+    {"name":"Ayar Labs Careers","url":"https://ayarlabs.com/careers/","type":"company"},
+    {"name":"PsiQuantum Careers","url":"https://www.psiquantum.com/careers","type":"company"},
+    {"name":"Magic Leap Careers","url":"https://www.magicleap.com/careers","type":"company"},
+    {"name":"Anduril Careers","url":"https://www.anduril.com/careers/","type":"company"},
+    {"name":"Nuburu","url":"https://nuburu.net/","type":"company"},
+    {"name":"Hyperlight","url":"https://hyperlightcorp.com/","type":"company"},
+    {"name":"NIL Technology Careers","url":"https://www.nilt.com/careers/","type":"company"},
+    {"name":"Photonics.com","url":"https://www.photonics.com/","type":"industry"},
+    {"name":"Optica Newsroom","url":"https://www.optica.org/en-us/about/newsroom/","type":"industry"},
+    {"name":"SPIE News","url":"https://spie.org/news","type":"industry"},
+    {"name":"LinkedIn","url":"https://www.linkedin.com/","type":"discovery","access":"manual review only"},
+    {"name":"Greenhouse","url":"https://www.greenhouse.io/","type":"public ATS"},
+    {"name":"Lever","url":"https://www.lever.co/","type":"public ATS"},
+    {"name":"Ashby","url":"https://www.ashbyhq.com/","type":"public ATS"}
   ],
-  "normalization": ["Keep only optics/photonics-relevant entities and links.","Attach source URL and observed date to every factual record.","Prefer an official source over a third-party summary.","Leave uncertain people, role, and news fields blank until verified."]
+  "submission_queue":"https://github.com/changlaplace/optics-industry-intelligence/issues?q=is%3Aissue%20is%3Aopen%20%5BSource%5D"
 }
