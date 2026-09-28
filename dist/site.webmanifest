@@ -1,0 +1,10 @@
+{
+  "name": "OpticSignal",
+  "short_name": "OpticSignal",
+  "description": "Optics and photonics industry intelligence.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f8f8",
+  "theme_color": "#10212b",
+  "icons": [{"src":"favicon.svg","sizes":"any","type":"image/svg+xml"}]
+}

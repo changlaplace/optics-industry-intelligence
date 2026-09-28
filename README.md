@@ -38,3 +38,9 @@ Use company career portals, public ATS feeds, company newsrooms, and public acad
 ## Deployment
 
 This project is configured as a static Site through `.openai/hosting.json`. It can also deploy to GitHub Pages, Vercel, Netlify, or Cloudflare Pages without a build step.
+
+## Search discovery
+
+- `dist/robots.txt` permits indexing and points crawlers to `dist/sitemap.xml`.
+- The current sitemap intentionally lists the public root URL. Hash-based client routes are not independent indexable documents; add real server paths for company and news records when search discovery becomes a priority.
+- Verify the production domain in Google Search Console and submit `https://optics-industry-intelligence.yubbie.chatgpt.site/sitemap.xml` after deployment.
