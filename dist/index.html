@@ -10,12 +10,14 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="network.css" />
+    <link rel="stylesheet" href="enhancements.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   </head>
   <body>
     <header class="site-header">
       <a class="brand" href="#/" aria-label="OpticSignal home"><span class="brand-mark">O</span><span>OPTIC<span>SIGNAL</span></span></a>
       <nav aria-label="Primary navigation">
-        <a href="#/">Dashboard</a><a href="#/companies">Companies</a><a href="#/blogs">Blogs</a><a href="#/people">People &amp; Network</a>
+        <a href="#/">Dashboard</a><a href="#/companies">Companies</a><a href="#/blogs">Blogs</a><a href="#/people">People &amp; Network</a><a href="#/about">About</a>
       </nav>
       <button class="search-trigger" id="open-search" aria-label="Search OpticSignal"><span>Search companies, people, technologies</span><kbd>/</kbd></button>
     </header>
@@ -24,5 +26,7 @@
     <footer><span>OpticSignal</span><span>Initial research set &middot; Updated 27 Sep 2026</span><a href="#/sources">Sources & methodology</a></footer>
     <script src="app.js"></script>
     <script src="sections.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="enhancements.js"></script>
   </body>
 </html>

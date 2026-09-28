@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "policy": "Store only the minimum metadata needed to route visitors to primary public sources. Do not store article bodies or account credentials.",
+  "source_groups": [
+    {"name":"Official company sites","uses":["company descriptions","locations","career links","newsrooms"],"examples":["Apple Careers","Meta Careers","ASML News"]},
+    {"name":"Public ATS portals","uses":["job availability checks","first-seen and last-seen snapshots"],"examples":["Greenhouse","Lever","Ashby"],"access":"Use documented public endpoints where available; otherwise retain the career URL for review."},
+    {"name":"Professional and academic public pages","uses":["current affiliations","education and past roles when explicitly documented","research areas"],"examples":["university faculty pages","company bios","ORCID"]},
+    {"name":"Industry reporting and professional platforms","uses":["source discovery","news links","manual verification"],"examples":["Optica","SPIE","Photonics Media","LinkedIn"],"access":"LinkedIn is a discovery and manual-review source only; no credentials are stored."}
+  ],
+  "normalization": ["Keep only optics/photonics-relevant entities and links.","Attach source URL and observed date to every factual record.","Prefer an official source over a third-party summary.","Leave uncertain people, role, and news fields blank until verified."]
+}

@@ -6,6 +6,8 @@ OpticSignal is a public, static MVP for tracking optics and photonics companies,
 
 - `dist/`: dependency-free static application, deployable to any static host.
 - `dist/app.js`: initial structured entity data plus rendering and search.
+- `dist/enhancements.js`: remote-source icons, company map, richer people record shape, and the About page.
+- `data/sources.json`: versioned source registry and ingestion policy.
 - `scripts/import-template.json`: future ingestion payload shape.
 - `scripts/validate-data.mjs`: lightweight publish-time dataset check.
 
