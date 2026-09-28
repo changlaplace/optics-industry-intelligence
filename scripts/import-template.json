@@ -1,0 +1,15 @@
+{
+  "entity": "job",
+  "title": "Optical Systems Engineer",
+  "company": "Example Company",
+  "location": "City, Region",
+  "postingUrl": "https://example.com/careers/job-id",
+  "firstSeen": "2026-09-27",
+  "lastSeen": "2026-09-27",
+  "postingDate": null,
+  "status": "active",
+  "category": "Optical Systems Engineer",
+  "seniority": "mid",
+  "skills": ["Zemax", "optical design"],
+  "sources": [{"url":"https://example.com/careers/job-id","capturedAt":"2026-09-27"}]
+}

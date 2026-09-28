@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Optics industry intelligence: companies, hiring, people, and technology news." />
+    <title>OpticSignal | Industry Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#/" aria-label="OpticSignal home"><span class="brand-mark">O</span><span>OPTIC<span>SIGNAL</span></span></a>
+      <nav aria-label="Primary navigation">
+        <a href="#/companies">Companies</a><a href="#/jobs">Hiring Market</a><a href="#/news">News</a><a href="#/people">People</a><a href="#/market">Market</a>
+      </nav>
+      <button class="search-trigger" id="open-search" aria-label="Search OpticSignal"><span>Search companies, people, technologies</span><kbd>/</kbd></button>
+    </header>
+    <main id="app"></main>
+    <dialog id="search-dialog"><div class="search-panel"><div class="search-head"><input id="global-search" placeholder="Search the optics ecosystem" autocomplete="off" /><button id="close-search" aria-label="Close search">&#215;</button></div><div id="search-results" class="search-results"><p>Search across companies, jobs, people, technologies, and news.</p></div></div></dialog>
+    <footer><span>OpticSignal</span><span>Initial research set &middot; Updated 27 Sep 2026</span><a href="#/sources">Sources & methodology</a></footer>
+    <script src="app.js"></script>
+  </body>
+</html>
