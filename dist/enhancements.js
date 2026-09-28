@@ -35,8 +35,29 @@
     const href = D.companies.some((company) => company[0] === person[1]) ? `#/company/${slug(person[1])}` : '#/people';
     return `<a class="person-card" href="${href}"><div class="avatar">${person[0].split(' ').map((part) => part[0]).slice(0, 2).join('')}</div><h3>${person[0]}</h3><p>${person[1]}</p><span class="tag yellow">${person[2]}</span><div class="bio-facts"><span><b>Current:</b> ${current}</span><span><b>Previous:</b> ${previous}</span><span><b>Education:</b> ${education}</span></div></a>`;
   }
+  const affiliationLocations = {
+    'Harvard University': [42.3770, -71.1167], 'Stanford University': [37.4275, -122.1697], 'University of Washington': [47.6553, -122.3035],
+    'UC Santa Barbara': [34.4140, -119.8489], 'Columbia University': [40.8075, -73.9626], UCLA: [34.0689, -118.4452], NVIDIA: [37.3702, -121.9530],
+    Google: [37.4220, -122.0841], 'Ayar Labs': [37.3382, -121.8863], Lightmatter: [37.3861, -122.0839], PsiQuantum: [37.4419, -122.1430],
+    ASML: [41.1212, -73.4085], ZEISS: [40.7330, -74.1724], 'Magic Leap': [26.1601, -80.1714], 'Purdue University': [40.4237, -86.9212],
+    'University of Pennsylvania': [39.9522, -75.1932], 'UC Berkeley': [37.8719, -122.2585], 'University of Toronto': [43.6629, -79.3957], MIT: [42.3601, -71.0942]
+  };
+  function addPeopleMap() {
+    const firstSection = app.querySelector('.section'); if (!firstSection || !window.L) return;
+    const section = document.createElement('section'); section.className = 'section';
+    section.innerHTML = '<div class="section-head"><div><h2 class="section-title">Public affiliation map</h2><p class="meta">Institutions and organizations represented in the people index.</p></div><span class="meta">No personal locations</span></div><div id="people-map" class="company-map people-map" aria-label="Map of public professional affiliations"></div><p class="people-map-note">Markers reflect public organizational affiliation only, not individual location or private information.</p>';
+    firstSection.before(section);
+    const map = L.map('people-map', { scrollWheelZoom: false }).setView([39.7, -99.2], 4);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 12, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+    const groups = new Map();
+    D.people.forEach((person) => { if (!affiliationLocations[person[1]]) return; groups.set(person[1], [...(groups.get(person[1]) || []), person[0]]); });
+    groups.forEach((names, organization) => {
+      const marker = L.circleMarker(affiliationLocations[organization], { radius: Math.min(11, 6 + names.length), color: '#126b70', weight: 2, fillColor: '#16a5a6', fillOpacity: .86 }).addTo(map);
+      marker.bindPopup(`<strong>${organization}</strong>${names.join('<br>')}`);
+    });
+  }
   const originalPeople = window.people;
-  window.people = () => { originalPeople(); const list = document.querySelector('.people-list'); if (list) list.innerHTML = D.people.map(peopleCard).join(''); decorateLinks(); };
+  window.people = () => { originalPeople(); addPeopleMap(); const list = document.querySelector('.people-list'); if (list) list.innerHTML = D.people.map(peopleCard).join(''); decorateLinks(); };
   function sourceDirectory() {
     const entries = new Map();
     D.companies.forEach((company) => entries.set(company[5], { label: `${company[0]} careers`, url: company[5] }));
