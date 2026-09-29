@@ -2,7 +2,9 @@ name: Update optics intelligence data
 
 on:
   schedule:
-    - cron: "17 9 */3 * *"
+    # 05:17 UTC is inside DeepSeek's current weekday off-peak window.
+    # The cadence gate below performs the actual refresh once every 72 hours.
+    - cron: "17 5 * * *"
   workflow_dispatch:
     inputs:
       force_refresh:
@@ -29,7 +31,8 @@ jobs:
     timeout-minutes: 60
     env:
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-      DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL || 'deepseek-chat' }}
+      DEEPSEEK_MODEL: deepseek-flash
+      UPDATE_TRIGGER: ${{ github.event_name }}
       FORCE_REFRESH: ${{ inputs.force_refresh || 'false' }}
       MAX_SOURCES: ${{ inputs.max_sources || '0' }}
 
@@ -39,7 +42,36 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Check three-day cadence
+        id: cadence
+        shell: bash
+        run: |
+          if [ "$GITHUB_EVENT_NAME" != "schedule" ]; then
+            echo "due=true" >> "$GITHUB_OUTPUT"
+            echo "Manual update requested; bypassing the cadence gate."
+            exit 0
+          fi
+          due=$(python3 - <<'PY'
+          import json
+          from datetime import datetime, timedelta, timezone
+          from pathlib import Path
+
+          state = json.loads(Path("data/update-state.json").read_text(encoding="utf-8"))
+          value = state.get("last_scheduled_run_at")
+          if not value:
+              print("true")
+          else:
+              last_run = datetime.fromisoformat(value.replace("Z", "+00:00"))
+              print("true" if datetime.now(timezone.utc) - last_run >= timedelta(hours=72) else "false")
+          PY
+          )
+          echo "due=$due" >> "$GITHUB_OUTPUT"
+          if [ "$due" != "true" ]; then
+            echo "The last successful scheduled update was less than 72 hours ago."
+          fi
+
       - name: Set up Python
+        if: steps.cadence.outputs.due == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -47,12 +79,14 @@ jobs:
           cache-dependency-path: requirements-update.txt
 
       - name: Install updater dependencies
+        if: steps.cadence.outputs.due == 'true'
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-update.txt
           crawl4ai-setup
 
       - name: Crawl, extract, and merge
+        if: steps.cadence.outputs.due == 'true'
         run: |
           args=()
           if [ "$FORCE_REFRESH" = "true" ]; then args+=(--force); fi
@@ -60,12 +94,14 @@ jobs:
           python scripts/update_content.py "${args[@]}"
 
       - name: Validate generated data
+        if: steps.cadence.outputs.due == 'true'
         run: |
           node scripts/validate-data.mjs
           node --check dist/app.js
           python scripts/update_content.py --self-test
 
       - name: Commit changed data
+        if: steps.cadence.outputs.due == 'true'
         run: |
           if git diff --quiet -- dist/app.js data/update-state.json; then
             echo "No repository data changed."

@@ -180,9 +180,10 @@ def call_deepseek(source: dict, content: str, current: dict) -> dict:
     if not api_key:
         raise RuntimeError("DEEPSEEK_API_KEY is not configured")
     payload = {
-        "model": os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
+        "model": os.getenv("DEEPSEEK_MODEL", "deepseek-flash"),
         "messages": extraction_prompt(source, content, current),
         "response_format": {"type": "json_object"},
+        "thinking": {"type": "disabled"},
         "temperature": 0,
         "max_tokens": 5000,
     }
@@ -430,14 +431,18 @@ def main() -> int:
         extractions.append((source, url, digest, extracted))
 
     today = datetime.now(timezone.utc).date().isoformat()
+    completed_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     semantic_changes = 0
     for source, url, digest, extracted in extractions:
         semantic_changes += merge_extraction(dataset, extracted, source, today)
         next_state.setdefault("sources", {})[url] = {
             "name": source["name"],
             "content_hash": digest,
-            "processed_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+            "processed_at": completed_at,
         }
+
+    if os.getenv("UPDATE_TRIGGER") == "schedule":
+        next_state["last_scheduled_run_at"] = completed_at
 
     if semantic_changes:
         write_site_data(dataset)
