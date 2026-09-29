@@ -1,0 +1,183 @@
+{
+  "version": 1,
+  "reviewed_domains": {
+    "3m.com": {
+      "website": "https://news.3m.com/2026-05-12-New-coalition-launches-to-advance-and-scale-optical-connections-for-AI-data-centers",
+      "name_hint": "New coalition launches to advance and scale optical connections for AI data centers",
+      "discovered_from": "EBO MSA Members",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "emc-directory.com": {
+      "website": "https://www.emc-directory.com/get-quotations",
+      "name_hint": "EMC Testing Quotes",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "pcbdirectory.com": {
+      "website": "https://www.pcbdirectory.com/get-quotations-assembly",
+      "name_hint": "PCB Assembly Quotes",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "everythingpe.com": {
+      "website": "https://www.everythingpe.com/resistor-color-code-calculator",
+      "name_hint": "Resistor Color Code Tool",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "everythingrf.com": {
+      "website": "https://www.everythingrf.com/",
+      "name_hint": "everything RF",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "prdrop.ai": {
+      "website": "https://www.prdrop.ai/",
+      "name_hint": "PRdrop",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "satnow.com": {
+      "website": "https://www.satnow.com/",
+      "name_hint": "SatNow",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "unmannedtimes.com": {
+      "website": "https://www.unmannedtimes.com/",
+      "name_hint": "Unmanned Times",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "clicky.com": {
+      "website": "https://clicky.com/101055601",
+      "name_hint": "Clicky",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "frontiersinoptics.com": {
+      "website": "https://www.frontiersinoptics.com/",
+      "name_hint": "FIO+LS",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "greenphotonicsguide.com": {
+      "website": "https://greenphotonicsguide.com/",
+      "name_hint": "Green Photonics Guide",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "lightourfuture.org": {
+      "website": "https://www.lightourfuture.org/",
+      "name_hint": "NPI",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "ofcconference.org": {
+      "website": "https://www.ofcconference.org/",
+      "name_hint": "OFC",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "optica-opn.org": {
+      "website": "https://www.optica-opn.org/",
+      "name_hint": "OPN",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "optics4kids.org": {
+      "website": "https://www.optics4kids.org/",
+      "name_hint": "Optics 4 Kids",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "azurefd.net": {
+      "website": "https://opticaorg-dev-cac7d2csctagc8bm.z01.azurefd.net/$web/optica/media/files/industry/2024/assets/current_corporate_members_letterhead.pdf",
+      "name_hint": "here",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "osa.org": {
+      "website": "https://account.osa.org/eweb/dynamicpage.aspx?mbr_src_code=OSAWEBS&webcode=member",
+      "name_hint": "Join Optica or Renew",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "consent.studio": {
+      "website": "https://consent.studio/legal/privacy/end-users",
+      "name_hint": "Consent",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "radware.com": {
+      "website": "https://www.radware.com/privacypolicy.aspx",
+      "name_hint": "Radware",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "safety.google": {
+      "website": "https://business.safety.google/privacy",
+      "name_hint": "Safety",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "cloudflare.com": {
+      "website": "https://www.cloudflare.com/privacypolicy",
+      "name_hint": "Cloudflare",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "reddit.com": {
+      "website": "https://www.reddit.com/policies/privacy-policy",
+      "name_hint": "Reddit",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "workinoptics.com": {
+      "website": "https://workinoptics.com/",
+      "name_hint": "Career Services",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "zoom.us": {
+      "website": "https://osa.zoom.us/rec/play/Hf0jMsXHMPCd8uojn_hQYKYUy66EZmH1Ej5h-JDp1EYoawrMi1IbPNbRzwyjQ3bXrCwaOrmKeh1prP8U.B5oTWIuyyE3cRZ58?_x_zm_rhtaid=827&_x_zm_rtaid=AQueZErMQ_K-XWfPfk1qxA.1641425238874.4830428b98b89c454de038b074165645&continueMode=true",
+      "name_hint": "watch this video",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    },
+    "calendly.com": {
+      "website": "https://calendly.com/josepozo",
+      "name_hint": "https://calendly.com/josepozo",
+      "discovered_from": "Optica Corporate Member Directory",
+      "reviewed_at": "2026-09-29T03:40:34+00:00",
+      "accepted": false
+    }
+  },
+  "last_run_at": "2026-09-29T03:40:34+00:00",
+  "last_candidate_count": 25,
+  "last_added_count": 0
+}
