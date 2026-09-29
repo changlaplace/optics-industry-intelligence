@@ -53,7 +53,9 @@ The updater is intentionally repository-native:
 
 ## Deployment
 
-This project is configured as a static Site through `.openai/hosting.json`. It can also deploy to GitHub Pages, Vercel, Netlify, or Cloudflare Pages without a build step.
+This project is configured as a static Site through `.openai/hosting.json`. It also includes `.github/workflows/deploy-pages.yml`, which publishes `dist/` to GitHub Pages after any `dist/**` change reaches `main`, including commits created by the automated content updater.
+
+GitHub Pages requires one initial repository setting: open **Settings → Pages → Build and deployment**, then choose **GitHub Actions** as the source. After that, deployments are automatic and can also be started manually from the Actions tab. No deployment secret is required.
 
 ## Search discovery
 
