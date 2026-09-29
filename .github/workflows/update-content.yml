@@ -108,19 +108,19 @@ jobs:
         id: commit
         if: steps.cadence.outputs.due == 'true'
         run: |
-          if git diff --quiet -- dist/app.js data/update-state.json; then
+          if git diff --quiet -- dist data/update-state.json; then
             echo "No repository data changed."
             echo "site_changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          if git diff --quiet -- dist/app.js; then
+          if git diff --quiet -- dist; then
             echo "site_changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "site_changed=true" >> "$GITHUB_OUTPUT"
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dist/app.js data/update-state.json
+          git add dist data/update-state.json
           git commit -m "chore(data): refresh optics intelligence"
           git pull --rebase origin "${GITHUB_REF_NAME}"
           git push origin "HEAD:${GITHUB_REF_NAME}"

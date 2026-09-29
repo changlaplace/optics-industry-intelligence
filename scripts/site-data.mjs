@@ -1,9 +1,11 @@
 import { readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import vm from 'node:vm';
 
 const root = resolve(import.meta.dirname, '..');
 const appPath = resolve(root, 'dist', 'app.js');
+const indexPath = resolve(root, 'dist', 'index.html');
 const source = readFileSync(appPath, 'utf8');
 const startMarker = 'const D=';
 const start = source.indexOf(startMarker);
@@ -38,10 +40,18 @@ if (command === 'export') {
   if (!inputPath) throw new Error('Import requires a JSON file path');
   const data = JSON.parse(readFileSync(resolve(inputPath), 'utf8'));
   validate(data);
-  const next = `${source.slice(0, start)}${startMarker}${JSON.stringify(data)}${source.slice(end)}`;
+  const serialized = JSON.stringify(data);
+  const next = `${source.slice(0, start)}${startMarker}${serialized}${source.slice(end)}`;
   const temporary = `${appPath}.tmp`;
   writeFileSync(temporary, next, 'utf8');
   renameSync(temporary, appPath);
+  const version = createHash('sha256').update(serialized).digest('hex').slice(0, 12);
+  const index = readFileSync(indexPath, 'utf8');
+  const nextIndex = index.replace(/<script src="app\.js(?:\?v=[^"]*)?"><\/script>/, `<script src="app.js?v=${version}"></script>`);
+  if (nextIndex === index) throw new Error('Unable to update the app.js cache version in dist/index.html');
+  const temporaryIndex = `${indexPath}.tmp`;
+  writeFileSync(temporaryIndex, nextIndex, 'utf8');
+  renameSync(temporaryIndex, indexPath);
 } else {
   throw new Error(`Unknown command: ${command}`);
 }
