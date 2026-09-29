@@ -1,7 +1,40 @@
 (() => {
-  const locations = {
+  const exactCompanyLocations = {
     Apple: [37.3349, -122.0090], Meta: [37.4848, -122.1484], Google: [37.4220, -122.0841], Microsoft: [47.6739, -122.1215], NVIDIA: [37.3702, -121.9530], Amazon: [47.6225, -122.3365], Snap: [34.0195, -118.4912], KLA: [37.4200, -121.8980], 'Applied Materials': [37.3712, -121.9150], Coherent: [40.5680, -79.7970], Lumentum: [37.3382, -121.8863], Luminar: [28.5383, -81.3792], Lightmatter: [37.3861, -122.0839], Lightelligence: [42.3601, -71.0589], 'Ayar Labs': [37.3382, -121.8863], PsiQuantum: [37.4419, -122.1430], 'Magic Leap': [26.1601, -80.1714], Anduril: [33.6411, -117.9187], Nuburu: [39.5800, -104.8772], Hyperlight: [42.3736, -71.1097], 'Photonics.com': [42.4501, -73.2454], 'Texas Instruments': [32.7767, -96.7970]
   };
+  const placeLocations = {
+    'wuhan, china': [30.5928, 114.3055], 'shanghai, china': [31.2304, 121.4737], 'changchun, china': [43.8171, 125.3235],
+    'shenzhen, china': [22.5431, 114.0579], 'guangzhou, china': [23.1291, 113.2644], 'hong kong': [22.3193, 114.1694],
+    'beijing, china': [39.9042, 116.4074], 'hangzhou, china': [30.2741, 120.1551], 'suzhou, china': [31.2989, 120.5853],
+    'cupertino, ca': [37.3230, -122.0322], 'menlo park, ca': [37.4530, -122.1817], 'mountain view, ca': [37.3861, -122.0839],
+    'santa clara, ca': [37.3541, -121.9552], 'san jose, ca': [37.3382, -121.8863], 'milpitas, ca': [37.4323, -121.8996],
+    'santa monica, ca': [34.0195, -118.4912], 'costa mesa, ca': [33.6411, -117.9187], 'irvine, ca': [33.6846, -117.8265],
+    'seattle, wa': [47.6062, -122.3321], 'redmond, wa': [47.6740, -122.1215], 'boston, ma': [42.3601, -71.0589],
+    'cambridge, ma': [42.3736, -71.1097], 'dallas, tx': [32.7767, -96.7970], 'orlando, fl': [28.5383, -81.3792],
+    'plantation, fl': [26.1276, -80.2331], 'centennial, co': [39.5807, -104.8772], 'pittsfield, ma': [42.4501, -73.2454],
+    'saxonburg, pa': [40.7509, -79.8100], 'palo alto, ca': [37.4419, -122.1430], 'barcelona, spain': [41.3874, 2.1686],
+    'belfast, uk': [54.5973, -5.9301], 'besancon, france': [47.2378, 6.0241], 'copenhagen, denmark': [55.6761, 12.5683],
+    'kongens lyngby, denmark': [55.7704, 12.5038], 'dortmund, germany': [51.5136, 7.4653], 'dublin, ireland': [53.3498, -6.2603],
+    'gottingen, germany': [51.5413, 9.9158], 'munich, germany': [48.1351, 11.5820], 'oberkochen, germany': [48.7833, 10.1000],
+    'veldhoven, netherlands': [51.4189, 5.4060],
+    'vilnius, lithuania': [54.6872, 25.2797], 'moscow, russia': [55.7558, 37.6173], 'seoul, south korea': [37.5665, 126.9780],
+    'tokyo, japan': [35.6762, 139.6503], 'singapore': [1.3521, 103.8198], 'auckland, new zealand': [-36.8509, 174.7645],
+    'kingston upon hull, uk': [53.7676, -0.3274], 'china': [35.8617, 104.1954], 'taiwan': [23.6978, 120.9605],
+    'japan': [36.2048, 138.2529], 'south korea': [35.9078, 127.7669], 'australia': [-25.2744, 133.7751],
+    'canada': [56.1304, -106.3468], 'denmark': [56.2639, 9.5018], 'france': [46.2276, 2.2137], 'germany': [51.1657, 10.4515],
+    'ireland': [53.1424, -7.6921], 'italy': [41.8719, 12.5674], 'lithuania': [55.1694, 23.8813], 'netherlands': [52.1326, 5.2913],
+    'switzerland': [46.8182, 8.2275], 'uk': [55.3781, -3.4360], 'united states': [39.8283, -98.5795], 'usa': [39.8283, -98.5795],
+    'california, usa': [36.7783, -119.4179], 'illinois, usa': [40.6331, -89.3985], 'michigan, usa': [44.3148, -85.6024],
+    'pennsylvania, usa': [41.2033, -77.1945]
+  };
+  const normalizePlace = (value) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+  const placeEntries = Object.entries(placeLocations).sort((a, b) => b[0].length - a[0].length);
+  function companyPoint(company) {
+    if (exactCompanyLocations[company[0]]) return exactCompanyLocations[company[0]];
+    const location = normalizePlace(company[1] || '');
+    const match = placeEntries.find(([place]) => location === place || location.includes(place));
+    return match?.[1] || null;
+  }
   const favicon = (url) => { try { return `https://www.google.com/s2/favicons?sz=64&domain_url=${encodeURIComponent(new URL(url).origin)}`; } catch { return ''; } };
   const companiesBySlug = new Map(D.companies.map((company) => [slug(company[0]), company]));
   function decorateLinks(root = document) {
@@ -63,11 +96,11 @@
   function addCompanyMap() {
     const directory = document.querySelector('.directory'); if (!directory || !window.L) return;
     const section = document.createElement('section'); section.className = 'section map-section';
-    section.innerHTML = '<div class="section-head"><div><h2 class="section-title">North American company map</h2><p class="meta">Nearby companies are grouped into proportional bubbles. Select a bubble to open its complete list below the map.</p></div><span class="meta">Bubble size = company count</span></div><div id="company-map" class="company-map" aria-label="Map of companies in the directory"></div><div id="company-map-selection" class="map-selection" aria-live="polite"><span>Select a bubble to inspect every company in that region.</span></div><p class="map-caption">North America is the default view. Companies outside this view retain their location in the directory.</p>';
+    section.innerHTML = '<div class="section-head"><div><h2 class="section-title">Global company map</h2><p class="meta">Nearby companies are grouped into proportional bubbles. Select a bubble to open its complete list below the map.</p></div><span class="meta">Bubble size = company count</span></div><div id="company-map" class="company-map" aria-label="Map of companies in the directory"></div><div id="company-map-selection" class="map-selection" aria-live="polite"><span>Select a bubble to inspect every company in that region.</span></div><p class="map-caption">Locations use public city or regional information. Broad locations are shown at an approximate regional center.</p>';
     directory.before(section);
-    const map = L.map('company-map', { scrollWheelZoom: false }).setView([39.5, -98.35], 4);
+    const map = L.map('company-map', { scrollWheelZoom: false }).setView([28, 15], 2);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 12, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
-    const items = D.companies.filter((company) => locations[company[0]]).map((company) => ({ name: company[0], location: company[1], point: locations[company[0]], company }));
+    const items = D.companies.map((company) => ({ name: company[0], location: company[1], point: companyPoint(company), company })).filter((item) => item.point);
     clusterLocations(items).forEach((cluster) => addClusterMarker(map, cluster, '#167f83', (item) => `<a href="#/company/${slug(item.name)}"><b>${item.name}</b><small>${item.location || 'Location pending'}</small></a>`, 'company-map-selection'));
   }
   const originalCompanies = window.companies;
@@ -78,7 +111,8 @@
     if (record && top && !top.querySelector('.company-footprint-detail')) {
       const meta = marketMeta(record);
       top.querySelector('h1')?.insertAdjacentHTML('afterend', `<div class="company-footprint-detail">${footprintBadge(record)}<small>${meta.basis}. Editorial market-footprint signal, not an investment rating.</small></div>`);
-      top.insertAdjacentHTML('beforeend', `<p class="company-location meta"><b>Primary location:</b> ${record[1] || 'Not yet verified'}${locations[record[0]] ? ` &middot; <a href="https://www.openstreetmap.org/?mlat=${locations[record[0]][0]}&mlon=${locations[record[0]][1]}" target="_blank" rel="noreferrer">Map source</a>` : ''}</p>`);
+      const point = companyPoint(record);
+      top.insertAdjacentHTML('beforeend', `<p class="company-location meta"><b>Primary location:</b> ${record[1] || 'Not yet verified'}${point ? ` &middot; <a href="https://www.openstreetmap.org/?mlat=${point[0]}&mlon=${point[1]}" target="_blank" rel="noreferrer">Map source</a>` : ''}</p>`);
     }
     decorateLinks();
   };
@@ -160,7 +194,53 @@
     app.innerHTML = `${header('News', 'A chronological, link-first index of optics technology, company, and industry sources.')}<div class="filters"><button class="filter active" onclick="filterNews('')">All sources</button>${D.technologies.slice(0, 7).map((technology) => `<button class="filter" onclick="filterNews('${technology}')">${technology}</button>`).join('')}</div><section id="news-calendar" class="news-calendar" aria-label="News activity calendar"></section><section id="news-list" class="news-list">${D.news.filter(newsMatches).map(newsMarkup).join('')}</section>`;
     renderNewsCalendar(); decorateLinks();
   }
+  const snapshotDate = new Date(`${D.updated}T23:59:59`);
+  const validDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value || '');
+  const daysBeforeSnapshot = (value) => validDate(value) ? Math.floor((snapshotDate - new Date(`${value}T12:00:00`)) / 86400000) : Infinity;
+  const recentJobs = (days) => D.jobs.filter((job) => daysBeforeSnapshot(job[7]) >= 0 && daysBeforeSnapshot(job[7]) < days);
+  const activeJobs = () => D.jobs.filter((job) => !/inactive|closed|expired/i.test(job[5] || ''));
+  function ranked(values, limit = 6) {
+    const counts = new Map();
+    values.filter(Boolean).forEach((value) => counts.set(value, (counts.get(value) || 0) + 1));
+    return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, limit);
+  }
+  function observationRange() {
+    const dates = [
+      ...D.jobs.flatMap((job) => [job[7], job[8]]),
+      ...D.news.map((news) => news[2]),
+    ].filter(validDate).sort();
+    if (!dates.length) return `Snapshot updated ${D.updated}`;
+    return `${dates[0]} to ${dates.at(-1)}`;
+  }
+  function dataHome() {
+    const jobsNow = activeJobs();
+    const hiringCounts = ranked(jobsNow.map((job) => job[1]), 6);
+    const hiringCompanies = hiringCounts.map(([name]) => D.companies.find((company) => company[0] === name)).filter(Boolean);
+    const latestJobs = [...D.jobs].sort((a, b) => String(b[7] || '').localeCompare(String(a[7] || ''))).slice(0, 6);
+    const latestNews = [...D.news].sort((a, b) => b[2].localeCompare(a[2])).slice(0, 5);
+    app.innerHTML = `<section class="home-top"><article class="signal-card"><div class="eyebrow" style="color:#76e2dc">Signal desk / ${D.updated}</div><h1>The optics industry, in motion.</h1><p>Tracking companies, people, hiring, and technology across optics and photonics.</p></article><aside class="snapshot"><h2>Current data snapshot</h2><div class="metric-grid"><div class="metric"><b>${D.companies.length}</b><span>Companies</span></div><div class="metric"><b>${jobsNow.length}</b><span>Active role signals</span></div><div class="metric"><b>${D.news.length}</b><span>News records</span></div><div class="metric"><b>${D.technologies.length}</b><span>Technology areas</span></div></div><p class="meta" style="margin-top:16px">Observed dates: ${observationRange()}</p></aside></section><section class="section"><div class="section-head"><h2 class="section-title">Companies hiring most actively</h2><a href="#/companies">View company directory &rarr;</a></div><div class="grid grid-3">${hiringCompanies.map(companyCard).join('') || '<div class="empty">No active company-linked roles are indexed yet.</div>'}</div></section><section class="section"><div class="section-head"><h2 class="section-title">Recent role signals</h2><a href="#/jobs">Explore hiring market &rarr;</a></div>${jobTable(latestJobs)}</section><section class="section"><div class="section-head"><h2 class="section-title">Industry radar</h2><a href="#/news">All news &rarr;</a></div><div class="news-list">${latestNews.map(newsMarkup).join('') || '<div class="empty">No news records are indexed yet.</div>'}</div></section>`;
+    decorateLinks();
+  }
+  function dataJobs() {
+    const jobsNow = activeJobs();
+    const categories = ranked(jobsNow.map((job) => job[3]), 8);
+    const filters = categories.slice(0, 6).map(([name]) => `<button class="filter" onclick="filterJobs('${name.replace(/'/g, "\\'")}')">${name}</button>`).join('');
+    app.innerHTML = `${header('Hiring Market', `A source-linked view generated from ${D.jobs.length} job records in the repository dataset.`)}<div class="filters"><button class="filter active" onclick="filterJobs('')">All role signals</button>${filters}</div><section class="market-grid"><div class="card"><h2 class="section-title">Current snapshot</h2><div class="metric-grid"><div class="metric"><b>${jobsNow.length}</b><span>Active role signals</span></div><div class="metric"><b>${new Set(jobsNow.map((job) => job[1])).size}</b><span>Hiring companies</span></div><div class="metric"><b>${recentJobs(7).length}</b><span>Added in 7 days</span></div><div class="metric"><b>${recentJobs(30).length}</b><span>Added in 30 days</span></div></div></div><div class="card"><h2 class="section-title">Leading categories</h2><div class="topic-list">${categories.map(([name, count]) => `<span class="topic">${name} · ${count}</span>`).join('')}</div></div></section><section class="section"><div id="job-list">${jobTable(D.jobs)}</div></section>`;
+    decorateLinks();
+  }
+  function dataMarket() {
+    const jobsNow = activeJobs();
+    const categories = ranked(jobsNow.map((job) => job[3]), 7);
+    const companies = ranked(jobsNow.map((job) => job[1]), 7);
+    const locations = ranked(jobsNow.map((job) => job[2]), 7);
+    const topics = ranked(D.news.map((news) => news[3]), 9);
+    const bars = (items) => { const max = Math.max(1, ...items.map((item) => item[1])); return items.map(([name, count]) => `<div class="bar"><span>${name}</span><i style="width:${Math.max(8, Math.round(count / max * 92))}%"></i><b class="meta">${count}</b></div>`).join('') || '<div class="empty">No matching records yet.</div>'; };
+    app.innerHTML = `${header('Market', `Aggregates calculated directly from the repository dataset updated ${D.updated}. No synthetic history is shown.`)}<section class="market-grid section"><article class="detail-box"><h2>Active roles by category</h2>${bars(categories)}</article><article class="detail-box"><h2>Active roles by company</h2>${bars(companies)}</article><article class="detail-box"><h2>Active roles by location</h2>${bars(locations)}</article><article class="detail-box"><h2>News by topic</h2><div class="topic-list">${topics.map(([name, count]) => `<span class="topic">${name} · ${count}</span>`).join('') || '<span class="meta">No news topics indexed yet.</span>'}</div></article></section>`;
+  }
   window.filterNews = (query) => { calendarState.filter = query; const list = document.querySelector('#news-list'); if (!list) return; list.innerHTML = D.news.filter(newsMatches).map(newsMarkup).join(''); renderNewsCalendar(); decorateLinks(list); };
+  window.home = dataHome;
+  window.jobs = dataJobs;
+  window.market = dataMarket;
   window.news = industryNews;
   window.blogs = learningBlogs;
   async function loadRequestedSources() {
@@ -214,7 +294,7 @@
     });
   }
   window.about = () => {
-    app.innerHTML = `<div class="eyebrow">Optics Industry Intelligence / About this website</div><h1 class="page-title">About this website</h1><section class="about-grid"><div><details open><summary>Source directory (${sourceDirectory().length})</summary><p class="request-help"><button class="refresh-all" type="button" onclick="requestFullRefresh()">Request full refresh</button> Every request opens a public GitHub issue for the update queue.</p><div class="source-directory">${sourceEntries()}</div></details><details><summary>Requested sources and updates</summary><div id="requested-sources" class="requested-list"><p class="meta">Loading public requests...</p></div></details><details open><summary>Request a source</summary><form id="source-request-form" class="request-form"><select name="category" aria-label="Requested area"><option>People</option><option>Company</option><option>Job</option><option>News</option><option>Blog</option></select><input name="name" required placeholder="Your name" aria-label="Your name" /><input name="url" type="url" required placeholder="Public source URL" aria-label="Public source URL" /><button type="submit">Submit request</button></form><p class="request-help">Requests are submitted as public GitHub issues. Your GitHub account is the visible requester identity.</p></details></div><aside class="motto"><div class="eyebrow" style="color:#76e2dc">Conviction</div><blockquote>In the AI era, career advantage comes from a clearer map of the world.</blockquote><p>Build context. Follow real signals. Move with the field.</p><div class="refresh-clock"><div><span>Next scheduled source check</span><strong id="update-countdown">Loading...</strong></div><small id="last-update-run">Reading the update ledger...</small></div><div class="maintainer"><img src="https://github.com/changlaplace.png?size=160" alt="changlaplace GitHub avatar" loading="lazy" /><div><div class="eyebrow">Maintained by</div><h2>Optics PhD student</h2><p>University of Washington, Seattle</p><p>Metasurfaces · Computer vision</p><a href="https://github.com/changlaplace" target="_blank" rel="noreferrer">View GitHub profile &rarr;</a></div></div></aside></section><section class="update-pipeline"><div class="section-head"><div><h2 class="section-title">How the index refreshes</h2><p class="meta">The scheduled workflow revisits tracked links. New domains enter through the separate source-discovery workflow.</p></div><span class="pipeline-cadence">Every 72 hours</span></div><div class="pipeline-flow"><div class="pipeline-step"><b>1</b><strong>Source directory</strong><small>Official careers, newsrooms, ATS pages</small></div><i aria-hidden="true">&rarr;</i><div class="pipeline-step"><b>2</b><strong>Crawl4AI</strong><small>Crawl pages and clean public content</small></div><i aria-hidden="true">&rarr;</i><div class="pipeline-step"><b>3</b><strong>Change ledger</strong><small>Compare SHA-256 hashes and preserve crawl history</small></div><i aria-hidden="true">&rarr;</i><div class="pipeline-step"><b>4</b><strong>DeepSeek Flash</strong><small>Extract only changed optics records</small></div><i aria-hidden="true">&rarr;</i><div class="pipeline-step"><b>5</b><strong>GitHub dataset</strong><small>Merge, validate, commit, and redeploy</small></div></div><div class="pipeline-note"><strong>Source discovery</strong><span>Trusted industry directories are scanned in a separate manual Action. Accepted companies and URLs are appended to the source directory, then join future 72-hour checks.</span></div></section>`;
+    app.innerHTML = `<div class="eyebrow">Optics Industry Intelligence / About this website</div><h1 class="page-title">About this website</h1><section class="about-grid"><div><details open><summary>Source directory (${sourceDirectory().length})</summary><p class="request-help"><button class="refresh-all" type="button" onclick="requestFullRefresh()">Request full refresh</button> Every request opens a public GitHub issue for the update queue.</p><div class="source-directory">${sourceEntries()}</div></details><details><summary>Requested sources and updates</summary><div id="requested-sources" class="requested-list"><p class="meta">Loading public requests...</p></div></details><details open><summary>Request a source</summary><form id="source-request-form" class="request-form"><select name="category" aria-label="Requested area"><option>People</option><option>Company</option><option>Job</option><option>News</option><option>Blog</option></select><input name="name" required placeholder="Your name" aria-label="Your name" /><input name="url" type="url" required placeholder="Public source URL" aria-label="Public source URL" /><button type="submit">Submit request</button></form><p class="request-help">Requests are submitted as public GitHub issues. Your GitHub account is the visible requester identity.</p></details></div><aside class="motto"><div class="eyebrow" style="color:#76e2dc">Conviction</div><blockquote>In the AI era, career advantage comes from a clearer map of the world.</blockquote><p>Build context. Follow real signals. Move with the field.</p><div class="refresh-clock"><div><span>Next scheduled source check</span><strong id="update-countdown">Loading...</strong></div><small id="last-update-run">Reading the update ledger...</small></div><div class="maintainer"><img src="https://github.com/changlaplace.png?size=160" alt="changlaplace GitHub avatar" loading="lazy" /><div><div class="eyebrow">Maintained by</div><h2>Optics PhD student</h2><p>University of Washington, Seattle</p><p>Metasurfaces · Computer vision</p><a href="https://github.com/changlaplace" target="_blank" rel="noreferrer">View GitHub profile &rarr;</a></div></div></aside></section><section class="update-pipeline"><div class="section-head"><div><h2 class="section-title">How the index refreshes</h2><p class="meta">Scheduled checks revisit tracked links; manual discovery can add domains and index their content in the same run.</p></div><span class="pipeline-cadence">Every 72 hours</span></div><div class="pipeline-flow"><div class="pipeline-step"><b>1</b><strong>Source directory</strong><small>Official careers, newsrooms, ATS pages</small></div><i aria-hidden="true">&rarr;</i><div class="pipeline-step"><b>2</b><strong>Crawl4AI</strong><small>Crawl pages and clean public content</small></div><i aria-hidden="true">&rarr;</i><div class="pipeline-step"><b>3</b><strong>Change ledger</strong><small>Compare SHA-256 hashes and preserve crawl history</small></div><i aria-hidden="true">&rarr;</i><div class="pipeline-step"><b>4</b><strong>DeepSeek Flash</strong><small>Extract only changed optics records</small></div><i aria-hidden="true">&rarr;</i><div class="pipeline-step"><b>5</b><strong>GitHub dataset</strong><small>Merge, validate, commit, and redeploy</small></div></div><div class="pipeline-note"><strong>Source discovery</strong><span>The manual Action searches beyond the configured directory, reviews candidate companies, registers careers and newsroom links, extracts changed records, then commits one validated dataset.</span></div></section>`;
     startUpdateCountdown();
     bindRequestForm(); loadRequestedSources(); decorateLinks();
   };

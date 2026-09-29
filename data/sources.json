@@ -302,6 +302,14 @@
       "max_follow_links": 6
     },
     {
+      "name": "Huawei News",
+      "url": "https://www.huawei.com/en/news/",
+      "type": "company_news",
+      "company": "Huawei",
+      "website": "https://www.huawei.com/",
+      "max_follow_links": 12
+    },
+    {
       "name": "LuminWave (\u6d1b\u5fae\u79d1\u6280) Careers",
       "url": "https://luminwave.com.cn/",
       "type": "company",

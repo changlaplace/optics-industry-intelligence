@@ -29,6 +29,7 @@ EXCLUDED_DOMAINS = {
 }
 PROFILE_SIGNALS = ("company", "companies", "member", "members", "directory", "supplier", "vendor", "job")
 CAREER_SIGNALS = ("career", "careers", "jobs", "join-us", "work-with-us", "open-roles", "vacancies")
+NEWS_SIGNALS = ("news", "newsroom", "press", "media", "announcement", "insights", "updates")
 DEFAULT_SEARCH_QUERIES = [
     '"Sunny Optical" 舜宇光学 官网 招聘',
     '"Hesai" 禾赛科技 激光雷达 官网 招聘',
@@ -358,12 +359,17 @@ async def crawl_discovery(
             excerpt = re.sub(r"\s+", " ", result_markdown(result)).strip()[:700]
             item["excerpt"] = excerpt
             careers = []
+            news_pages = []
             for link in result_links(result):
                 signal = f"{urlsplit(link['url']).path} {link['text']}".casefold()
                 if any(term in signal for term in CAREER_SIGNALS):
                     careers.append(link["url"])
+                if any(term in signal for term in NEWS_SIGNALS):
+                    news_pages.append(link["url"])
             if careers:
                 item["careers_url"] = careers[0]
+            if news_pages:
+                item["news_url"] = news_pages[0]
         return shortlist
 
 
@@ -426,18 +432,27 @@ def merge(candidates: list[dict], accepted: list[dict], registry: dict, dataset:
             "tier": "Emerging specialist", "score": 2,
             "basis": "Focused optics or photonics market presence",
         }
-        source_url = canonical_url(candidate.get("careers_url") or website)
         directory_profile = domain(website) == "gophotonics.com" and bool(
             re.search(r"/companies/\d+/", urlsplit(website).path.casefold())
         )
-        if not directory_profile and source_url not in tracked_urls:
-            registry["tracked_urls"].append({
-                "name": f"{name} Careers", "url": source_url, "type": "company", "company": name,
-                "website": website, "location": str(record.get("location", "")).strip(),
-                "description": str(record.get("description", "")).strip(), "focus_areas": "|".join(focus),
-                "max_follow_links": 6,
-            })
-            tracked_urls.add(source_url)
+        if not directory_profile:
+            source_url = canonical_url(candidate.get("careers_url") or website)
+            if source_url not in tracked_urls:
+                registry["tracked_urls"].append({
+                    "name": f"{name} Careers", "url": source_url, "type": "company", "company": name,
+                    "website": website, "location": str(record.get("location", "")).strip(),
+                    "description": str(record.get("description", "")).strip(), "focus_areas": "|".join(focus),
+                    "max_follow_links": 6,
+                })
+                tracked_urls.add(source_url)
+            if candidate.get("news_url"):
+                news_url = canonical_url(candidate["news_url"])
+                if news_url not in tracked_urls:
+                    registry["tracked_urls"].append({
+                        "name": f"{name} News", "url": news_url, "type": "company_news", "company": name,
+                        "website": website, "max_follow_links": 10,
+                    })
+                    tracked_urls.add(news_url)
         existing_names.add(name.casefold())
         existing_sites.add(website_key)
         added += 1
@@ -469,6 +484,22 @@ def self_test() -> None:
         html = "<rss><channel><item><title>Acme Optics</title><link>https://acme-optics.com/</link></item></channel></rss>"
     rss_candidates = bing_rss_candidates(RssResult(), "optics")
     assert len(rss_candidates) == 1 and rss_candidates[0]["name_hint"] == "Acme Optics"
+    registry = {"tracked_urls": []}
+    dataset = {"companies": [], "company_meta": {}, "updated": "2026-01-01"}
+    added = merge(
+        [{
+            "name_hint": "Acme Optics", "website": "https://acme-optics.com/",
+            "careers_url": "https://acme-optics.com/careers",
+            "news_url": "https://acme-optics.com/news",
+        }],
+        [{
+            "id": 0, "name": "Acme Optics", "location": "Shanghai, China",
+            "description": "Develops optical systems.", "focus_areas": ["Photonics"],
+        }],
+        registry, dataset, 10,
+    )
+    assert added == 1
+    assert {item["type"] for item in registry["tracked_urls"]} == {"company", "company_news"}
     print("Source discovery helper checks passed.")
 
 

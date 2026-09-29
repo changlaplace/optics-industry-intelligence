@@ -100,7 +100,7 @@ def load_sources(max_sources: int, source_match: str = "") -> list[dict]:
     for source in registry.get("tracked_urls", []):
         if source.get("automation", True) is False:
             continue
-        if source.get("type") not in {"company", "industry"}:
+        if source.get("type") not in {"company", "company_news", "industry"}:
             continue
         if source.get("access") == "manual review only":
             continue
