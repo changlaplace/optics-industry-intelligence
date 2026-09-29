@@ -86,8 +86,11 @@ def profile_links(result, seed: dict) -> list[str]:
     for item in result_links(result):
         if domain(item["url"]) != seed_domain or item["url"] == canonical_url(seed["url"]):
             continue
-        signal = f"{urlsplit(item['url']).path} {item['text']}".casefold()
+        path = urlsplit(item["url"]).path.casefold()
+        signal = f"{path} {item['text']}".casefold()
         hits = sum(term in signal for term in PROFILE_SIGNALS)
+        if re.search(r"/companies/\d+/", path):
+            hits += 100
         if hits and len(item["text"]) >= 2:
             ranked.append((hits, item["url"]))
     ranked.sort(key=lambda value: (-value[0], value[1]))
@@ -96,11 +99,19 @@ def profile_links(result, seed: dict) -> list[str]:
 
 def candidate_links(result, discovered_from: str) -> list[dict]:
     base_domain = domain(getattr(result, "url", ""))
+    path = urlsplit(getattr(result, "url", "")).path.casefold()
+    company_profile = base_domain == "gophotonics.com" and bool(re.search(r"/companies/\d+/", path))
+    heading = re.search(r"(?m)^#\s+([^#\n]{2,100})$", result_markdown(result))
+    profile_name = heading.group(1).strip() if heading else ""
     candidates = []
     for item in result_links(result):
         if domain(item["url"]) == base_domain or excluded(item["url"]):
             continue
+        if company_profile and "visit website" not in item["text"].casefold():
+            continue
         label = item["text"].strip(" |-:")
+        if company_profile and profile_name:
+            label = profile_name
         if len(label) < 2 or label.casefold() in {"website", "visit website", "learn more", "read more"}:
             label = domain(item["url"]).split(".")[0].replace("-", " ").title()
         candidates.append({"name_hint": label[:100], "website": item["url"], "discovered_from": discovered_from})
