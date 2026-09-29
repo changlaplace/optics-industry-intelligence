@@ -1,6 +1,6 @@
 {
-  "last_successful_run_at": "2026-09-29T00:52:38+00:00",
+  "last_successful_run_at": "2026-09-29T03:03:29+00:00",
   "next_automatic_run_at": "2026-10-02T13:17:00+00:00",
   "cadence_hours": 72,
-  "partial_success": false
+  "partial_success": true
 }
