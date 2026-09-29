@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://optics-industry-intelligence.yubbie.chatgpt.site/sitemap.xml
+Sitemap: https://changlaplace.github.io/optics-industry-intelligence/sitemap.xml

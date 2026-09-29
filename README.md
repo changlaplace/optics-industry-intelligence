@@ -2,7 +2,7 @@
 
 OpticSignal is a public, static MVP for tracking optics and photonics companies, people, hiring signals, technology areas, and source-linked industry reading.
 
-**Live site:** [optics-industry-intelligence.yubbie.chatgpt.site](https://optics-industry-intelligence.yubbie.chatgpt.site)
+**Live site:** [changlaplace.github.io/optics-industry-intelligence](https://changlaplace.github.io/optics-industry-intelligence/)
 
 ## Architecture
 
@@ -53,7 +53,7 @@ The updater is intentionally repository-native:
 
 ## Deployment
 
-This project is configured as a static Site through `.openai/hosting.json`. It also includes `.github/workflows/deploy-pages.yml`, which publishes `dist/` to GitHub Pages after any `dist/**` change reaches `main`, including commits created by the automated content updater.
+GitHub Pages is the sole production host. `.github/workflows/deploy-pages.yml` publishes `dist/` after any `dist/**` change reaches `main`, including commits created by the automated content updater.
 
 GitHub Pages requires one initial repository setting: open **Settings → Pages → Build and deployment**, then choose **GitHub Actions** as the source. After that, deployments are automatic and can also be started manually from the Actions tab. No deployment secret is required.
 
@@ -61,4 +61,4 @@ GitHub Pages requires one initial repository setting: open **Settings → Pages 
 
 - `dist/robots.txt` permits indexing and points crawlers to `dist/sitemap.xml`.
 - The current sitemap intentionally lists the public root URL. Hash-based client routes are not independent indexable documents; add real server paths for company and news records when search discovery becomes a priority.
-- Verify the production domain in Google Search Console and submit `https://optics-industry-intelligence.yubbie.chatgpt.site/sitemap.xml` after deployment.
+- Verify the production URL in Google Search Console and submit `https://changlaplace.github.io/optics-industry-intelligence/sitemap.xml` after deployment.
