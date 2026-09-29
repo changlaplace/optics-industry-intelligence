@@ -1,2 +1,4 @@
 optic-signal-site.tar.gz
 .sites-runtime/
+__pycache__/
+.crawl4ai/

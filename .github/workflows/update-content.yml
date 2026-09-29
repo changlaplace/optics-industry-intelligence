@@ -1,0 +1,79 @@
+name: Update optics intelligence data
+
+on:
+  schedule:
+    - cron: "17 9 */3 * *"
+  workflow_dispatch:
+    inputs:
+      force_refresh:
+        description: Ignore stored content hashes and reprocess every source
+        required: false
+        default: false
+        type: boolean
+      max_sources:
+        description: Optional source limit for a test run (0 means all)
+        required: false
+        default: "0"
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: optics-content-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+      DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL || 'deepseek-chat' }}
+      FORCE_REFRESH: ${{ inputs.force_refresh || 'false' }}
+      MAX_SOURCES: ${{ inputs.max_sources || '0' }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-update.txt
+
+      - name: Install updater dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-update.txt
+          crawl4ai-setup
+
+      - name: Crawl, extract, and merge
+        run: |
+          args=()
+          if [ "$FORCE_REFRESH" = "true" ]; then args+=(--force); fi
+          if [ "$MAX_SOURCES" != "0" ]; then args+=(--max-sources "$MAX_SOURCES"); fi
+          python scripts/update_content.py "${args[@]}"
+
+      - name: Validate generated data
+        run: |
+          node scripts/validate-data.mjs
+          node --check dist/app.js
+          python scripts/update_content.py --self-test
+
+      - name: Commit changed data
+        run: |
+          if git diff --quiet -- dist/app.js data/update-state.json; then
+            echo "No repository data changed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist/app.js data/update-state.json
+          git commit -m "chore(data): refresh optics intelligence"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

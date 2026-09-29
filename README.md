@@ -35,6 +35,22 @@ Refresh requests also become public GitHub Issues. They form an agent-review que
 
 Use company career portals, public ATS feeds, company newsrooms, and public academic/company bios. Store the raw source URL, capture time, and parser version. Do not use aggressive scraping or treat a search result as a lasting fact.
 
+## Automated updates
+
+`.github/workflows/update-content.yml` runs every three days and can also be started manually from GitHub Actions. It uses Crawl4AI to create clean Markdown, skips unchanged source content using SHA-256 hashes in `data/update-state.json`, sends only changed content to DeepSeek, and conservatively merges validated records back into `dist/app.js`.
+
+Before the first run, add a repository Actions secret named `DEEPSEEK_API_KEY` under **Settings → Secrets and variables → Actions**. Do not put the key in a file, issue, workflow input, or chat message. The optional repository variable `DEEPSEEK_MODEL` overrides the default `deepseek-chat` model.
+
+Manual runs expose two controls: `force_refresh` ignores stored hashes, and `max_sources` limits a test run. A good first check is `max_sources=1`; after reviewing the resulting commit, run the complete source set.
+
+The updater is intentionally repository-native:
+
+- `data/sources.json` is the crawl registry.
+- `data/update-state.json` stores only content hashes and processing timestamps.
+- `scripts/update_content.py` handles crawling, DeepSeek extraction, validation, and conservative merging.
+- `scripts/site-data.mjs` safely reads and writes the existing JavaScript dataset.
+- Failed extraction never writes data or hash state. Individual blocked crawl sources are reported and left unchanged.
+
 ## Deployment
 
 This project is configured as a static Site through `.openai/hosting.json`. It can also deploy to GitHub Pages, Vercel, Netlify, or Cloudflare Pages without a build step.
