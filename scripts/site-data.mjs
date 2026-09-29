@@ -6,6 +6,7 @@ import vm from 'node:vm';
 const root = resolve(import.meta.dirname, '..');
 const appPath = resolve(root, 'dist', 'app.js');
 const indexPath = resolve(root, 'dist', 'index.html');
+const sitemapPath = resolve(root, 'dist', 'sitemap.xml');
 const source = readFileSync(appPath, 'utf8');
 const startMarker = 'const D=';
 const start = source.indexOf(startMarker);
@@ -52,6 +53,16 @@ if (command === 'export') {
   const temporaryIndex = `${indexPath}.tmp`;
   writeFileSync(temporaryIndex, nextIndex, 'utf8');
   renameSync(temporaryIndex, indexPath);
+  const sitemap = readFileSync(sitemapPath, 'utf8');
+  const nextSitemap = sitemap.replace(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/, `<lastmod>${data.updated}</lastmod>`);
+  if (nextSitemap === sitemap && !sitemap.includes(`<lastmod>${data.updated}</lastmod>`)) {
+    throw new Error('Unable to update lastmod in dist/sitemap.xml');
+  }
+  if (nextSitemap !== sitemap) {
+    const temporarySitemap = `${sitemapPath}.tmp`;
+    writeFileSync(temporarySitemap, nextSitemap, 'utf8');
+    renameSync(temporarySitemap, sitemapPath);
+  }
 } else {
   throw new Error(`Unknown command: ${command}`);
 }
