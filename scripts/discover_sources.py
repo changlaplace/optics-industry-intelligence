@@ -30,14 +30,20 @@ EXCLUDED_DOMAINS = {
 PROFILE_SIGNALS = ("company", "companies", "member", "members", "directory", "supplier", "vendor", "job")
 CAREER_SIGNALS = ("career", "careers", "jobs", "join-us", "work-with-us", "open-roles", "vacancies")
 DEFAULT_SEARCH_QUERIES = [
+    '"Sunny Optical" 舜宇光学 官网 招聘',
+    '"Hesai" 禾赛科技 激光雷达 官网 招聘',
+    '"RoboSense" 速腾聚创 激光雷达 官网 招聘',
+    '"Accelink" 光迅科技 光通信 官网 招聘',
+    '"Everbright Photonics" 长光华芯 激光 官网 招聘',
+    '"InnoLight" 中际旭创 光通信 官网 招聘',
+    '"Focuslight" 炬光科技 激光 光学 官网 招聘',
+    '"Raysolve" 理湃光晶 AR 光学 官网 招聘',
+    '"Goertek" 歌尔 光学 AR VR 官网 招聘',
+    '"Crystal-Optech" 水晶光电 官网 招聘',
+    '"Eoptolink" 新易盛 光通信 官网 招聘',
+    '"OFILM" 欧菲光 光学 影像 官网 招聘',
     "China optics photonics companies official website",
-    "中国 光学 光子 公司 官网",
     "中国 硅光 芯片 公司 官网 招聘",
-    "中国 激光 雷达 光学 公司 官网",
-    "中国 AR VR 光学 显示 公司 官网",
-    "China optical communications companies official website careers",
-    "China computational imaging camera optics company official website",
-    "华为 光通信 光学 招聘 官网",
     '"学向科技" 光学 公司',
     "global silicon photonics startups official website careers",
     "global metasurface meta optics companies official website",
@@ -220,14 +226,16 @@ def plan_search_queries(registry: dict, dataset: dict, limit: int) -> list[str]:
         "priorities": priorities,
         "maximum_queries": limit,
     }
-    prompt = """Plan high-signal public web searches for an optics-industry company database.
+    prompt = """Act as the search-planning stage of an optics-industry research agent.
 Return JSON only: {"queries":[{"query":"...","region":"...","focus":"..."}]}.
-Queries are instructions for a search engine, not factual claims. Seek official company and career websites for
-commercial organizations substantially active in optics, photonics, imaging, lasers, displays, LiDAR, optical
-networking, semiconductor optics, quantum photonics, or optical instrumentation. Avoid companies already listed.
-Use both English and local-language queries. Allocate at least 40 percent of queries to China and include exact-name
-queries for every company lead in the priorities. Spread the rest across regions and technologies. Do not invent
-company names or URLs. Keep each query concise and return no more than maximum_queries."""
+Queries are tool inputs, not database facts. At least two thirds should test a specific plausible company name using
+an exact-name query plus terms such as official site, careers, 官网, or 招聘. You may use your industry knowledge to
+propose company names as hypotheses, but never invent a URL; every company will be independently crawled and reviewed
+before inclusion. Seek commercial organizations substantially active in optics, photonics, imaging, lasers, displays,
+LiDAR, optical networking, semiconductor optics, quantum photonics, or optical instrumentation. Avoid companies already
+listed. Use both English and local-language queries, allocate at least half to China, and include exact-name queries for
+every company lead in the priorities. Spread the rest across regions and technologies. Keep each query concise and
+return no more than maximum_queries."""
     planned = []
     try:
         response = deepseek_json(prompt, context, 2500)
@@ -237,7 +245,8 @@ company names or URLs. Keep each query concise and return no more than maximum_q
                 planned.append(query[:180])
     except Exception as error:
         print(f"warning: DeepSeek search planning failed; using fallback queries: {error}")
-    combined = planned + DEFAULT_SEARCH_QUERIES
+    fallback_slots = min(len(DEFAULT_SEARCH_QUERIES), max(2, limit // 3))
+    combined = planned[:max(0, limit - fallback_slots)] + DEFAULT_SEARCH_QUERIES[:fallback_slots]
     return list(dict.fromkeys(query for query in combined if query))[:limit]
 
 
