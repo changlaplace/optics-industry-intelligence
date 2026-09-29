@@ -139,8 +139,34 @@
   }
   window.requestSourceRefresh = (label, url, scope) => openRefreshRequest(scope, label, url);
   window.requestFullRefresh = () => openRefreshRequest('All tracked sources', 'All tracked sources', 'https://github.com/changlaplace/optics-industry-intelligence/blob/main/data/sources.json');
+  function startUpdateCountdown() {
+    const countdown = document.querySelector('#update-countdown');
+    const lastRun = document.querySelector('#last-update-run');
+    if (!countdown || !lastRun) return;
+    fetch('update-status.json', { cache: 'no-store' }).then((response) => {
+      if (!response.ok) throw new Error('Update status unavailable');
+      return response.json();
+    }).then((status) => {
+      const next = new Date(status.next_automatic_run_at);
+      const last = new Date(status.last_successful_run_at);
+      lastRun.textContent = `Last successful refresh: ${last.toLocaleString()}`;
+      const tick = () => {
+        const remaining = Math.max(0, next.getTime() - Date.now());
+        const days = Math.floor(remaining / 86400000);
+        const hours = Math.floor((remaining % 86400000) / 3600000);
+        const minutes = Math.floor((remaining % 3600000) / 60000);
+        countdown.textContent = remaining ? `${days}d ${hours}h ${minutes}m` : 'Due now';
+      };
+      tick();
+      window.setInterval(tick, 60000);
+    }).catch(() => {
+      countdown.textContent = 'Status pending';
+      lastRun.textContent = 'The next successful update will start the 72-hour clock.';
+    });
+  }
   window.about = () => {
-    app.innerHTML = `<div class="eyebrow">Optics Industry Intelligence / About this website</div><h1 class="page-title">About this website</h1><section class="about-grid"><div><details open><summary>Source directory (${sourceDirectory().length})</summary><p class="request-help"><button class="refresh-all" type="button" onclick="requestFullRefresh()">Request full refresh</button> Every request opens a public GitHub issue for the update queue.</p><div class="source-directory">${sourceEntries()}</div></details><details><summary>Requested sources and updates</summary><div id="requested-sources" class="requested-list"><p class="meta">Loading public requests...</p></div></details><details open><summary>Request a source</summary><form id="source-request-form" class="request-form"><select name="category" aria-label="Requested area"><option>People</option><option>Company</option><option>Job</option><option>News</option><option>Blog</option></select><input name="name" required placeholder="Your name" aria-label="Your name" /><input name="url" type="url" required placeholder="Public source URL" aria-label="Public source URL" /><button type="submit">Submit request</button></form><p class="request-help">Requests are submitted as public GitHub issues. Your GitHub account is the visible requester identity.</p></details></div><aside class="motto"><div class="eyebrow" style="color:#76e2dc">Conviction</div><blockquote>In the AI era, career advantage comes from a clearer map of the world.</blockquote><p>Build context. Follow real signals. Move with the field.</p><div class="maintainer"><img src="https://github.com/changlaplace.png?size=160" alt="changlaplace GitHub avatar" loading="lazy" /><div><div class="eyebrow">Maintained by</div><h2>Optics PhD student</h2><p>University of Washington, Seattle</p><p>Metasurfaces · Computer vision</p><a href="https://github.com/changlaplace" target="_blank" rel="noreferrer">View GitHub profile &rarr;</a></div></div></aside></section>`;
+    app.innerHTML = `<div class="eyebrow">Optics Industry Intelligence / About this website</div><h1 class="page-title">About this website</h1><section class="about-grid"><div><details open><summary>Source directory (${sourceDirectory().length})</summary><p class="request-help"><button class="refresh-all" type="button" onclick="requestFullRefresh()">Request full refresh</button> Every request opens a public GitHub issue for the update queue.</p><div class="source-directory">${sourceEntries()}</div></details><details><summary>Requested sources and updates</summary><div id="requested-sources" class="requested-list"><p class="meta">Loading public requests...</p></div></details><details open><summary>Request a source</summary><form id="source-request-form" class="request-form"><select name="category" aria-label="Requested area"><option>People</option><option>Company</option><option>Job</option><option>News</option><option>Blog</option></select><input name="name" required placeholder="Your name" aria-label="Your name" /><input name="url" type="url" required placeholder="Public source URL" aria-label="Public source URL" /><button type="submit">Submit request</button></form><p class="request-help">Requests are submitted as public GitHub issues. Your GitHub account is the visible requester identity.</p></details></div><aside class="motto"><div class="eyebrow" style="color:#76e2dc">Conviction</div><blockquote>In the AI era, career advantage comes from a clearer map of the world.</blockquote><p>Build context. Follow real signals. Move with the field.</p><div class="refresh-clock"><div><span>Next DeepSeek refresh</span><strong id="update-countdown">Loading...</strong></div><small id="last-update-run">Reading the update ledger...</small></div><div class="maintainer"><img src="https://github.com/changlaplace.png?size=160" alt="changlaplace GitHub avatar" loading="lazy" /><div><div class="eyebrow">Maintained by</div><h2>Optics PhD student</h2><p>University of Washington, Seattle</p><p>Metasurfaces · Computer vision</p><a href="https://github.com/changlaplace" target="_blank" rel="noreferrer">View GitHub profile &rarr;</a></div></div></aside></section>`;
+    startUpdateCountdown();
     bindRequestForm(); loadRequestedSources(); decorateLinks();
   };
   const footerStatus = document.querySelector('footer span:nth-child(2)');

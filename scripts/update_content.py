@@ -16,13 +16,14 @@ import tempfile
 import time
 import urllib.error
 import urllib.request
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES_PATH = ROOT / "data" / "sources.json"
 STATE_PATH = ROOT / "data" / "update-state.json"
+PUBLIC_STATUS_PATH = ROOT / "dist" / "update-status.json"
 BRIDGE_PATH = ROOT / "scripts" / "site-data.mjs"
 MAX_CONTENT_CHARS = int(os.getenv("MAX_SOURCE_CHARS", "30000"))
 MAX_RECORDS_PER_SOURCE = 40
@@ -149,7 +150,7 @@ async def crawl_sources(sources: list[dict]) -> tuple[dict[str, str], list[str]]
     return crawled, failures
 
 
-def extraction_prompt(source: dict, content: str, current: dict) -> list[dict]:
+def extraction_prompt(source: dict, content: str, current: dict, record_limit: int) -> list[dict]:
     company_names = [item[0] for item in current["companies"]]
     categories = sorted({item[3] for item in current["jobs"]})
     system = """You extract factual optics/photonics industry records from public page content.
@@ -159,6 +160,8 @@ Include only facts explicitly supported by the supplied page. Do not guess dates
 Only include records relevant to optics, photonics, imaging, cameras, displays, lasers, LiDAR,
 lithography, optical metrology, sensors, semiconductor optical systems, or quantum photonics.
 Prefer exact job posting URLs over generic career-page URLs. Return empty arrays when nothing useful is present.
+Keep every field concise and prioritize exact job links.""" + f"""
+Return no more than {record_limit} records in each array.""" + """
 JSON shape:
 {"companies":[{"name":"","location":"","description":"","focus_areas":[""],"website":""}],
 "jobs":[{"title":"","company":"","location":"","category":"","seniority":"","status":"active","posting_url":"","posting_date":null}],
@@ -179,23 +182,24 @@ def call_deepseek(source: dict, content: str, current: dict) -> dict:
     api_key = os.getenv("DEEPSEEK_API_KEY", "").strip()
     if not api_key:
         raise RuntimeError("DEEPSEEK_API_KEY is not configured")
-    payload = {
-        "model": os.getenv("DEEPSEEK_MODEL", "deepseek-flash"),
-        "messages": extraction_prompt(source, content, current),
-        "response_format": {"type": "json_object"},
-        "thinking": {"type": "disabled"},
-        "temperature": 0,
-        "max_tokens": 5000,
-    }
-    request = urllib.request.Request(
-        "https://api.deepseek.com/chat/completions",
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-        method="POST",
-    )
     last_error: Exception | None = None
-    for attempt in range(3):
+    record_limits = (25, 12, 6)
+    for attempt, record_limit in enumerate(record_limits):
         try:
+            payload = {
+                "model": os.getenv("DEEPSEEK_MODEL", "deepseek-flash"),
+                "messages": extraction_prompt(source, content, current, record_limit),
+                "response_format": {"type": "json_object"},
+                "thinking": {"type": "disabled"},
+                "temperature": 0,
+                "max_tokens": 8000,
+            }
+            request = urllib.request.Request(
+                "https://api.deepseek.com/chat/completions",
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                method="POST",
+            )
             with urllib.request.urlopen(request, timeout=120) as response:
                 envelope = json.loads(response.read().decode("utf-8"))
             choice = envelope["choices"][0]
@@ -204,7 +208,7 @@ def call_deepseek(source: dict, content: str, current: dict) -> dict:
             return validate_extraction(json.loads(choice["message"]["content"]))
         except (urllib.error.URLError, TimeoutError, KeyError, IndexError, json.JSONDecodeError, RuntimeError) as error:
             last_error = error
-            if attempt < 2:
+            if attempt < len(record_limits) - 1:
                 time.sleep(2 ** attempt)
     raise RuntimeError(f"DeepSeek extraction failed for {source['name']}: {last_error}")
 
@@ -334,11 +338,54 @@ def merge_extraction(dataset: dict, extracted: dict, source: dict, today: str) -
     return changes
 
 
+def process_changed_sources(
+    changed_sources: list[tuple[dict, str, str, str]],
+    dataset: dict,
+    next_state: dict,
+    today: str,
+    extractor=call_deepseek,
+) -> tuple[int, int, list[str]]:
+    semantic_changes = 0
+    successful_extractions = 0
+    failures = []
+    for source, url, content, digest in changed_sources:
+        try:
+            extracted = extractor(source, content, dataset)
+            semantic_changes += merge_extraction(dataset, extracted, source, today)
+            successful_extractions += 1
+            next_state.setdefault("sources", {})[url] = {
+                "name": source["name"],
+                "content_hash": digest,
+                "processed_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+            }
+        except Exception as error:
+            failures.append(f"{source['name']}: {error}")
+            print(f"warning: {source['name']} extraction skipped: {error}", file=sys.stderr)
+    return semantic_changes, successful_extractions, failures
+
+
 def append_summary(lines: list[str]) -> None:
     path = os.getenv("GITHUB_STEP_SUMMARY")
     if path:
         with open(path, "a", encoding="utf-8") as handle:
             handle.write("\n".join(lines) + "\n")
+
+
+def next_automatic_run(completed_at: datetime) -> datetime:
+    earliest = completed_at + timedelta(hours=72)
+    candidate = earliest.replace(hour=13, minute=17, second=0, microsecond=0)
+    if candidate < earliest:
+        candidate += timedelta(days=1)
+    return candidate
+
+
+def write_public_status(completed_at: datetime, partial: bool) -> None:
+    write_json_atomic(PUBLIC_STATUS_PATH, {
+        "last_successful_run_at": completed_at.replace(microsecond=0).isoformat(),
+        "next_automatic_run_at": next_automatic_run(completed_at).isoformat(),
+        "cadence_hours": 72,
+        "partial_success": partial,
+    })
 
 
 def self_test() -> None:
@@ -392,6 +439,23 @@ def self_test() -> None:
     assert dataset["jobs"][0][0] == "Optical Engineer"
     assert dataset["news"][0][0] == "Example Optics launches a photonics system"
     assert dataset["updated"] == "2026-01-03"
+    completed = datetime(2026, 1, 1, 14, 0, tzinfo=timezone.utc)
+    assert next_automatic_run(completed).isoformat() == "2026-01-05T13:17:00+00:00"
+    partial_dataset = copy.deepcopy(dataset)
+    partial_state = {"sources": {}}
+    partial_sources = [
+        ({"name": "Broken", "url": "https://broken.example", "type": "company"}, "https://broken.example/", "x", "hash-1"),
+        ({"name": "Example Optics", "url": "https://example.com", "type": "company"}, "https://example.com/", "x", "hash-2"),
+    ]
+    def fake_extractor(source, _content, _current):
+        if source["name"] == "Broken":
+            raise RuntimeError("simulated failure")
+        return {"companies": [], "jobs": [], "news": []}
+    partial_changes, partial_successes, partial_failures = process_changed_sources(
+        partial_sources, partial_dataset, partial_state, "2026-01-03", fake_extractor
+    )
+    assert partial_changes == 0 and partial_successes == 1 and len(partial_failures) == 1
+    assert "https://example.com/" in partial_state["sources"]
     print("Updater helper checks passed.")
 
 
@@ -425,21 +489,17 @@ def main() -> int:
         if args.force or previous.get("content_hash") != digest:
             changed_sources.append((source_by_url[url], url, content, digest))
 
-    extractions = []
-    for source, url, content, digest in changed_sources:
-        extracted = call_deepseek(source, content, dataset)
-        extractions.append((source, url, digest, extracted))
-
     today = datetime.now(timezone.utc).date().isoformat()
-    completed_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
-    semantic_changes = 0
-    for source, url, digest, extracted in extractions:
-        semantic_changes += merge_extraction(dataset, extracted, source, today)
-        next_state.setdefault("sources", {})[url] = {
-            "name": source["name"],
-            "content_hash": digest,
-            "processed_at": completed_at,
-        }
+    semantic_changes, successful_extractions, extraction_failures = process_changed_sources(
+        changed_sources, dataset, next_state, today
+    )
+
+    if changed_sources and not successful_extractions:
+        raise RuntimeError("Every changed source failed DeepSeek extraction; existing data was left untouched")
+
+    completed = datetime.now(timezone.utc).replace(microsecond=0)
+    completed_at = completed.isoformat()
+    next_state["last_successful_run_at"] = completed_at
 
     if os.getenv("UPDATE_TRIGGER") == "schedule":
         next_state["last_scheduled_run_at"] = completed_at
@@ -448,6 +508,7 @@ def main() -> int:
         write_site_data(dataset)
     if next_state != state:
         write_json_atomic(STATE_PATH, next_state)
+    write_public_status(completed, bool(crawl_failures or extraction_failures))
 
     print(f"Crawled {len(crawled)}/{len(sources)} sources; {len(changed_sources)} changed; {semantic_changes} data changes.")
     for failure in crawl_failures:
@@ -458,6 +519,8 @@ def main() -> int:
         f"- Sources sent to DeepSeek: {len(changed_sources)}",
         f"- Semantic record changes: {semantic_changes}",
         f"- Crawl warnings: {len(crawl_failures)}",
+        f"- DeepSeek warnings: {len(extraction_failures)}",
+        f"- Successful DeepSeek sources: {successful_extractions}/{len(changed_sources)}",
     ])
     return 0
 

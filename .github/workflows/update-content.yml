@@ -61,7 +61,7 @@ jobs:
           from pathlib import Path
 
           state = json.loads(Path("data/update-state.json").read_text(encoding="utf-8"))
-          value = state.get("last_scheduled_run_at")
+          value = state.get("last_successful_run_at") or state.get("last_scheduled_run_at")
           if not value:
               print("true")
           else:
