@@ -1,46 +1,219 @@
 {
   "version": 2,
   "policy": "Store only the minimum metadata needed to route visitors to public primary sources. Do not store article bodies, user submissions, account credentials, or restricted content.",
-  "update_order": ["official company careers and news pages", "public ATS endpoints when available", "public academic and organization bios", "industry reporting and professional platforms for discovery"],
+  "update_order": [
+    "official company careers and news pages",
+    "public ATS endpoints when available",
+    "public academic and organization bios",
+    "industry reporting and professional platforms for discovery"
+  ],
   "discovery_seeds": [
-    {"name":"Optica Corporate Member Directory","url":"https://www.optica.org/membership/member_resources/member_directories/corporate_member_directory/","max_profile_links":40},
-    {"name":"GoPhotonics Company Directory","url":"https://www.gophotonics.com/companies","max_profile_links":40},
-    {"name":"Photonics Career Center","url":"https://www.photonics.com/Jobs.aspx","max_profile_links":20},
-    {"name":"EBO MSA Members","url":"https://ebomsa.org/","max_profile_links":10}
+    {
+      "name": "Optica Corporate Member Directory",
+      "url": "https://www.optica.org/membership/member_resources/member_directories/corporate_member_directory/",
+      "max_profile_links": 40
+    },
+    {
+      "name": "GoPhotonics Company Directory",
+      "url": "https://www.gophotonics.com/companies",
+      "max_profile_links": 40
+    },
+    {
+      "name": "Photonics Career Center",
+      "url": "https://www.photonics.com/Jobs.aspx",
+      "max_profile_links": 20
+    },
+    {
+      "name": "EBO MSA Members",
+      "url": "https://ebomsa.org/",
+      "max_profile_links": 10
+    }
   ],
   "tracked_urls": [
-    {"name":"Apple Careers","url":"https://www.apple.com/careers/","type":"company"},
-    {"name":"Meta Careers","url":"https://www.metacareers.com/","type":"company"},
-    {"name":"Google Careers","url":"https://www.google.com/about/careers/","type":"company"},
-    {"name":"Microsoft Careers","url":"https://jobs.careers.microsoft.com/","type":"company"},
-    {"name":"NVIDIA Careers","url":"https://www.nvidia.com/en-us/about-nvidia/careers/","type":"company"},
-    {"name":"Amazon Jobs","url":"https://www.amazon.jobs/","type":"company"},
-    {"name":"Snap Careers","url":"https://careers.snap.com/","type":"company"},
-    {"name":"ASML Careers","url":"https://www.asml.com/en/careers","type":"company"},
-    {"name":"ZEISS Careers","url":"https://www.zeiss.com/careers.html","type":"company"},
-    {"name":"KLA Careers","url":"https://careers.kla.com/","type":"company"},
-    {"name":"Applied Materials Careers","url":"https://careers.appliedmaterials.com/","type":"company"},
-    {"name":"Coherent Careers","url":"https://www.coherent.com/company/careers","type":"company"},
-    {"name":"Lumentum Careers","url":"https://careers.lumentum.com/","type":"company"},
-    {"name":"Luminar Careers","url":"https://www.luminartech.com/careers","type":"company"},
-    {"name":"Lightmatter Careers","url":"https://lightmatter.co/careers/","type":"company"},
-    {"name":"Lightelligence Careers","url":"https://lightelligence.ai/careers/","type":"company"},
-    {"name":"Ayar Labs Careers","url":"https://ayarlabs.com/careers/","type":"company"},
-    {"name":"PsiQuantum Careers","url":"https://www.psiquantum.com/careers","type":"company"},
-    {"name":"Magic Leap Careers","url":"https://www.magicleap.com/careers","type":"company"},
-    {"name":"Anduril Careers","url":"https://www.anduril.com/careers/","type":"company"},
-    {"name":"Nuburu","url":"https://nuburu.net/","type":"company"},
-    {"name":"Hyperlight","url":"https://hyperlightcorp.com/","type":"company"},
-    {"name":"NIL Technology Careers","url":"https://www.nilt.com/careers/","type":"company"},
-    {"name":"Nokia Optical Jobs","url":"https://jobs.nokia.com/en/sites/CX_1/jobs","type":"company","company":"Nokia","website":"https://www.nokia.com/","location":"Espoo, Finland","description":"Optical networking and telecommunications systems","focus_areas":"Optical networks|Coherent optics|Photonics|Silicon photonics","max_follow_links":12},
-    {"name":"Corning Engineering Jobs","url":"https://corningjobs.corning.com/go/Engineering/7684300/","type":"company","company":"Corning","website":"https://www.corning.com/","location":"Corning, NY","description":"Materials science, optical fiber, photonics, and advanced optics","focus_areas":"Optical fiber|Photonics|Advanced optics|Display materials","max_follow_links":10},
-    {"name":"Photonics.com","url":"https://www.photonics.com/","type":"industry"},
-    {"name":"Optica Newsroom","url":"https://www.optica.org/en-us/about/newsroom/","type":"industry"},
-    {"name":"SPIE News","url":"https://spie.org/news","type":"industry"},
-    {"name":"LinkedIn","url":"https://www.linkedin.com/","type":"discovery","access":"manual review only"},
-    {"name":"Greenhouse","url":"https://www.greenhouse.io/","type":"public ATS"},
-    {"name":"Lever","url":"https://www.lever.co/","type":"public ATS"},
-    {"name":"Ashby","url":"https://www.ashbyhq.com/","type":"public ATS"}
+    {
+      "name": "Apple Careers",
+      "url": "https://www.apple.com/careers/",
+      "type": "company"
+    },
+    {
+      "name": "Meta Careers",
+      "url": "https://www.metacareers.com/",
+      "type": "company"
+    },
+    {
+      "name": "Google Careers",
+      "url": "https://www.google.com/about/careers/",
+      "type": "company"
+    },
+    {
+      "name": "Microsoft Careers",
+      "url": "https://jobs.careers.microsoft.com/",
+      "type": "company"
+    },
+    {
+      "name": "NVIDIA Careers",
+      "url": "https://www.nvidia.com/en-us/about-nvidia/careers/",
+      "type": "company"
+    },
+    {
+      "name": "Amazon Jobs",
+      "url": "https://www.amazon.jobs/",
+      "type": "company"
+    },
+    {
+      "name": "Snap Careers",
+      "url": "https://careers.snap.com/",
+      "type": "company"
+    },
+    {
+      "name": "ASML Careers",
+      "url": "https://www.asml.com/en/careers",
+      "type": "company"
+    },
+    {
+      "name": "ZEISS Careers",
+      "url": "https://www.zeiss.com/careers.html",
+      "type": "company"
+    },
+    {
+      "name": "KLA Careers",
+      "url": "https://careers.kla.com/",
+      "type": "company"
+    },
+    {
+      "name": "Applied Materials Careers",
+      "url": "https://careers.appliedmaterials.com/",
+      "type": "company"
+    },
+    {
+      "name": "Coherent Careers",
+      "url": "https://www.coherent.com/company/careers",
+      "type": "company"
+    },
+    {
+      "name": "Lumentum Careers",
+      "url": "https://careers.lumentum.com/",
+      "type": "company"
+    },
+    {
+      "name": "Luminar Careers",
+      "url": "https://www.luminartech.com/careers",
+      "type": "company"
+    },
+    {
+      "name": "Lightmatter Careers",
+      "url": "https://lightmatter.co/careers/",
+      "type": "company"
+    },
+    {
+      "name": "Lightelligence Careers",
+      "url": "https://lightelligence.ai/careers/",
+      "type": "company"
+    },
+    {
+      "name": "Ayar Labs Careers",
+      "url": "https://ayarlabs.com/careers/",
+      "type": "company"
+    },
+    {
+      "name": "PsiQuantum Careers",
+      "url": "https://www.psiquantum.com/careers",
+      "type": "company"
+    },
+    {
+      "name": "Magic Leap Careers",
+      "url": "https://www.magicleap.com/careers",
+      "type": "company"
+    },
+    {
+      "name": "Anduril Careers",
+      "url": "https://www.anduril.com/careers/",
+      "type": "company"
+    },
+    {
+      "name": "Nuburu",
+      "url": "https://nuburu.net/",
+      "type": "company"
+    },
+    {
+      "name": "Hyperlight",
+      "url": "https://hyperlightcorp.com/",
+      "type": "company"
+    },
+    {
+      "name": "NIL Technology Careers",
+      "url": "https://www.nilt.com/careers/",
+      "type": "company"
+    },
+    {
+      "name": "Nokia Optical Jobs",
+      "url": "https://jobs.nokia.com/en/sites/CX_1/jobs",
+      "type": "company",
+      "company": "Nokia",
+      "website": "https://www.nokia.com/",
+      "location": "Espoo, Finland",
+      "description": "Optical networking and telecommunications systems",
+      "focus_areas": "Optical networks|Coherent optics|Photonics|Silicon photonics",
+      "max_follow_links": 12
+    },
+    {
+      "name": "Corning Engineering Jobs",
+      "url": "https://corningjobs.corning.com/go/Engineering/7684300/",
+      "type": "company",
+      "company": "Corning",
+      "website": "https://www.corning.com/",
+      "location": "Corning, NY",
+      "description": "Materials science, optical fiber, photonics, and advanced optics",
+      "focus_areas": "Optical fiber|Photonics|Advanced optics|Display materials",
+      "max_follow_links": 10
+    },
+    {
+      "name": "Photonics.com",
+      "url": "https://www.photonics.com/",
+      "type": "industry"
+    },
+    {
+      "name": "Optica Newsroom",
+      "url": "https://www.optica.org/en-us/about/newsroom/",
+      "type": "industry"
+    },
+    {
+      "name": "SPIE News",
+      "url": "https://spie.org/news",
+      "type": "industry"
+    },
+    {
+      "name": "LinkedIn",
+      "url": "https://www.linkedin.com/",
+      "type": "discovery",
+      "access": "manual review only"
+    },
+    {
+      "name": "Greenhouse",
+      "url": "https://www.greenhouse.io/",
+      "type": "public ATS"
+    },
+    {
+      "name": "Lever",
+      "url": "https://www.lever.co/",
+      "type": "public ATS"
+    },
+    {
+      "name": "Ashby",
+      "url": "https://www.ashbyhq.com/",
+      "type": "public ATS"
+    },
+    {
+      "name": "Brillnics Careers",
+      "url": "https://www.brillnics.com/career",
+      "type": "company",
+      "company": "Brillnics",
+      "website": "https://www.brillnics.com/",
+      "location": "",
+      "description": "Develops CMOS image sensors for mobile and automotive applications.",
+      "focus_areas": "CMOS image sensors|Imaging|Semiconductor optics",
+      "max_follow_links": 6
+    }
   ],
-  "submission_queue":"https://github.com/changlaplace/optics-industry-intelligence/issues?q=is%3Aissue%20is%3Aopen%20%5BSource%5D"
+  "submission_queue": "https://github.com/changlaplace/optics-industry-intelligence/issues?q=is%3Aissue%20is%3Aopen%20%5BSource%5D"
 }

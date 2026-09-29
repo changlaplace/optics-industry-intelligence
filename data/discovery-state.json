@@ -175,9 +175,303 @@
       "discovered_from": "Optica Corporate Member Directory",
       "reviewed_at": "2026-09-29T03:40:34+00:00",
       "accepted": false
+    },
+    "brillnics.com": {
+      "website": "https://www.brillnics.com/",
+      "name_hint": "Brillnics",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "ebomsa.org": {
+      "website": "https://ebomsa.org/assets/pdf/EBO_MSA_Agreement_v4_members.pdf",
+      "name_hint": "EBO MSA Agreement",
+      "discovered_from": "EBO MSA Members",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": false
+    },
+    "https://www.gophotonics.com/companies/1031/brillnics": {
+      "website": "https://www.gophotonics.com/companies/1031/brillnics",
+      "name_hint": "Brillnics",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/1033/aret-associates": {
+      "website": "https://www.gophotonics.com/companies/1033/aret-associates",
+      "name_hint": "Aret\u00e9 Associates",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/1072/beyond-photonics": {
+      "website": "https://www.gophotonics.com/companies/1072/beyond-photonics",
+      "name_hint": "Beyond Photonics",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/1438/shanghai-at-microwave-limited": {
+      "website": "https://www.gophotonics.com/companies/1438/shanghai-at-microwave-limited",
+      "name_hint": "AT Microwave",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/1447/advanced-photonix": {
+      "website": "https://www.gophotonics.com/companies/1447/advanced-photonix",
+      "name_hint": "Advanced Photonix",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/1480/eblana-photonics-ltd": {
+      "website": "https://www.gophotonics.com/companies/1480/eblana-photonics-ltd",
+      "name_hint": "Eblana Photonics",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/1482/benchmark-electronics-inc": {
+      "website": "https://www.gophotonics.com/companies/1482/benchmark-electronics-inc",
+      "name_hint": "Benchmark",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/1493/cutting-edge-optronics": {
+      "website": "https://www.gophotonics.com/companies/1493/cutting-edge-optronics",
+      "name_hint": "Cutting Edge Optronics",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/1527/beamq-lasers": {
+      "website": "https://www.gophotonics.com/companies/1527/beamq-lasers",
+      "name_hint": "BeamQ Lasers",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/1529/chunghwa-leading-photonics-tech-clpt-": {
+      "website": "https://www.gophotonics.com/companies/1529/chunghwa-leading-photonics-tech-clpt-",
+      "name_hint": "Chunghwa Leading Photonics Tech (CLPT)",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/161/andor-technology": {
+      "website": "https://www.gophotonics.com/companies/161/andor-technology",
+      "name_hint": "Andor Technology",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/227/anitoa-systems-llc": {
+      "website": "https://www.gophotonics.com/companies/227/anitoa-systems-llc",
+      "name_hint": "Anitoa Systems, LLC",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/229/ace-leds": {
+      "website": "https://www.gophotonics.com/companies/229/ace-leds",
+      "name_hint": "ACE LEDS",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/251/epi-leds-co-ltd-": {
+      "website": "https://www.gophotonics.com/companies/251/epi-leds-co-ltd-",
+      "name_hint": "Epileds",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/263/coherent-corp": {
+      "website": "https://www.gophotonics.com/companies/263/coherent-corp",
+      "name_hint": "Coherent Corp.",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/264/changchun-new-industries-optoelectronics-tech-co-ltd-": {
+      "website": "https://www.gophotonics.com/companies/264/changchun-new-industries-optoelectronics-tech-co-ltd-",
+      "name_hint": "CNI Laser",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/268/ekspla": {
+      "website": "https://www.gophotonics.com/companies/268/ekspla",
+      "name_hint": "EKSPLA",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/270/crystal-is-inc-": {
+      "website": "https://www.gophotonics.com/companies/270/crystal-is-inc-",
+      "name_hint": "Crystal IS, Inc.",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/3340/allied-scientific-pro": {
+      "website": "https://www.gophotonics.com/companies/3340/allied-scientific-pro",
+      "name_hint": "Allied Scientific Pro",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/3341/approved-technology-ltd": {
+      "website": "https://www.gophotonics.com/companies/3341/approved-technology-ltd",
+      "name_hint": "ATGBICS\u00ae by Approved Technology",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/3342/clifton-photonics-ltd": {
+      "website": "https://www.gophotonics.com/companies/3342/clifton-photonics-ltd",
+      "name_hint": "Clifton Photonics",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/4218/commscope": {
+      "website": "https://www.gophotonics.com/companies/4218/commscope",
+      "name_hint": "CommScope",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/4360/qubitekk": {
+      "website": "https://www.gophotonics.com/companies/4360/qubitekk",
+      "name_hint": "AusOptic",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/441/cvi-laser-optics": {
+      "website": "https://www.gophotonics.com/companies/441/cvi-laser-optics",
+      "name_hint": "CVI Laser Optics",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/445/the-ealing-corporation": {
+      "website": "https://www.gophotonics.com/companies/445/the-ealing-corporation",
+      "name_hint": "Ealing Catalog",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/449/artifex-engineering": {
+      "website": "https://www.gophotonics.com/companies/449/artifex-engineering",
+      "name_hint": "Artifex Engineering GmbH & Co. KG",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/453/alphalas-gmbh": {
+      "website": "https://www.gophotonics.com/companies/453/alphalas-gmbh",
+      "name_hint": "ALPHALAS",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/458/aurea-technology": {
+      "website": "https://www.gophotonics.com/companies/458/aurea-technology",
+      "name_hint": "AUREA Technology",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/506/egismos-technology-corporation": {
+      "website": "https://www.gophotonics.com/companies/506/egismos-technology-corporation",
+      "name_hint": "Egismos Technology Corporation",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/510/avesta-ltd-": {
+      "website": "https://www.gophotonics.com/companies/510/avesta-ltd-",
+      "name_hint": "Avesta Ltd.",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/527/apollo-instruments-inc-": {
+      "website": "https://www.gophotonics.com/companies/527/apollo-instruments-inc-",
+      "name_hint": "Apollo Instruments, Inc.",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/534/dyna-image-corporation": {
+      "website": "https://www.gophotonics.com/companies/534/dyna-image-corporation",
+      "name_hint": "DYNA Image Corporation",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/540/amonics-limited": {
+      "website": "https://www.gophotonics.com/companies/540/amonics-limited",
+      "name_hint": "Amonics Limited",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/541/ams-technologies-ag": {
+      "website": "https://www.gophotonics.com/companies/541/ams-technologies-ag",
+      "name_hint": "AMS Technologies AG",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/590/alkeria": {
+      "website": "https://www.gophotonics.com/companies/590/alkeria",
+      "name_hint": "Alkeria",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/592/baumer": {
+      "website": "https://www.gophotonics.com/companies/592/baumer",
+      "name_hint": "Baumer",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/594/emergent-vision-technologies-inc-": {
+      "website": "https://www.gophotonics.com/companies/594/emergent-vision-technologies-inc-",
+      "name_hint": "Emergent Vision Technologies, Inc.",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/612/edinburgh-instruments-ltd-": {
+      "website": "https://www.gophotonics.com/companies/612/edinburgh-instruments-ltd-",
+      "name_hint": "Edinburgh Instruments",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/633/apac-opto-electronics-inc-": {
+      "website": "https://www.gophotonics.com/companies/633/apac-opto-electronics-inc-",
+      "name_hint": "APAC Opto Electronics Inc.",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
+    },
+    "https://www.gophotonics.com/companies/640/cis-corporation": {
+      "website": "https://www.gophotonics.com/companies/640/cis-corporation",
+      "name_hint": "CIS Corporation",
+      "discovered_from": "GoPhotonics Company Directory",
+      "reviewed_at": "2026-09-29T03:50:37+00:00",
+      "accepted": true
     }
   },
-  "last_run_at": "2026-09-29T03:40:34+00:00",
-  "last_candidate_count": 25,
-  "last_added_count": 0
+  "last_run_at": "2026-09-29T03:50:37+00:00",
+  "last_candidate_count": 42,
+  "last_added_count": 25
 }
