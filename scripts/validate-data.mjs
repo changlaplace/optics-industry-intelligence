@@ -15,6 +15,9 @@ for (const key of ['companies', 'jobs', 'people', 'news', 'sources', 'technologi
   if (!Array.isArray(data[key])) throw new Error(`Dataset field ${key} must be an array`);
 }
 if (!/^\d{4}-\d{2}-\d{2}$/.test(data.updated)) throw new Error('Dataset updated date is invalid');
+if (!data.company_meta || typeof data.company_meta !== 'object' || Array.isArray(data.company_meta)) {
+  throw new Error('Dataset company_meta must be an object');
+}
 if (data.companies.length > 2000 || data.jobs.length > 10000 || data.news.length > 5000) {
   throw new Error('Dataset exceeded the static-site safety limit');
 }
@@ -28,6 +31,10 @@ function publicUrl(value, label) {
 data.companies.forEach((item, index) => {
   if (!Array.isArray(item) || item.length < 6 || !item[0]) throw new Error(`Company ${index} is malformed`);
   publicUrl(item[5], `Company ${item[0]}`);
+  const meta = data.company_meta[item[0]];
+  if (!meta || !meta.tier || !Number.isInteger(meta.score) || meta.score < 1 || meta.score > 5 || !meta.basis) {
+    throw new Error(`Company ${item[0]} is missing valid market-footprint metadata`);
+  }
 });
 data.jobs.forEach((item, index) => {
   if (!Array.isArray(item) || item.length < 7 || !item[0] || !item[1]) throw new Error(`Job ${index} is malformed`);

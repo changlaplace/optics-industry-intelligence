@@ -8,7 +8,7 @@ OpticSignal is a public, static MVP for tracking optics and photonics companies,
 
 - `dist/`: dependency-free static application, deployable to any static host.
 - `dist/app.js`: initial structured entity data plus rendering and search.
-- `dist/enhancements.js`: remote-source icons, company map, richer people record shape, and the About page.
+- `dist/enhancements.js`: remote-source icons, clustered company/people maps, company footprint signals, and the About page.
 - `data/sources.json`: versioned source registry and ingestion policy.
 - `scripts/import-template.json`: future ingestion payload shape.
 - `scripts/validate-data.mjs`: lightweight publish-time dataset check.
@@ -37,7 +37,7 @@ Use company career portals, public ATS feeds, company newsrooms, and public acad
 
 ## Automated updates
 
-`.github/workflows/update-content.yml` checks daily at 13:17 UTC (21:17 Beijing time) and performs a scheduled refresh only when at least 72 hours have passed since the last successful run, including a manual run. This falls inside DeepSeek's current weekday off-peak window and leaves a long buffer before the next peak period. It can also be started manually at any time. The updater uses Crawl4AI to fetch fresh pages and create clean Markdown, compares that normalized content with repository-persisted SHA-256 hashes in `data/update-state.json`, and sends only changed content to DeepSeek. It then conservatively merges validated records into `dist/app.js`, commits the result, and deploys changed site data to GitHub Pages in the same workflow run.
+`.github/workflows/update-content.yml` checks daily at 13:17 UTC (21:17 Beijing time) and performs a scheduled refresh when at least 72 hours have passed since the last scheduled run. Manual runs do not postpone that independent schedule. This falls inside DeepSeek's current weekday off-peak window and leaves a long buffer before the next peak period. It can also be started manually at any time. The updater uses Crawl4AI to fetch fresh pages and create clean Markdown, compares that normalized content with repository-persisted SHA-256 hashes in `data/update-state.json`, and sends only changed content to DeepSeek. It then conservatively merges validated records into `dist/app.js`, commits the result, and deploys changed site data to GitHub Pages in the same workflow run.
 
 Source failures are isolated: a blocked crawl or failed DeepSeek response is logged and skipped while successful sources continue to merge. Long pages are preserved rather than head/tail-truncated, divided into small Markdown segments, and locally screened for optics terms before any API call. Relevant segments are processed sequentially with a compact URL/name memory to prevent duplication. If a response is truncated, only that segment is recursively divided and retried; the source's result count is not reduced. The workflow fails without publishing only when every eligible source fails. `dist/update-status.json` powers the About-page countdown and records the latest successful run plus the next eligible automatic refresh.
 
@@ -47,11 +47,12 @@ Before the first run, add a repository Actions secret named `DEEPSEEK_API_KEY` u
 
 Manual runs expose two controls: `force_refresh` ignores stored hashes, and `max_sources` limits a test run. A good first check is `max_sources=1`; after reviewing the resulting commit, run the complete source set.
 
-The separate manual **Discover optics sources** workflow expands coverage without force-refreshing existing pages. It crawls trusted industry directories, follows a bounded number of company profiles, removes known and irrelevant domains locally, and sends only compact candidate evidence to DeepSeek in batches of 30. Accepted companies are added to the static directory and their official careers page (when found) is added to `data/sources.json`; reviewed domains are remembered in `data/discovery-state.json` so later discovery runs do not spend tokens reviewing the same candidate again.
+The separate manual **Discover optics sources** workflow expands coverage without force-refreshing existing pages. It scans multiple trusted-directory pages, removes known and irrelevant domains locally, and sends only compact candidate evidence to DeepSeek in batches of 30. A run can promote up to 100 accepted companies. Accepted companies are added to the static directory and their official careers page (when found) is added to `data/sources.json`; reviewed domains are remembered in `data/discovery-state.json` so later discovery runs do not spend tokens reviewing the same candidate again.
 
 The updater is intentionally repository-native:
 
 - `data/sources.json` is the crawl registry.
+- `company_meta` in the static dataset stores the editorial 1-5 market-footprint tier and its plain-language basis for every company. It is a browsing signal, not an investment rating.
 - `data/update-state.json` stores only content hashes and processing timestamps.
 - `scripts/update_content.py` handles crawling, DeepSeek extraction, validation, and conservative merging.
 - `scripts/site-data.mjs` safely reads and writes the existing JavaScript dataset.

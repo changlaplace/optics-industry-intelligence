@@ -135,19 +135,29 @@ async def crawl_discovery(seeds: list[dict], max_profiles: int, max_candidates: 
         seed_results = await crawler.arun_many(urls=[item["url"] for item in seeds], config=run)
         profiles: list[tuple[str, str]] = []
         profile_fallbacks: list[dict] = []
+        seed_by_url = {canonical_url(item["url"]): item for item in seeds}
         for result in seed_results:
-            seed = next((item for item in seeds if domain(item["url"]) == domain(getattr(result, "url", ""))), None)
+            try:
+                result_url = canonical_url(getattr(result, "url", ""))
+            except ValueError:
+                result_url = ""
+            seed = seed_by_url.get(result_url)
+            if not seed:
+                same_domain = [item for item in seeds if domain(item["url"]) == domain(result_url)]
+                seed = same_domain[0] if len(same_domain) == 1 else None
             if not seed or not result.success:
                 print(f"warning: discovery seed failed: {getattr(result, 'url', seed and seed['url'])}")
                 continue
             candidates.extend(candidate_links(result, seed["name"]))
             selected_profiles = profile_links(result, seed)
             link_names = {item["url"]: item["text"] for item in result_links(result)}
-            profiles.extend((url, seed["name"]) for url in selected_profiles)
+            if seed.get("crawl_profiles", True):
+                profiles.extend((url, seed["name"]) for url in selected_profiles)
             profile_fallbacks.extend({
                 "name_hint": link_names.get(url, "").strip()[:100], "website": url,
                 "discovered_from": seed["name"],
                 "excerpt": f"Listed in {seed['name']}, a trusted optics and photonics industry directory.",
+                "directory_only": True,
             } for url in selected_profiles if link_names.get(url, "").strip())
         profiles = list(dict.fromkeys(profiles))[:max_profiles]
         if profiles:
@@ -170,10 +180,20 @@ async def crawl_discovery(seeds: list[dict], max_profiles: int, max_candidates: 
         if not shortlist:
             return []
 
-        home_results = await crawler.arun_many(urls=[item["website"] for item in shortlist], config=run)
-        by_domain = {domain(item["website"]): item for item in shortlist}
+        home_targets = [item for item in shortlist if not item.get("directory_only")]
+        home_results = await crawler.arun_many(
+            urls=[item["website"] for item in home_targets], config=run
+        ) if home_targets else []
+        by_url = {canonical_url(item["website"]): item for item in home_targets}
         for result in home_results:
-            item = by_domain.get(domain(getattr(result, "url", "")))
+            try:
+                result_url = canonical_url(getattr(result, "url", ""))
+            except ValueError:
+                continue
+            item = by_url.get(result_url)
+            if not item:
+                same_domain = [entry for entry in home_targets if domain(entry["website"]) == domain(result_url)]
+                item = same_domain[0] if len(same_domain) == 1 else None
             if not item or not result.success:
                 continue
             excerpt = re.sub(r"\s+", " ", result_markdown(result)).strip()[:700]
@@ -255,6 +275,10 @@ def merge(candidates: list[dict], accepted: list[dict], registry: dict, dataset:
             name, str(record.get("location", "")).strip(), str(record.get("description", "")).strip(),
             "|".join(focus), "New source", website,
         ])
+        dataset.setdefault("company_meta", {})[name] = {
+            "tier": "Emerging specialist", "score": 2,
+            "basis": "Focused optics or photonics market presence",
+        }
         source_url = canonical_url(candidate.get("careers_url") or website)
         directory_profile = domain(website) == "gophotonics.com" and bool(
             re.search(r"/companies/\d+/", urlsplit(website).path.casefold())
@@ -291,9 +315,9 @@ def self_test() -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--max-profiles", type=int, default=80)
-    parser.add_argument("--max-candidates", type=int, default=60)
-    parser.add_argument("--promote-limit", type=int, default=25)
+    parser.add_argument("--max-profiles", type=int, default=320)
+    parser.add_argument("--max-candidates", type=int, default=160)
+    parser.add_argument("--promote-limit", type=int, default=100)
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args()
     if args.self_test:

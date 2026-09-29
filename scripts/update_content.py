@@ -417,6 +417,7 @@ def validate_extraction(value: dict) -> dict:
 
 def merge_extraction(dataset: dict, extracted: dict, source: dict, today: str) -> int:
     changes = 0
+    company_meta = dataset.setdefault("company_meta", {})
     company_by_name = {item[0].casefold(): item for item in dataset["companies"]}
     for record in extracted["companies"]:
         name, website = text(record.get("name")), text(record.get("website")) or source["url"]
@@ -442,6 +443,10 @@ def merge_extraction(dataset: dict, extracted: dict, source: dict, today: str) -
                 name, text(record.get("location")), text(record.get("description")),
                 "|".join(focus[:5]), "New", website,
             ])
+            company_meta.setdefault(name, {
+                "tier": "Emerging specialist", "score": 2,
+                "basis": "Focused optics or photonics market presence",
+            })
             company_by_name[name.casefold()] = dataset["companies"][-1]
             changes += 1
 
@@ -452,6 +457,10 @@ def merge_extraction(dataset: dict, extracted: dict, source: dict, today: str) -
             source_company, text(source.get("location")), text(source.get("description")),
             text(source.get("focus_areas")), "New", text(source.get("website")) or source["url"],
         ])
+        company_meta.setdefault(source_company, {
+            "tier": "Emerging specialist", "score": 2,
+            "basis": "Focused optics or photonics market presence",
+        })
         known_companies[source_company.casefold()] = source_company
         changes += 1
     job_keys = {
@@ -552,18 +561,21 @@ def append_summary(lines: list[str]) -> None:
             handle.write("\n".join(lines) + "\n")
 
 
-def next_automatic_run(completed_at: datetime) -> datetime:
-    earliest = completed_at + timedelta(hours=72)
-    candidate = earliest.replace(hour=13, minute=17, second=0, microsecond=0)
-    if candidate < earliest:
+def next_automatic_run(last_scheduled_at: datetime | None, now: datetime) -> datetime:
+    if last_scheduled_at:
+        due = last_scheduled_at + timedelta(hours=72)
+        if due > now:
+            return due
+    candidate = now.replace(hour=13, minute=17, second=0, microsecond=0)
+    if candidate <= now:
         candidate += timedelta(days=1)
     return candidate
 
 
-def write_public_status(completed_at: datetime, partial: bool) -> None:
+def write_public_status(completed_at: datetime, partial: bool, last_scheduled_at: datetime | None) -> None:
     write_json_atomic(PUBLIC_STATUS_PATH, {
         "last_successful_run_at": completed_at.replace(microsecond=0).isoformat(),
-        "next_automatic_run_at": next_automatic_run(completed_at).isoformat(),
+        "next_automatic_run_at": next_automatic_run(last_scheduled_at, completed_at).isoformat(),
         "cadence_hours": 72,
         "partial_success": partial,
     })
@@ -638,7 +650,9 @@ def self_test() -> None:
     assert dataset["news"][0][0] == "Example Optics launches a photonics system"
     assert dataset["updated"] == "2026-01-03"
     completed = datetime(2026, 1, 1, 14, 0, tzinfo=timezone.utc)
-    assert next_automatic_run(completed).isoformat() == "2026-01-05T13:17:00+00:00"
+    scheduled = datetime(2026, 1, 1, 13, 17, tzinfo=timezone.utc)
+    assert next_automatic_run(scheduled, completed).isoformat() == "2026-01-04T13:17:00+00:00"
+    assert next_automatic_run(None, completed).isoformat() == "2026-01-02T13:17:00+00:00"
     partial_dataset = copy.deepcopy(dataset)
     partial_state = {"sources": {}}
     partial_sources = [
@@ -719,7 +733,9 @@ def main() -> int:
         write_site_data(dataset)
     if next_state != state:
         write_json_atomic(STATE_PATH, next_state)
-    write_public_status(completed, bool(crawl_failures or extraction_failures))
+    scheduled_value = next_state.get("last_scheduled_run_at")
+    scheduled_at = datetime.fromisoformat(scheduled_value.replace("Z", "+00:00")) if scheduled_value else None
+    write_public_status(completed, bool(crawl_failures or extraction_failures), scheduled_at)
 
     print(f"Crawled {len(crawled)}/{len(sources)} sources; {len(changed_sources)} changed; {semantic_changes} data changes.")
     for failure in crawl_failures:

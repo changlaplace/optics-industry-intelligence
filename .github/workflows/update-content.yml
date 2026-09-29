@@ -67,7 +67,8 @@ jobs:
           from pathlib import Path
 
           state = json.loads(Path("data/update-state.json").read_text(encoding="utf-8"))
-          value = state.get("last_successful_run_at") or state.get("last_scheduled_run_at")
+          # Manual runs do not postpone the independent three-day schedule.
+          value = state.get("last_scheduled_run_at")
           if not value:
               print("true")
           else:

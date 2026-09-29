@@ -14,9 +14,34 @@
       "max_profile_links": 40
     },
     {
-      "name": "GoPhotonics Company Directory",
+      "name": "GoPhotonics Company Directory - Page 1",
       "url": "https://www.gophotonics.com/companies",
-      "max_profile_links": 40
+      "max_profile_links": 50,
+      "crawl_profiles": false
+    },
+    {
+      "name": "GoPhotonics Company Directory - Page 2",
+      "url": "https://www.gophotonics.com/companies-country=na-startswith=na-page=2",
+      "max_profile_links": 50,
+      "crawl_profiles": false
+    },
+    {
+      "name": "GoPhotonics Company Directory - Page 3",
+      "url": "https://www.gophotonics.com/companies-country=na-startswith=na-page=3",
+      "max_profile_links": 50,
+      "crawl_profiles": false
+    },
+    {
+      "name": "GoPhotonics Company Directory - Page 4",
+      "url": "https://www.gophotonics.com/companies-country=na-startswith=na-page=4",
+      "max_profile_links": 50,
+      "crawl_profiles": false
+    },
+    {
+      "name": "GoPhotonics Company Directory - Page 5",
+      "url": "https://www.gophotonics.com/companies-country=na-startswith=na-page=5",
+      "max_profile_links": 50,
+      "crawl_profiles": false
     },
     {
       "name": "Photonics Career Center",
@@ -166,6 +191,17 @@
       "description": "Materials science, optical fiber, photonics, and advanced optics",
       "focus_areas": "Optical fiber|Photonics|Advanced optics|Display materials",
       "max_follow_links": 10
+    },
+    {
+      "name": "Texas Instruments Photonics Jobs",
+      "url": "https://careers.ti.com/en/sites/CX/jobs",
+      "type": "company",
+      "company": "Texas Instruments",
+      "website": "https://www.ti.com/",
+      "location": "Dallas, TX",
+      "description": "Analog, embedded, sensing, and silicon photonics semiconductors",
+      "focus_areas": "Silicon photonics|Optical sensing|Semiconductor systems",
+      "max_follow_links": 12
     },
     {
       "name": "Photonics.com",

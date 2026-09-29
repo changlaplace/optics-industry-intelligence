@@ -6,17 +6,17 @@ on:
       max_profiles:
         description: Maximum trusted-directory profile pages to inspect
         required: false
-        default: "80"
+        default: "320"
         type: string
       max_candidates:
         description: Maximum new domains sent to DeepSeek for review
         required: false
-        default: "60"
+        default: "160"
         type: string
       promote_limit:
         description: Maximum accepted companies added in this run
         required: false
-        default: "25"
+        default: "100"
         type: string
 
 permissions:
