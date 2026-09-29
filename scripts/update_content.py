@@ -26,6 +26,7 @@ STATE_PATH = ROOT / "data" / "update-state.json"
 PUBLIC_STATUS_PATH = ROOT / "dist" / "update-status.json"
 BRIDGE_PATH = ROOT / "scripts" / "site-data.mjs"
 MAX_CONTENT_CHARS = int(os.getenv("MAX_SOURCE_CHARS", "30000"))
+CHUNK_CONTENT_CHARS = int(os.getenv("DEEPSEEK_CHUNK_CHARS", "9000"))
 MAX_RECORDS_PER_SOURCE = 40
 OPTICS_TERMS = (
     "optic", "photon", "imaging", "camera", "lidar", "laser", "lithograph",
@@ -150,7 +151,33 @@ async def crawl_sources(sources: list[dict]) -> tuple[dict[str, str], list[str]]
     return crawled, failures
 
 
-def extraction_prompt(source: dict, content: str, current: dict, record_limit: int) -> list[dict]:
+class DeepSeekResponseTruncated(RuntimeError):
+    pass
+
+
+def split_markdown(value: str, max_chars: int = CHUNK_CONTENT_CHARS) -> list[str]:
+    chunks: list[str] = []
+    current: list[str] = []
+    current_length = 0
+    for line in value.splitlines():
+        if len(line) > max_chars:
+            if current:
+                chunks.append("\n".join(current))
+                current, current_length = [], 0
+            chunks.extend(line[index:index + max_chars] for index in range(0, len(line), max_chars))
+            continue
+        added = len(line) + (1 if current else 0)
+        if current and current_length + added > max_chars:
+            chunks.append("\n".join(current))
+            current, current_length = [], 0
+        current.append(line)
+        current_length += len(line) + (1 if len(current) > 1 else 0)
+    if current:
+        chunks.append("\n".join(current))
+    return [chunk for chunk in chunks if chunk.strip()]
+
+
+def extraction_prompt(source: dict, content: str, current: dict, part_label: str, memory: dict) -> list[dict]:
     company_names = [item[0] for item in current["companies"]]
     categories = sorted({item[3] for item in current["jobs"]})
     system = """You extract factual optics/photonics industry records from public page content.
@@ -160,8 +187,8 @@ Include only facts explicitly supported by the supplied page. Do not guess dates
 Only include records relevant to optics, photonics, imaging, cameras, displays, lasers, LiDAR,
 lithography, optical metrology, sensors, semiconductor optical systems, or quantum photonics.
 Prefer exact job posting URLs over generic career-page URLs. Return empty arrays when nothing useful is present.
-Keep every field concise and prioritize exact job links.""" + f"""
-Return no more than {record_limit} records in each array.""" + """
+Keep every field concise and prioritize exact job links.
+The page is processed in segments. Do not repeat records listed in compact_memory.
 JSON shape:
 {"companies":[{"name":"","location":"","description":"","focus_areas":[""],"website":""}],
 "jobs":[{"title":"","company":"","location":"","category":"","seniority":"","status":"active","posting_url":"","posting_date":null}],
@@ -169,6 +196,8 @@ JSON shape:
     user = json.dumps(
         {
             "source": {"name": source["name"], "url": source["url"], "type": source["type"]},
+            "page_part": part_label,
+            "compact_memory": memory,
             "known_companies": company_names,
             "preferred_job_categories": categories,
             "page_markdown": content,
@@ -178,17 +207,16 @@ JSON shape:
     return [{"role": "system", "content": system}, {"role": "user", "content": user}]
 
 
-def call_deepseek(source: dict, content: str, current: dict) -> dict:
+def call_deepseek_chunk(source: dict, content: str, current: dict, part_label: str, memory: dict) -> dict:
     api_key = os.getenv("DEEPSEEK_API_KEY", "").strip()
     if not api_key:
         raise RuntimeError("DEEPSEEK_API_KEY is not configured")
     last_error: Exception | None = None
-    record_limits = (25, 12, 6)
-    for attempt, record_limit in enumerate(record_limits):
+    for attempt in range(3):
         try:
             payload = {
                 "model": os.getenv("DEEPSEEK_MODEL", "deepseek-flash"),
-                "messages": extraction_prompt(source, content, current, record_limit),
+                "messages": extraction_prompt(source, content, current, part_label, memory),
                 "response_format": {"type": "json_object"},
                 "thinking": {"type": "disabled"},
                 "temperature": 0,
@@ -204,13 +232,61 @@ def call_deepseek(source: dict, content: str, current: dict) -> dict:
                 envelope = json.loads(response.read().decode("utf-8"))
             choice = envelope["choices"][0]
             if choice.get("finish_reason") == "length":
-                raise RuntimeError("DeepSeek response was truncated")
+                raise DeepSeekResponseTruncated("DeepSeek response was truncated")
             return validate_extraction(json.loads(choice["message"]["content"]))
+        except DeepSeekResponseTruncated:
+            raise
         except (urllib.error.URLError, TimeoutError, KeyError, IndexError, json.JSONDecodeError, RuntimeError) as error:
             last_error = error
-            if attempt < len(record_limits) - 1:
+            if attempt < 2:
                 time.sleep(2 ** attempt)
     raise RuntimeError(f"DeepSeek extraction failed for {source['name']}: {last_error}")
+
+
+def record_identity(kind: str, record: dict) -> str:
+    if kind == "companies":
+        return text(record.get("name")).casefold()
+    if kind == "jobs":
+        return text(record.get("posting_url")) or "|".join([
+            text(record.get("company")).casefold(), text(record.get("title")).casefold(),
+            text(record.get("location")).casefold(),
+        ])
+    return text(record.get("url")) or text(record.get("title")).casefold()
+
+
+def compact_memory(extracted: dict) -> dict:
+    return {
+        "companies": [text(item.get("name")) for item in extracted["companies"] if text(item.get("name"))],
+        "job_urls": [text(item.get("posting_url")) for item in extracted["jobs"] if text(item.get("posting_url"))],
+        "news_urls": [text(item.get("url")) for item in extracted["news"] if text(item.get("url"))],
+    }
+
+
+def extract_source(source: dict, content: str, current: dict, chunk_extractor=call_deepseek_chunk) -> dict:
+    combined = {"companies": [], "jobs": [], "news": []}
+    seen = {key: set() for key in combined}
+
+    def process_chunk(chunk: str, label: str, depth: int = 0) -> None:
+        try:
+            result = chunk_extractor(source, chunk, current, label, compact_memory(combined))
+        except DeepSeekResponseTruncated:
+            halves = split_markdown(chunk, max(1500, len(chunk) // 2))
+            if depth >= 4 or len(halves) < 2:
+                raise
+            for index, half in enumerate(halves, start=1):
+                process_chunk(half, f"{label}.{index}", depth + 1)
+            return
+        for kind, records in result.items():
+            for record in records:
+                identity = record_identity(kind, record)
+                if identity and identity not in seen[kind]:
+                    seen[kind].add(identity)
+                    combined[kind].append(record)
+
+    chunks = split_markdown(content)
+    for index, chunk in enumerate(chunks, start=1):
+        process_chunk(chunk, f"{index}/{len(chunks)}")
+    return combined
 
 
 def text(value) -> str:
@@ -343,7 +419,7 @@ def process_changed_sources(
     dataset: dict,
     next_state: dict,
     today: str,
-    extractor=call_deepseek,
+    extractor=extract_source,
 ) -> tuple[int, int, list[str]]:
     semantic_changes = 0
     successful_extractions = 0
@@ -393,6 +469,8 @@ def self_test() -> None:
     sample = {"companies": [], "jobs": [], "news": []}
     assert validate_extraction(sample) == sample
     assert clean_markdown("Cookie Settings\n# Optical Engineer\nCamera systems") == "# Optical Engineer\nCamera systems"
+    chunks = split_markdown("one two\nthree four\nfive six", 15)
+    assert chunks == ["one two", "three four", "five six"]
     dataset = {
         "updated": "2026-01-01",
         "companies": [[
@@ -456,6 +534,18 @@ def self_test() -> None:
     )
     assert partial_changes == 0 and partial_successes == 1 and len(partial_failures) == 1
     assert "https://example.com/" in partial_state["sources"]
+    chunk_calls = []
+    def fake_chunk_extractor(_source, chunk, _current, label, memory):
+        chunk_calls.append((chunk, label, memory))
+        if len(chunk) > 1500:
+            raise DeepSeekResponseTruncated("simulated truncation")
+        return {"companies": [], "jobs": [], "news": []}
+    extracted_chunks = extract_source(
+        {"name": "Chunked", "url": "https://example.com", "type": "company"},
+        "a" * 2000, dataset, fake_chunk_extractor
+    )
+    assert extracted_chunks == {"companies": [], "jobs": [], "news": []}
+    assert len(chunk_calls) == 3
     print("Updater helper checks passed.")
 
 
