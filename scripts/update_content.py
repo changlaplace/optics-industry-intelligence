@@ -25,7 +25,6 @@ SOURCES_PATH = ROOT / "data" / "sources.json"
 STATE_PATH = ROOT / "data" / "update-state.json"
 PUBLIC_STATUS_PATH = ROOT / "dist" / "update-status.json"
 BRIDGE_PATH = ROOT / "scripts" / "site-data.mjs"
-MAX_CONTENT_CHARS = int(os.getenv("MAX_SOURCE_CHARS", "30000"))
 CHUNK_CONTENT_CHARS = int(os.getenv("DEEPSEEK_CHUNK_CHARS", "9000"))
 MAX_RECORDS_PER_SOURCE = 40
 OPTICS_TERMS = (
@@ -54,10 +53,7 @@ def clean_markdown(value: str) -> str:
             continue
         lines.append(line)
     cleaned = "\n".join(lines)
-    if len(cleaned) <= MAX_CONTENT_CHARS:
-        return cleaned
-    half = MAX_CONTENT_CHARS // 2
-    return f"{cleaned[:half]}\n\n[content trimmed]\n\n{cleaned[-half:]}"
+    return cleaned
 
 
 def content_hash(value: str) -> str:
@@ -177,6 +173,11 @@ def split_markdown(value: str, max_chars: int = CHUNK_CONTENT_CHARS) -> list[str
     return [chunk for chunk in chunks if chunk.strip()]
 
 
+def chunk_is_relevant(value: str) -> bool:
+    haystack = value.casefold()
+    return any(term in haystack for term in OPTICS_TERMS)
+
+
 def extraction_prompt(source: dict, content: str, current: dict, part_label: str, memory: dict) -> list[dict]:
     company_names = [item[0] for item in current["companies"]]
     categories = sorted({item[3] for item in current["jobs"]})
@@ -283,7 +284,9 @@ def extract_source(source: dict, content: str, current: dict, chunk_extractor=ca
                     seen[kind].add(identity)
                     combined[kind].append(record)
 
-    chunks = split_markdown(content)
+    all_chunks = split_markdown(content)
+    chunks = [chunk for chunk in all_chunks if chunk_is_relevant(chunk)]
+    print(f"{source['name']}: {len(chunks)}/{len(all_chunks)} segments contain optics signals")
     for index, chunk in enumerate(chunks, start=1):
         process_chunk(chunk, f"{index}/{len(chunks)}")
     return combined
@@ -469,8 +472,11 @@ def self_test() -> None:
     sample = {"companies": [], "jobs": [], "news": []}
     assert validate_extraction(sample) == sample
     assert clean_markdown("Cookie Settings\n# Optical Engineer\nCamera systems") == "# Optical Engineer\nCamera systems"
+    assert len(clean_markdown("Photonics " * 5000)) > 30000
     chunks = split_markdown("one two\nthree four\nfive six", 15)
     assert chunks == ["one two", "three four", "five six"]
+    assert chunk_is_relevant("Senior optical systems engineer")
+    assert not chunk_is_relevant("Corporate legal and payroll information")
     dataset = {
         "updated": "2026-01-01",
         "companies": [[
@@ -542,7 +548,7 @@ def self_test() -> None:
         return {"companies": [], "jobs": [], "news": []}
     extracted_chunks = extract_source(
         {"name": "Chunked", "url": "https://example.com", "type": "company"},
-        "a" * 2000, dataset, fake_chunk_extractor
+        "optical " * 250, dataset, fake_chunk_extractor
     )
     assert extracted_chunks == {"companies": [], "jobs": [], "news": []}
     assert len(chunk_calls) == 3
