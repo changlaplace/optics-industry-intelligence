@@ -1,5 +1,11 @@
 {
   "version": 2,
   "last_scheduled_run_at": null,
-  "sources": {}
+  "sources": {
+    "https://www.apple.com/careers": {
+      "name": "Apple Careers",
+      "content_hash": "a1316bb5ae5e4d42d783247e682c1591a2fe88a9c139dc83355c21bc97a598a2",
+      "processed_at": "2026-09-29T00:52:38+00:00"
+    }
+  }
 }
