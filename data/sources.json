@@ -26,23 +26,23 @@
       "optical metrology"
     ],
     "company_leads": [
-      "Huawei / 华为",
-      "学向科技"
+      "Huawei / \u534e\u4e3a",
+      "\u5b66\u5411\u79d1\u6280"
     ]
   },
   "discovery_leads": [
     {
-      "name": "Huawei / 华为",
+      "name": "Huawei / \u534e\u4e3a",
       "url": "https://www.huawei.com/",
       "evidence": "Official corporate site; review its optical networking and imaging activities."
     },
     {
-      "name": "LuminWave / 洛微科技",
+      "name": "LuminWave / \u6d1b\u5fae\u79d1\u6280",
       "url": "https://luminwave.com.cn/",
       "evidence": "Official company site describing silicon-photonics FMCW LiDAR and 3D imaging products."
     },
     {
-      "name": "CSPC / 国科光芯",
+      "name": "CSPC / \u56fd\u79d1\u5149\u82af",
       "url": "https://www.cspctech.com/",
       "evidence": "Official company site describing silicon-photonics chips for communications, OCT, and LiDAR."
     }
@@ -288,6 +288,39 @@
       "location": "",
       "description": "Develops CMOS image sensors for mobile and automotive applications.",
       "focus_areas": "CMOS image sensors|Imaging|Semiconductor optics",
+      "max_follow_links": 6
+    },
+    {
+      "name": "Huawei Careers",
+      "url": "https://career.huawei.com/en",
+      "type": "company",
+      "company": "Huawei",
+      "website": "https://www.huawei.com/",
+      "location": "Shenzhen, China",
+      "description": "Global ICT firm with optical networking and photonics business.",
+      "focus_areas": "Optical networking|Photonics|Semiconductor optics",
+      "max_follow_links": 6
+    },
+    {
+      "name": "LuminWave (\u6d1b\u5fae\u79d1\u6280) Careers",
+      "url": "https://luminwave.com.cn/",
+      "type": "company",
+      "company": "LuminWave (\u6d1b\u5fae\u79d1\u6280)",
+      "website": "https://luminwave.com.cn/",
+      "location": "China",
+      "description": "Silicon-photonics FMCW LiDAR and 3D imaging products.",
+      "focus_areas": "LiDAR|Silicon photonics|3D imaging",
+      "max_follow_links": 6
+    },
+    {
+      "name": "CSPC (\u56fd\u79d1\u5149\u82af) Careers",
+      "url": "https://www.cspctech.com/",
+      "type": "company",
+      "company": "CSPC (\u56fd\u79d1\u5149\u82af)",
+      "website": "https://www.cspctech.com/",
+      "location": "China",
+      "description": "Silicon-photonics chips for communications, OCT, and LiDAR.",
+      "focus_areas": "Silicon photonics|Optical communications|LiDAR|OCT",
       "max_follow_links": 6
     }
   ],
