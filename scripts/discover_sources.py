@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Discover optics companies from trusted directories and promote a bounded reviewed set."""
+"""Discover optics companies with directories plus an AI-planned web-search loop."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ import tempfile
 import urllib.request
 from datetime import date, datetime, timezone
 from pathlib import Path
-from urllib.parse import urljoin, urlsplit, urlunsplit
+from urllib.parse import quote_plus, urljoin, urlsplit, urlunsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES_PATH = ROOT / "data" / "sources.json"
@@ -23,10 +23,24 @@ BRIDGE_PATH = ROOT / "scripts" / "site-data.mjs"
 EXCLUDED_DOMAINS = {
     "facebook.com", "instagram.com", "linkedin.com", "twitter.com", "x.com", "youtube.com",
     "wikipedia.org", "google.com", "doubleclick.net", "optica.org", "gophotonics.com",
-    "photonics.com", "ebomsa.org", "spie.org",
+    "photonics.com", "ebomsa.org", "spie.org", "brave.com", "search.brave.com",
 }
 PROFILE_SIGNALS = ("company", "companies", "member", "members", "directory", "supplier", "vendor", "job")
 CAREER_SIGNALS = ("career", "careers", "jobs", "join-us", "work-with-us", "open-roles", "vacancies")
+DEFAULT_SEARCH_QUERIES = [
+    "China optics photonics companies official website",
+    "中国 光学 光子 公司 官网",
+    "中国 硅光 芯片 公司 官网 招聘",
+    "中国 激光 雷达 光学 公司 官网",
+    "中国 AR VR 光学 显示 公司 官网",
+    "China optical communications companies official website careers",
+    "China computational imaging camera optics company official website",
+    "华为 光通信 光学 招聘 官网",
+    '"学向科技" 光学 公司',
+    "global silicon photonics startups official website careers",
+    "global metasurface meta optics companies official website",
+    "optical metrology semiconductor equipment companies careers",
+]
 
 
 def read_json(path: Path, default: dict) -> dict:
@@ -125,12 +139,100 @@ def candidate_links(result, discovered_from: str) -> list[dict]:
     return candidates
 
 
-async def crawl_discovery(seeds: list[dict], max_profiles: int, max_candidates: int) -> list[dict]:
+def search_candidates(result, query: str) -> list[dict]:
+    """Turn external links from a public search result page into review candidates."""
+    candidates = []
+    for item in result_links(result):
+        if excluded(item["url"]):
+            continue
+        label = item["text"].strip(" |-:")
+        if len(label) < 2:
+            label = domain(item["url"]).split(".")[0].replace("-", " ").title()
+        candidates.append({
+            "name_hint": label[:120],
+            "website": item["url"],
+            "discovered_from": f"Web search: {query}",
+            "search_query": query,
+        })
+    return candidates
+
+
+def deepseek_json(system_prompt: str, value: object, max_tokens: int) -> dict:
+    api_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError("DEEPSEEK_API_KEY is not configured")
+    payload = {
+        "model": os.getenv("DEEPSEEK_MODEL", "deepseek-flash"),
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": json.dumps(value, ensure_ascii=False)},
+        ],
+        "response_format": {"type": "json_object"},
+        "thinking": {"type": "disabled"},
+        "temperature": 0,
+        "max_tokens": max_tokens,
+    }
+    request = urllib.request.Request(
+        "https://api.deepseek.com/chat/completions", data=json.dumps(payload).encode(),
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}, method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=180) as response:
+        message = json.loads(response.read().decode())["choices"][0]["message"]["content"]
+    parsed = json.loads(message)
+    return parsed if isinstance(parsed, dict) else {}
+
+
+def plan_search_queries(registry: dict, dataset: dict, limit: int) -> list[str]:
+    """Ask DeepSeek what to search, while keeping deterministic coverage fallbacks."""
+    if limit <= 0:
+        return []
+    priorities = registry.get("discovery_priorities", {})
+    context = {
+        "current_companies": [row[0] for row in dataset.get("companies", [])],
+        "priorities": priorities,
+        "maximum_queries": limit,
+    }
+    prompt = """Plan high-signal public web searches for an optics-industry company database.
+Return JSON only: {"queries":[{"query":"...","region":"...","focus":"..."}]}.
+Queries are instructions for a search engine, not factual claims. Seek official company and career websites for
+commercial organizations substantially active in optics, photonics, imaging, lasers, displays, LiDAR, optical
+networking, semiconductor optics, quantum photonics, or optical instrumentation. Avoid companies already listed.
+Use both English and local-language queries. Allocate at least 40 percent of queries to China and include exact-name
+queries for every company lead in the priorities. Spread the rest across regions and technologies. Do not invent
+company names or URLs. Keep each query concise and return no more than maximum_queries."""
+    planned = []
+    try:
+        response = deepseek_json(prompt, context, 2500)
+        for item in response.get("queries", []):
+            query = str(item.get("query", "") if isinstance(item, dict) else item).strip()
+            if query:
+                planned.append(query[:180])
+    except Exception as error:
+        print(f"warning: DeepSeek search planning failed; using fallback queries: {error}")
+    combined = planned + DEFAULT_SEARCH_QUERIES
+    return list(dict.fromkeys(query for query in combined if query))[:limit]
+
+
+async def crawl_discovery(
+    seeds: list[dict], leads: list[dict], queries: list[str], max_profiles: int,
+    max_candidates: int, max_search_results: int, skip_keys: set[str],
+) -> list[dict]:
     from crawl4ai import AsyncWebCrawler, BrowserConfig, CacheMode, CrawlerRunConfig
 
     browser = BrowserConfig(headless=True, verbose=False)
     run = CrawlerRunConfig(cache_mode=CacheMode.BYPASS, page_timeout=45000, wait_until="domcontentloaded")
     candidates: list[dict] = []
+    for lead in leads:
+        try:
+            website = canonical_url(lead["url"])
+        except (KeyError, ValueError):
+            continue
+        candidates.append({
+            "name_hint": str(lead.get("name", domain(website))).strip()[:120],
+            "website": website,
+            "discovered_from": "Curated discovery lead",
+            "excerpt": str(lead.get("evidence", "Public company lead awaiting source review"))[:700],
+        })
     async with AsyncWebCrawler(config=browser) as crawler:
         seed_results = await crawler.arun_many(urls=[item["url"] for item in seeds], config=run)
         profiles: list[tuple[str, str]] = []
@@ -170,11 +272,35 @@ async def crawl_discovery(seeds: list[dict], max_profiles: int, max_candidates: 
                 owner = owner_by_url.get(result_url, "Trusted optics directory")
                 candidates.extend(candidate_links(result, owner))
 
+        if queries:
+            search_urls = [f"https://search.brave.com/search?q={quote_plus(query)}&source=web" for query in queries]
+            query_by_url = {canonical_url(url): query for url, query in zip(search_urls, queries)}
+            search_results = await crawler.arun_many(urls=search_urls, config=run)
+            search_candidates_seen = 0
+            for result in search_results:
+                if not result.success:
+                    print(f"warning: web search failed: {getattr(result, 'url', 'unknown query')}")
+                    continue
+                try:
+                    result_url = canonical_url(getattr(result, "url", ""))
+                except ValueError:
+                    continue
+                query = query_by_url.get(result_url)
+                if not query:
+                    continue
+                for item in search_candidates(result, query):
+                    if search_candidates_seen >= max_search_results:
+                        break
+                    candidates.append(item)
+                    search_candidates_seen += 1
+                if search_candidates_seen >= max_search_results:
+                    break
+
         candidates.extend(profile_fallbacks)
         unique: dict[str, dict] = {}
         for item in candidates:
             key = candidate_key(item)
-            if key and key not in unique:
+            if key and key not in skip_keys and key not in unique:
                 unique[key] = item
         shortlist = list(unique.values())[:max_candidates]
         if not shortlist:
@@ -209,30 +335,18 @@ async def crawl_discovery(seeds: list[dict], max_profiles: int, max_candidates: 
 
 
 def deepseek_review(candidates: list[dict]) -> list[dict]:
-    api_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
-    if not api_key:
-        raise RuntimeError("DEEPSEEK_API_KEY is not configured")
     compact = [{"id": index, **item} for index, item in enumerate(candidates)]
-    prompt = """Review candidate organizations discovered from trusted optics/photonics directories.
+    prompt = """Review candidate organizations discovered from trusted directories and public web search.
 Keep only real commercial companies substantially active in optics, photonics, imaging, lasers, displays,
 LiDAR, optical networking, semiconductor optics, quantum photonics, or optical instrumentation.
-Reject universities, associations, publishers, recruiters, resellers with no optical specialization, malformed
-labels, and candidates whose evidence is insufficient. Never invent a URL or fact. Return JSON only:
+Diversified technology companies qualify only when the supplied evidence shows a meaningful optics business.
+Reject search engines, news articles, universities, associations, publishers, recruiters, generic resellers,
+malformed labels, unofficial profile pages, and candidates whose evidence is insufficient. The candidate website
+must be an official company-controlled domain or a trusted industry-directory profile. Never invent a URL or fact.
+Preserve a well-known English name; a Chinese name may follow it in parentheses. Return JSON only:
 {"accepted":[{"id":0,"name":"","location":"","description":"","focus_areas":[""]}]}
 Use the supplied id. Keep descriptions under 16 words and at most four focus areas."""
-    payload = {
-        "model": os.getenv("DEEPSEEK_MODEL", "deepseek-flash"),
-        "messages": [{"role": "system", "content": prompt}, {"role": "user", "content": json.dumps(compact)}],
-        "response_format": {"type": "json_object"}, "thinking": {"type": "disabled"},
-        "temperature": 0, "max_tokens": 5000,
-    }
-    request = urllib.request.Request(
-        "https://api.deepseek.com/chat/completions", data=json.dumps(payload).encode(),
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}, method="POST",
-    )
-    with urllib.request.urlopen(request, timeout=180) as response:
-        message = json.loads(response.read().decode())["choices"][0]["message"]["content"]
-    value = json.loads(message)
+    value = deepseek_json(prompt, compact, 5000)
     return value.get("accepted", []) if isinstance(value, dict) else []
 
 
@@ -310,6 +424,14 @@ def self_test() -> None:
         links = {"internal": [{"href": "/company/acme", "text": "Acme Optics"}], "external": []}
     links = profile_links(Result(), {"url": Result.url, "max_profile_links": 5})
     assert links == ["https://directory.example/company/acme"]
+    class SearchResult:
+        url = "https://search.brave.com/search?q=optics&source=web"
+        links = {"external": [
+            {"href": "https://acme-optics.com/about", "text": "Acme Optics"},
+            {"href": "https://www.linkedin.com/company/acme", "text": "LinkedIn"},
+        ]}
+    candidates = search_candidates(SearchResult(), "optics")
+    assert len(candidates) == 1 and candidates[0]["website"] == "https://acme-optics.com/about"
     print("Source discovery helper checks passed.")
 
 
@@ -317,6 +439,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--max-profiles", type=int, default=320)
     parser.add_argument("--max-candidates", type=int, default=160)
+    parser.add_argument("--max-search-queries", type=int, default=18)
+    parser.add_argument("--max-search-results", type=int, default=120)
     parser.add_argument("--promote-limit", type=int, default=100)
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args()
@@ -329,16 +453,15 @@ def main() -> int:
     state = read_json(STATE_PATH, {"version": 1, "reviewed_domains": {}})
     known_keys = {candidate_key({"website": item["url"]}) for item in registry.get("tracked_urls", [])}
     known_keys.update(candidate_key({"website": row[5]}) for row in dataset["companies"])
-    candidates = asyncio.run(crawl_discovery(
-        registry.get("discovery_seeds", []), args.max_profiles, args.max_candidates + len(known_keys)
-    ))
-    candidates = [item for item in candidates if candidate_key(item) not in known_keys]
     reviewed = state.get("reviewed_domains", {})
-    candidates = [
-        item for item in candidates
-        if candidate_key(item) not in reviewed
-        or (reviewed[candidate_key(item)].get("accepted") and candidate_key(item) not in known_keys)
-    ][:args.max_candidates]
+    skip_keys = known_keys | {
+        key for key, value in reviewed.items() if not value.get("accepted")
+    }
+    queries = plan_search_queries(registry, dataset, args.max_search_queries)
+    candidates = asyncio.run(crawl_discovery(
+        registry.get("discovery_seeds", []), registry.get("discovery_leads", []), queries,
+        args.max_profiles, args.max_candidates, args.max_search_results, skip_keys,
+    ))[:args.max_candidates]
     if not candidates:
         print("No unreviewed source candidates were discovered.")
         return 0
@@ -363,6 +486,7 @@ def main() -> int:
     state["last_run_at"] = now
     state["last_candidate_count"] = len(candidates)
     state["last_added_count"] = added
+    state["last_search_queries"] = queries
     if added:
         write_dataset(dataset)
         write_json_atomic(SOURCES_PATH, registry)

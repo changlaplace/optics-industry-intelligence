@@ -11,7 +11,17 @@ on:
       max_candidates:
         description: Maximum new domains sent to DeepSeek for review
         required: false
-        default: "160"
+        default: "240"
+        type: string
+      max_search_queries:
+        description: Maximum AI-planned web searches (directories still run too)
+        required: false
+        default: "18"
+        type: string
+      max_search_results:
+        description: Maximum web-search result links considered before deduplication
+        required: false
+        default: "120"
         type: string
       promote_limit:
         description: Maximum accepted companies added in this run
@@ -54,6 +64,8 @@ jobs:
           python scripts/discover_sources.py
           --max-profiles "${{ inputs.max_profiles }}"
           --max-candidates "${{ inputs.max_candidates }}"
+          --max-search-queries "${{ inputs.max_search_queries }}"
+          --max-search-results "${{ inputs.max_search_results }}"
           --promote-limit "${{ inputs.promote_limit }}"
       - name: Validate result
         run: |

@@ -47,7 +47,9 @@ Before the first run, add a repository Actions secret named `DEEPSEEK_API_KEY` u
 
 Manual runs expose two controls: `force_refresh` ignores stored hashes, and `max_sources` limits a test run. A good first check is `max_sources=1`; after reviewing the resulting commit, run the complete source set.
 
-The separate manual **Discover optics sources** workflow expands coverage without force-refreshing existing pages. It scans multiple trusted-directory pages, removes known and irrelevant domains locally, and sends only compact candidate evidence to DeepSeek in batches of 30. A run can promote up to 100 accepted companies. Accepted companies are added to the static directory and their official careers page (when found) is added to `data/sources.json`; reviewed domains are remembered in `data/discovery-state.json` so later discovery runs do not spend tokens reviewing the same candidate again.
+The separate manual **Discover optics sources** workflow expands coverage without force-refreshing existing pages. DeepSeek first plans targeted multilingual searches from the current coverage gaps and the priorities in `data/sources.json`. Crawl4AI executes those searches through public Brave Search result pages, while also scanning the configured trusted directories and curated leads. Known and previously rejected domains are removed locally before page crawling or review. DeepSeek then reviews compact evidence in batches of 30, and a run can promote up to 100 accepted companies. Accepted companies are added to the static directory and their official careers page (when found) is added to `data/sources.json`; reviewed domains and the latest search plan are remembered in `data/discovery-state.json` so later runs do not spend tokens reviewing the same candidate again.
+
+DeepSeek does not receive unrestricted network access. The repository provides the controlled search-and-crawl tools, then DeepSeek plans queries and judges the returned evidence. This keeps source provenance visible and lets one failed page be skipped without trusting model-generated URLs.
 
 The updater is intentionally repository-native:
 

@@ -1,11 +1,51 @@
 {
-  "version": 2,
+  "version": 3,
   "policy": "Store only the minimum metadata needed to route visitors to public primary sources. Do not store article bodies, user submissions, account credentials, or restricted content.",
   "update_order": [
     "official company careers and news pages",
     "public ATS endpoints when available",
     "public academic and organization bios",
     "industry reporting and professional platforms for discovery"
+  ],
+  "discovery_priorities": {
+    "regions": [
+      "China",
+      "North America",
+      "Europe",
+      "Japan",
+      "South Korea"
+    ],
+    "focus_areas": [
+      "silicon photonics",
+      "optical communications",
+      "lasers and LiDAR",
+      "computational imaging",
+      "AR/VR and display optics",
+      "metasurfaces and meta-optics",
+      "semiconductor optical systems",
+      "optical metrology"
+    ],
+    "company_leads": [
+      "Huawei / 华为",
+      "学向科技"
+    ]
+  },
+  "discovery_leads": [
+    {
+      "name": "Huawei / 华为",
+      "url": "https://www.huawei.com/",
+      "evidence": "Official corporate site; review its optical networking and imaging activities."
+    },
+    {
+      "name": "LuminWave / 洛微科技",
+      "url": "https://luminwave.com.cn/",
+      "evidence": "Official company site describing silicon-photonics FMCW LiDAR and 3D imaging products."
+    },
+    {
+      "name": "CSPC / 国科光芯",
+      "url": "https://www.cspctech.com/",
+      "evidence": "Official company site describing silicon-photonics chips for communications, OCT, and LiDAR."
+    }
   ],
   "discovery_seeds": [
     {
