@@ -37,7 +37,7 @@ Use company career portals, public ATS feeds, company newsrooms, and public acad
 
 ## Automated updates
 
-`.github/workflows/update-content.yml` checks daily at 05:17 UTC and performs a scheduled refresh only when at least 72 hours have passed since the last successful scheduled run. This falls inside DeepSeek's current weekday off-peak window. It can also be started manually at any time. The updater uses Crawl4AI to create clean Markdown, skips unchanged source content using SHA-256 hashes in `data/update-state.json`, sends only changed content to DeepSeek, conservatively merges validated records back into `dist/app.js`, commits the result, and deploys changed site data to GitHub Pages in the same workflow run.
+`.github/workflows/update-content.yml` checks daily at 13:17 UTC (21:17 Beijing time) and performs a scheduled refresh only when at least 72 hours have passed since the last successful scheduled run. This falls inside DeepSeek's current weekday off-peak window and leaves a long buffer before the next peak period. It can also be started manually at any time. The updater uses Crawl4AI to fetch fresh pages and create clean Markdown, compares that normalized content with repository-persisted SHA-256 hashes in `data/update-state.json`, and sends only changed content to DeepSeek. It then conservatively merges validated records into `dist/app.js`, commits the result, and deploys changed site data to GitHub Pages in the same workflow run.
 
 Before the first run, add a repository Actions secret named `DEEPSEEK_API_KEY` under **Settings → Secrets and variables → Actions**. Do not put the key in a file, issue, workflow input, or chat message. Extraction is pinned to the official `deepseek-flash` API model, currently DeepSeek V4.1 Flash.
 
@@ -49,6 +49,7 @@ The updater is intentionally repository-native:
 - `data/update-state.json` stores only content hashes and processing timestamps.
 - `scripts/update_content.py` handles crawling, DeepSeek extraction, validation, and conservative merging.
 - `scripts/site-data.mjs` safely reads and writes the existing JavaScript dataset.
+- Crawl4AI deliberately fetches a fresh page instead of trusting a runner-local cache; unchanged normalized content never reaches DeepSeek.
 - Failed extraction never writes data or hash state. Individual blocked crawl sources are reported and left unchanged.
 
 ## Deployment

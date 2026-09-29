@@ -2,9 +2,9 @@ name: Update optics intelligence data
 
 on:
   schedule:
-    # 05:17 UTC is inside DeepSeek's current weekday off-peak window.
+    # 13:17 UTC is 21:17 in Beijing and inside DeepSeek's current off-peak window.
     # The cadence gate below performs the actual refresh once every 72 hours.
-    - cron: "17 5 * * *"
+    - cron: "17 13 * * *"
   workflow_dispatch:
     inputs:
       force_refresh:
