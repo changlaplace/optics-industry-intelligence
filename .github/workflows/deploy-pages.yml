@@ -6,6 +6,13 @@ on:
       - main
     paths:
       - "dist/**"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_run:
+    workflows:
+      - "Discover optics sources"
+      - "Update optics intelligence data"
+    types:
+      - completed
   workflow_dispatch:
 
 permissions:
@@ -19,6 +26,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -27,6 +35,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+        with:
+          ref: main
 
       - name: Validate static data
         run: |
