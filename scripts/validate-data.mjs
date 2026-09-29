@@ -4,9 +4,10 @@ import vm from 'node:vm';
 
 const source = readFileSync(new URL('../dist/app.js', import.meta.url), 'utf8');
 const startMarker = 'const D=';
-const endMarker = ';\nconst app=';
 const start = source.indexOf(startMarker);
-const end = source.indexOf(endMarker, start);
+const tail = start < 0 ? '' : source.slice(start + startMarker.length);
+const endMatch = tail.match(/;\r?\n\s*const app=/);
+const end = endMatch ? start + startMarker.length + endMatch.index : -1;
 if (start < 0 || end < 0) throw new Error('Unable to locate the D dataset');
 
 const data = vm.runInNewContext(`(${source.slice(start + startMarker.length, end)})`, Object.create(null), { timeout: 1000 });

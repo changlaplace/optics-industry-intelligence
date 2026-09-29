@@ -37,7 +37,7 @@ Use company career portals, public ATS feeds, company newsrooms, and public acad
 
 ## Automated updates
 
-`.github/workflows/update-content.yml` checks daily at 05:17 UTC and performs a scheduled refresh only when at least 72 hours have passed since the last successful scheduled run. This falls inside DeepSeek's current weekday off-peak window. It can also be started manually at any time. The updater uses Crawl4AI to create clean Markdown, skips unchanged source content using SHA-256 hashes in `data/update-state.json`, sends only changed content to DeepSeek, and conservatively merges validated records back into `dist/app.js`.
+`.github/workflows/update-content.yml` checks daily at 05:17 UTC and performs a scheduled refresh only when at least 72 hours have passed since the last successful scheduled run. This falls inside DeepSeek's current weekday off-peak window. It can also be started manually at any time. The updater uses Crawl4AI to create clean Markdown, skips unchanged source content using SHA-256 hashes in `data/update-state.json`, sends only changed content to DeepSeek, conservatively merges validated records back into `dist/app.js`, commits the result, and deploys changed site data to GitHub Pages in the same workflow run.
 
 Before the first run, add a repository Actions secret named `DEEPSEEK_API_KEY` under **Settings → Secrets and variables → Actions**. Do not put the key in a file, issue, workflow input, or chat message. Extraction is pinned to the official `deepseek-flash` API model, currently DeepSeek V4.1 Flash.
 
