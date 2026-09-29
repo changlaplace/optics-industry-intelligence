@@ -310,7 +310,11 @@ def main() -> int:
     ))
     candidates = [item for item in candidates if candidate_key(item) not in known_keys]
     reviewed = state.get("reviewed_domains", {})
-    candidates = [item for item in candidates if candidate_key(item) not in reviewed][:args.max_candidates]
+    candidates = [
+        item for item in candidates
+        if candidate_key(item) not in reviewed
+        or (reviewed[candidate_key(item)].get("accepted") and candidate_key(item) not in known_keys)
+    ][:args.max_candidates]
     if not candidates:
         print("No unreviewed source candidates were discovered.")
         return 0
