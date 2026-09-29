@@ -322,6 +322,72 @@
       "description": "Silicon-photonics chips for communications, OCT, and LiDAR.",
       "focus_areas": "Silicon photonics|Optical communications|LiDAR|OCT",
       "max_follow_links": 6
+    },
+    {
+      "name": "Sunny Optical Intelligent Optics (\u821c\u5b87\u667a\u80fd\u5149\u5b66) Careers",
+      "url": "https://www.sunnyaiot.com/",
+      "type": "company",
+      "company": "Sunny Optical Intelligent Optics (\u821c\u5b87\u667a\u80fd\u5149\u5b66)",
+      "website": "https://www.sunnyaiot.com/",
+      "location": "China",
+      "description": "Machine vision systems and optical modules for robotics and AIoT.",
+      "focus_areas": "Machine vision|Optical modules|Robotics|AIoT",
+      "max_follow_links": 6
+    },
+    {
+      "name": "Goertek Optics (\u6b4c\u5c14\u5149\u5b66) Careers",
+      "url": "https://www.goeroptics.com/",
+      "type": "company",
+      "company": "Goertek Optics (\u6b4c\u5c14\u5149\u5b66)",
+      "website": "https://www.goeroptics.com/",
+      "location": "China",
+      "description": "XR optics, automotive optics, laser modules and micro-nano optics.",
+      "focus_areas": "XR optics|Automotive optics|Laser modules|Micro-nano optics",
+      "max_follow_links": 6
+    },
+    {
+      "name": "LBTEK (\u9e93\u90a6) Careers",
+      "url": "https://www.lubon.com/join-us",
+      "type": "company",
+      "company": "LBTEK (\u9e93\u90a6)",
+      "website": "https://www.lbtek.com/",
+      "location": "China",
+      "description": "Optical components and lab instruments for photonics research.",
+      "focus_areas": "Optical components|Optical instruments|Photonics",
+      "max_follow_links": 6
+    },
+    {
+      "name": "Oeabt (\u57fa\u5ea7\u5149\u5b66) Careers",
+      "url": "https://www.oeabt.com/",
+      "type": "company",
+      "company": "Oeabt (\u57fa\u5ea7\u5149\u5b66)",
+      "website": "https://www.oeabt.com/",
+      "location": "Guangzhou, China",
+      "description": "Optical components and instruments for research and industry.",
+      "focus_areas": "Optical components|Optical instruments",
+      "max_follow_links": 6
+    },
+    {
+      "name": "Tinyphoton (\u5c0f\u5149\u5b50) Careers",
+      "url": "https://tinyphoton.com/we/jobs",
+      "type": "company",
+      "company": "Tinyphoton (\u5c0f\u5149\u5b50)",
+      "website": "https://tinyphoton.com/",
+      "location": "China",
+      "description": "Optical smart hardware combining optics, robotics and AI.",
+      "focus_areas": "Optical hardware|Imaging|Robotics",
+      "max_follow_links": 6
+    },
+    {
+      "name": "Accelink Technologies Careers",
+      "url": "https://www.accelink.com/en",
+      "type": "company",
+      "company": "Accelink Technologies",
+      "website": "https://www.accelink.com/en",
+      "location": "Wuhan, China",
+      "description": "Manufacturer of optical transceivers, amplifiers and passive optical components.",
+      "focus_areas": "Optical transceivers|Optical amplifiers|Passive components|Optical networking",
+      "max_follow_links": 6
     }
   ],
   "submission_queue": "https://github.com/changlaplace/optics-industry-intelligence/issues?q=is%3Aissue%20is%3Aopen%20%5BSource%5D"
