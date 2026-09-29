@@ -2,6 +2,12 @@
   "version": 2,
   "policy": "Store only the minimum metadata needed to route visitors to public primary sources. Do not store article bodies, user submissions, account credentials, or restricted content.",
   "update_order": ["official company careers and news pages", "public ATS endpoints when available", "public academic and organization bios", "industry reporting and professional platforms for discovery"],
+  "discovery_seeds": [
+    {"name":"Optica Corporate Member Directory","url":"https://www.optica.org/membership/member_resources/member_directories/corporate_member_directory/","max_profile_links":40},
+    {"name":"GoPhotonics Company Directory","url":"https://www.gophotonics.com/companies","max_profile_links":40},
+    {"name":"Photonics Career Center","url":"https://www.photonics.com/Jobs.aspx","max_profile_links":20},
+    {"name":"EBO MSA Members","url":"https://ebomsa.org/","max_profile_links":10}
+  ],
   "tracked_urls": [
     {"name":"Apple Careers","url":"https://www.apple.com/careers/","type":"company"},
     {"name":"Meta Careers","url":"https://www.metacareers.com/","type":"company"},

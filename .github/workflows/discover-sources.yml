@@ -1,0 +1,74 @@
+name: Discover optics sources
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_profiles:
+        description: Maximum trusted-directory profile pages to inspect
+        required: false
+        default: "80"
+        type: string
+      max_candidates:
+        description: Maximum new domains sent to DeepSeek for review
+        required: false
+        default: "60"
+        type: string
+      promote_limit:
+        description: Maximum accepted companies added in this run
+        required: false
+        default: "25"
+        type: string
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: optics-content-update
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+      DEEPSEEK_MODEL: deepseek-flash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-update.txt
+      - name: Install discovery dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-update.txt
+          crawl4ai-setup
+      - name: Discover and review sources
+        run: >-
+          python scripts/discover_sources.py
+          --max-profiles "${{ inputs.max_profiles }}"
+          --max-candidates "${{ inputs.max_candidates }}"
+          --promote-limit "${{ inputs.promote_limit }}"
+      - name: Validate result
+        run: |
+          python scripts/discover_sources.py --self-test
+          node scripts/validate-data.mjs
+          node --check dist/app.js
+      - name: Commit discovered sources
+        run: |
+          if [ -z "$(git status --porcelain -- dist data)" ]; then
+            echo "No new sources passed review."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist data
+          git commit -m "chore(data): discover optics sources"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
