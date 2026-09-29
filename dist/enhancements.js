@@ -3,12 +3,14 @@
     Apple: [37.3349, -122.0090], Meta: [37.4848, -122.1484], Google: [37.4220, -122.0841], Microsoft: [47.6739, -122.1215], NVIDIA: [37.3702, -121.9530], Amazon: [47.6225, -122.3365], Snap: [34.0195, -118.4912], KLA: [37.4200, -121.8980], 'Applied Materials': [37.3712, -121.9150], Coherent: [40.5680, -79.7970], Lumentum: [37.3382, -121.8863], Luminar: [28.5383, -81.3792], Lightmatter: [37.3861, -122.0839], Lightelligence: [42.3601, -71.0589], 'Ayar Labs': [37.3382, -121.8863], PsiQuantum: [37.4419, -122.1430], 'Magic Leap': [26.1601, -80.1714], Anduril: [33.6411, -117.9187], Nuburu: [39.5800, -104.8772], Hyperlight: [42.3736, -71.1097], 'Photonics.com': [42.4501, -73.2454], 'Texas Instruments': [32.7767, -96.7970]
   };
   const favicon = (url) => { try { return `https://www.google.com/s2/favicons?sz=64&domain_url=${encodeURIComponent(new URL(url).origin)}`; } catch { return ''; } };
+  const companiesBySlug = new Map(D.companies.map((company) => [slug(company[0]), company]));
   function decorateLinks(root = document) {
-    root.querySelectorAll('a[href]').forEach((link) => {
+    const links = root.matches?.('a[href]') ? [root, ...root.querySelectorAll('a[href]')] : [...root.querySelectorAll('a[href]')];
+    links.forEach((link) => {
       if (link.querySelector('.source-icon')) return;
       const href = link.getAttribute('href'); let url = link.href;
       const companyRoute = href.startsWith('#/company/');
-      if (companyRoute) { const company = D.companies.find((entry) => slug(entry[0]) === href.split('/').pop()); if (company) url = company[5]; }
+      if (companyRoute) { const company = companiesBySlug.get(href.split('/').pop()); if (company) url = company[5]; }
       if (!companyRoute && new URL(url).origin === location.origin) return;
       if (!/^https?:/.test(url)) return;
       const image = document.createElement('img'); image.className = 'source-icon'; image.src = favicon(url); image.alt = ''; image.loading = 'lazy'; image.referrerPolicy = 'no-referrer'; link.prepend(image);
@@ -40,7 +42,7 @@
     });
     return clusters;
   }
-  function addClusterMarker(map, cluster, color, renderItem) {
+  function addClusterMarker(map, cluster, color, renderItem, panelId) {
     const count = cluster.items.length;
     const marker = L.circleMarker(cluster.point, {
       radius: Math.min(25, 7 + Math.sqrt(count) * 4.5), color, weight: 2,
@@ -49,18 +51,24 @@
     const places = [...new Set(cluster.items.map((item) => item.location).filter(Boolean))];
     const heading = `${count} ${count === 1 ? 'record' : 'records'}${places.length ? ` near ${places.slice(0, 2).join(' / ')}` : ''}`;
     const list = cluster.items.sort((a, b) => a.name.localeCompare(b.name)).map(renderItem).join('');
-    marker.bindTooltip(`<div class="cluster-tooltip"><strong>${heading}</strong>${list}</div>`, { direction: 'top', opacity: .97, sticky: true });
-    marker.bindPopup(`<div class="cluster-popup"><strong>${heading}</strong>${list}</div>`, { maxWidth: 330 });
+    marker.bindTooltip(`<div class="cluster-tooltip"><strong>${heading}</strong><small>Select to show the complete list below the map.</small></div>`, { direction: 'top', opacity: .97, sticky: true });
+    marker.on('click', () => {
+      const panel = document.getElementById(panelId); if (!panel) return;
+      panel.innerHTML = `<div class="map-selection-head"><span>Selected region</span><strong>${heading}</strong></div><div class="map-selection-list">${list}</div>`;
+      panel.classList.add('active');
+      decorateLinks(panel);
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
   }
   function addCompanyMap() {
     const directory = document.querySelector('.directory'); if (!directory || !window.L) return;
     const section = document.createElement('section'); section.className = 'section map-section';
-    section.innerHTML = '<div class="section-head"><div><h2 class="section-title">North American company map</h2><p class="meta">Nearby companies are grouped into proportional bubbles. Hover or select a bubble to see every record.</p></div><span class="meta">Bubble size = company count</span></div><div id="company-map" class="company-map" aria-label="Map of companies in the directory"></div><p class="map-caption">North America is the default view. Companies outside this view retain their location in the directory.</p>';
+    section.innerHTML = '<div class="section-head"><div><h2 class="section-title">North American company map</h2><p class="meta">Nearby companies are grouped into proportional bubbles. Select a bubble to open its complete list below the map.</p></div><span class="meta">Bubble size = company count</span></div><div id="company-map" class="company-map" aria-label="Map of companies in the directory"></div><div id="company-map-selection" class="map-selection" aria-live="polite"><span>Select a bubble to inspect every company in that region.</span></div><p class="map-caption">North America is the default view. Companies outside this view retain their location in the directory.</p>';
     directory.before(section);
     const map = L.map('company-map', { scrollWheelZoom: false }).setView([39.5, -98.35], 4);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 12, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
     const items = D.companies.filter((company) => locations[company[0]]).map((company) => ({ name: company[0], location: company[1], point: locations[company[0]], company }));
-    clusterLocations(items).forEach((cluster) => addClusterMarker(map, cluster, '#167f83', (item) => `<a href="#/company/${slug(item.name)}"><b>${item.name}</b><small>${item.location || 'Location pending'}</small></a>`));
+    clusterLocations(items).forEach((cluster) => addClusterMarker(map, cluster, '#167f83', (item) => `<a href="#/company/${slug(item.name)}"><b>${item.name}</b><small>${item.location || 'Location pending'}</small></a>`, 'company-map-selection'));
   }
   const originalCompanies = window.companies;
   window.companies = () => { originalCompanies(); addCompanyMap(); decorateLinks(); };
@@ -90,14 +98,14 @@
   function addPeopleMap() {
     const firstSection = app.querySelector('.section'); if (!firstSection || !window.L) return;
     const section = document.createElement('section'); section.className = 'section';
-    section.innerHTML = '<div class="section-head"><div><h2 class="section-title">Public affiliation map</h2><p class="meta">Nearby institutions are grouped. Hover or select a bubble to see all organizations and people.</p></div><span class="meta">No personal locations</span></div><div id="people-map" class="company-map people-map" aria-label="Map of public professional affiliations"></div><p class="people-map-note">Markers reflect public organizational affiliation only, not individual location or private information.</p>';
+    section.innerHTML = '<div class="section-head"><div><h2 class="section-title">Public affiliation map</h2><p class="meta">Nearby institutions are grouped. Select a bubble to open its complete list below the map.</p></div><span class="meta">No personal locations</span></div><div id="people-map" class="company-map people-map" aria-label="Map of public professional affiliations"></div><div id="people-map-selection" class="map-selection" aria-live="polite"><span>Select a bubble to inspect every public affiliation in that region.</span></div><p class="people-map-note">Markers reflect public organizational affiliation only, not individual location or private information.</p>';
     firstSection.before(section);
     const map = L.map('people-map', { scrollWheelZoom: false }).setView([39.7, -99.2], 4);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 12, attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
     const groups = new Map();
     D.people.forEach((person) => { if (!affiliationLocations[person[1]]) return; groups.set(person[1], [...(groups.get(person[1]) || []), person[0]]); });
     const items = [...groups].map(([organization, names]) => ({ name: organization, location: organization, point: affiliationLocations[organization], names }));
-    clusterLocations(items).forEach((cluster) => addClusterMarker(map, cluster, '#b65a43', (item) => `<span><b>${item.name}</b><small>${item.names.join(', ')}</small></span>`));
+    clusterLocations(items).forEach((cluster) => addClusterMarker(map, cluster, '#b65a43', (item) => `<span><b>${item.name}</b><small>${item.names.join(', ')}</small></span>`, 'people-map-selection'));
   }
   const originalPeople = window.people;
   window.people = () => { originalPeople(); addPeopleMap(); const list = document.querySelector('.people-list'); if (list) list.innerHTML = D.people.map(peopleCard).join(''); decorateLinks(); };
@@ -216,5 +224,8 @@
     const [route, id] = (location.hash.slice(2) || '').split('/');
     if (route === 'companies') return window.companies(); if (route === 'company') return window.company(id); if (route === 'people') return window.people(); if (route === 'about') return window.about(); if (route === 'blogs') return window.blogs(); if (route === 'jobs') return window.jobs(); if (route === 'news') return window.news(); if (route === 'market') return window.market(); if (route === 'sources') return window.about(); return window.home();
   }
-  window.addEventListener('hashchange', enhancedRouter); new MutationObserver(() => decorateLinks()).observe(app, { childList: true, subtree: true }); enhancedRouter();
+  const linkObserver = new MutationObserver((mutations) => mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
+    if (node.nodeType === Node.ELEMENT_NODE) decorateLinks(node);
+  })));
+  window.addEventListener('hashchange', enhancedRouter); linkObserver.observe(app, { childList: true, subtree: true }); enhancedRouter();
 })();
