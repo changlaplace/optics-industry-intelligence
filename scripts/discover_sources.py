@@ -60,6 +60,13 @@ def excluded(value: str) -> bool:
     return not host or any(host == item or host.endswith("." + item) for item in EXCLUDED_DOMAINS)
 
 
+def candidate_key(item: dict) -> str:
+    path = urlsplit(item["website"]).path.casefold()
+    if domain(item["website"]) == "gophotonics.com" and re.search(r"/companies/\d+/", path):
+        return canonical_url(item["website"])
+    return domain(item["website"])
+
+
 def result_markdown(result) -> str:
     markdown = getattr(result, "markdown", "")
     if isinstance(markdown, str):
@@ -127,13 +134,21 @@ async def crawl_discovery(seeds: list[dict], max_profiles: int, max_candidates: 
     async with AsyncWebCrawler(config=browser) as crawler:
         seed_results = await crawler.arun_many(urls=[item["url"] for item in seeds], config=run)
         profiles: list[tuple[str, str]] = []
+        profile_fallbacks: list[dict] = []
         for result in seed_results:
             seed = next((item for item in seeds if domain(item["url"]) == domain(getattr(result, "url", ""))), None)
             if not seed or not result.success:
                 print(f"warning: discovery seed failed: {getattr(result, 'url', seed and seed['url'])}")
                 continue
             candidates.extend(candidate_links(result, seed["name"]))
-            profiles.extend((url, seed["name"]) for url in profile_links(result, seed))
+            selected_profiles = profile_links(result, seed)
+            link_names = {item["url"]: item["text"] for item in result_links(result)}
+            profiles.extend((url, seed["name"]) for url in selected_profiles)
+            profile_fallbacks.extend({
+                "name_hint": link_names.get(url, "").strip()[:100], "website": url,
+                "discovered_from": seed["name"],
+                "excerpt": f"Listed in {seed['name']}, a trusted optics and photonics industry directory.",
+            } for url in selected_profiles if link_names.get(url, "").strip())
         profiles = list(dict.fromkeys(profiles))[:max_profiles]
         if profiles:
             profile_results = await crawler.arun_many(urls=[url for url, _ in profiles], config=run)
@@ -145,9 +160,10 @@ async def crawl_discovery(seeds: list[dict], max_profiles: int, max_candidates: 
                 owner = owner_by_url.get(result_url, "Trusted optics directory")
                 candidates.extend(candidate_links(result, owner))
 
+        candidates.extend(profile_fallbacks)
         unique: dict[str, dict] = {}
         for item in candidates:
-            key = domain(item["website"])
+            key = candidate_key(item)
             if key and key not in unique:
                 unique[key] = item
         shortlist = list(unique.values())[:max_candidates]
@@ -217,7 +233,7 @@ def write_dataset(data: dict) -> None:
 
 def merge(candidates: list[dict], accepted: list[dict], registry: dict, dataset: dict, limit: int) -> int:
     existing_names = {row[0].casefold() for row in dataset["companies"]}
-    existing_domains = {domain(row[5]) for row in dataset["companies"]}
+    existing_sites = {candidate_key({"website": row[5]}) for row in dataset["companies"]}
     tracked_urls = {canonical_url(item["url"]) for item in registry["tracked_urls"]}
     added = 0
     for record in accepted:
@@ -229,8 +245,8 @@ def merge(candidates: list[dict], accepted: list[dict], registry: dict, dataset:
         candidate = candidates[index]
         name = str(record.get("name", "")).strip()
         website = candidate["website"]
-        website_domain = domain(website)
-        if not name or name.casefold() in existing_names or website_domain in existing_domains:
+        website_key = candidate_key(candidate)
+        if not name or name.casefold() in existing_names or website_key in existing_sites:
             continue
         focus = [str(item).strip() for item in record.get("focus_areas", []) if str(item).strip()][:4]
         if not focus:
@@ -239,9 +255,11 @@ def merge(candidates: list[dict], accepted: list[dict], registry: dict, dataset:
             name, str(record.get("location", "")).strip(), str(record.get("description", "")).strip(),
             "|".join(focus), "New source", website,
         ])
-        source_url = candidate.get("careers_url") or website
-        source_url = canonical_url(source_url)
-        if source_url not in tracked_urls:
+        source_url = canonical_url(candidate.get("careers_url") or website)
+        directory_profile = domain(website) == "gophotonics.com" and bool(
+            re.search(r"/companies/\d+/", urlsplit(website).path.casefold())
+        )
+        if not directory_profile and source_url not in tracked_urls:
             registry["tracked_urls"].append({
                 "name": f"{name} Careers", "url": source_url, "type": "company", "company": name,
                 "website": website, "location": str(record.get("location", "")).strip(),
@@ -250,7 +268,7 @@ def merge(candidates: list[dict], accepted: list[dict], registry: dict, dataset:
             })
             tracked_urls.add(source_url)
         existing_names.add(name.casefold())
-        existing_domains.add(website_domain)
+        existing_sites.add(website_key)
         added += 1
     if added:
         dataset["companies"].sort(key=lambda row: row[0].casefold())
@@ -285,14 +303,14 @@ def main() -> int:
     registry = read_json(SOURCES_PATH, {})
     dataset = read_dataset()
     state = read_json(STATE_PATH, {"version": 1, "reviewed_domains": {}})
-    known_domains = {domain(item["url"]) for item in registry.get("tracked_urls", [])}
-    known_domains.update(domain(row[5]) for row in dataset["companies"])
+    known_keys = {candidate_key({"website": item["url"]}) for item in registry.get("tracked_urls", [])}
+    known_keys.update(candidate_key({"website": row[5]}) for row in dataset["companies"])
     candidates = asyncio.run(crawl_discovery(
-        registry.get("discovery_seeds", []), args.max_profiles, args.max_candidates + len(known_domains)
+        registry.get("discovery_seeds", []), args.max_profiles, args.max_candidates + len(known_keys)
     ))
-    candidates = [item for item in candidates if domain(item["website"]) not in known_domains]
+    candidates = [item for item in candidates if candidate_key(item) not in known_keys]
     reviewed = state.get("reviewed_domains", {})
-    candidates = [item for item in candidates if domain(item["website"]) not in reviewed][:args.max_candidates]
+    candidates = [item for item in candidates if candidate_key(item) not in reviewed][:args.max_candidates]
     if not candidates:
         print("No unreviewed source candidates were discovered.")
         return 0
@@ -308,7 +326,7 @@ def main() -> int:
     now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     accepted_ids = {item.get("id") for item in accepted}
     for index, item in enumerate(candidates):
-        reviewed[domain(item["website"])] = {
+        reviewed[candidate_key(item)] = {
             "website": item["website"], "name_hint": item["name_hint"],
             "discovered_from": item["discovered_from"], "reviewed_at": now,
             "accepted": index in accepted_ids,
