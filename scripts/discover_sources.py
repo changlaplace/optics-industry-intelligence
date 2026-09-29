@@ -6,7 +6,9 @@ from __future__ import annotations
 import argparse
 import asyncio
 import copy
+import html as html_lib
 import json
+import math
 import os
 import re
 import subprocess
@@ -157,6 +159,32 @@ def search_candidates(result, query: str) -> list[dict]:
     return candidates
 
 
+def bing_rss_candidates(result, query: str) -> list[dict]:
+    """Extract direct result links from Bing's public RSS response."""
+    raw = str(getattr(result, "html", "") or getattr(result, "cleaned_html", "") or "")
+    candidates = []
+    for block in re.findall(r"<item\b[^>]*>(.*?)</item>", raw, flags=re.IGNORECASE | re.DOTALL):
+        title_match = re.search(r"<title>(.*?)</title>", block, flags=re.IGNORECASE | re.DOTALL)
+        link_match = re.search(r"<link>(.*?)</link>", block, flags=re.IGNORECASE | re.DOTALL)
+        if not link_match:
+            continue
+        website = html_lib.unescape(re.sub(r"<[^>]+>", "", link_match.group(1))).strip()
+        try:
+            website = canonical_url(website)
+        except ValueError:
+            continue
+        if excluded(website):
+            continue
+        title = html_lib.unescape(re.sub(r"<[^>]+>", "", title_match.group(1) if title_match else ""))
+        candidates.append({
+            "name_hint": re.sub(r"\s+", " ", title).strip()[:120] or domain(website),
+            "website": website,
+            "discovered_from": f"Web search: {query}",
+            "search_query": query,
+        })
+    return candidates
+
+
 def deepseek_json(system_prompt: str, value: object, max_tokens: int) -> dict:
     api_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
     if not api_key:
@@ -273,28 +301,24 @@ async def crawl_discovery(
                 candidates.extend(candidate_links(result, owner))
 
         if queries:
-            search_urls = [f"https://search.brave.com/search?q={quote_plus(query)}&source=web" for query in queries]
-            query_by_url = {canonical_url(url): query for url, query in zip(search_urls, queries)}
-            search_results = await crawler.arun_many(urls=search_urls, config=run)
-            search_candidates_seen = 0
-            for result in search_results:
-                if not result.success:
-                    print(f"warning: web search failed: {getattr(result, 'url', 'unknown query')}")
-                    continue
-                try:
-                    result_url = canonical_url(getattr(result, "url", ""))
-                except ValueError:
-                    continue
-                query = query_by_url.get(result_url)
-                if not query:
-                    continue
-                for item in search_candidates(result, query):
-                    if search_candidates_seen >= max_search_results:
-                        break
-                    candidates.append(item)
-                    search_candidates_seen += 1
-                if search_candidates_seen >= max_search_results:
-                    break
+            per_query_limit = max(1, math.ceil(max_search_results / len(queries)))
+            for query in queries:
+                found = []
+                brave_url = f"https://search.brave.com/search?q={quote_plus(query)}&source=web"
+                brave_result = await crawler.arun(url=brave_url, config=run)
+                if brave_result.success:
+                    found = search_candidates(brave_result, query)
+                else:
+                    print(f"warning: Brave search failed; trying Bing RSS: {query}")
+                if not found:
+                    bing_url = f"https://www.bing.com/search?format=rss&q={quote_plus(query)}"
+                    bing_result = await crawler.arun(url=bing_url, config=run)
+                    if bing_result.success:
+                        found = bing_rss_candidates(bing_result, query) or search_candidates(bing_result, query)
+                    else:
+                        print(f"warning: all search providers failed: {query}")
+                candidates.extend(found[:per_query_limit])
+                await asyncio.sleep(1.0)
 
         candidates.extend(profile_fallbacks)
         unique: dict[str, dict] = {}
@@ -432,6 +456,10 @@ def self_test() -> None:
         ]}
     candidates = search_candidates(SearchResult(), "optics")
     assert len(candidates) == 1 and candidates[0]["website"] == "https://acme-optics.com/about"
+    class RssResult:
+        html = "<rss><channel><item><title>Acme Optics</title><link>https://acme-optics.com/</link></item></channel></rss>"
+    rss_candidates = bing_rss_candidates(RssResult(), "optics")
+    assert len(rss_candidates) == 1 and rss_candidates[0]["name_hint"] == "Acme Optics"
     print("Source discovery helper checks passed.")
 
 
