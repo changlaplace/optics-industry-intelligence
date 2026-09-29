@@ -18,7 +18,7 @@ import urllib.error
 import urllib.request
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit, urlunsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES_PATH = ROOT / "data" / "sources.json"
@@ -31,6 +31,10 @@ OPTICS_TERMS = (
     "optic", "photon", "imaging", "camera", "lidar", "laser", "lithograph",
     "metrology", "display", "sensor", "metasurface", "quantum", "semiconductor",
 )
+LINK_SIGNAL_TERMS = OPTICS_TERMS + (
+    "job", "career", "opening", "position", "opportunit", "news", "press", "release", "article",
+)
+PUBLIC_ATS_HOSTS = ("greenhouse.io", "lever.co", "ashbyhq.com", "myworkdayjobs.com", "jobs.nokia.com")
 
 
 def canonicalize_url(value: str) -> str:
@@ -90,7 +94,7 @@ def write_site_data(data: dict) -> None:
         temporary.unlink(missing_ok=True)
 
 
-def load_sources(max_sources: int) -> list[dict]:
+def load_sources(max_sources: int, source_match: str = "") -> list[dict]:
     registry = read_json(SOURCES_PATH)
     sources = []
     for source in registry.get("tracked_urls", []):
@@ -105,6 +109,9 @@ def load_sources(max_sources: int) -> list[dict]:
         except (KeyError, ValueError):
             continue
         sources.append(source)
+    if source_match:
+        needle = source_match.casefold()
+        sources = [source for source in sources if needle in source.get("name", "").casefold()]
     return sources[:max_sources] if max_sources > 0 else sources
 
 
@@ -117,6 +124,55 @@ def markdown_from_result(result) -> str:
         if candidate:
             return candidate
     return str(markdown or "")
+
+
+def domain_key(value: str) -> str:
+    host = (urlsplit(value).hostname or "").casefold().removeprefix("www.")
+    parts = host.split(".")
+    return ".".join(parts[-2:]) if len(parts) >= 2 else host
+
+
+def match_source(result_url: str, sources: list[dict]) -> dict | None:
+    try:
+        canonical = canonicalize_url(result_url)
+    except ValueError:
+        return None
+    exact = {canonicalize_url(source["url"]): source for source in sources}
+    if canonical in exact:
+        return exact[canonical]
+    result_domain = domain_key(result_url)
+    candidates = [source for source in sources if domain_key(source["url"]) == result_domain]
+    return candidates[0] if len(candidates) == 1 else None
+
+
+def discover_links(result, source: dict) -> list[str]:
+    if source.get("follow_links", True) is False:
+        return []
+    result_url = getattr(result, "url", source["url"])
+    source_domain = domain_key(source["url"])
+    ranked = []
+    for group in ("internal", "external"):
+        for link in (getattr(result, "links", {}) or {}).get(group, []):
+            href = urljoin(result_url, link.get("href", ""))
+            try:
+                canonical = canonicalize_url(href)
+            except ValueError:
+                continue
+            host = (urlsplit(canonical).hostname or "").casefold()
+            allowed = domain_key(canonical) == source_domain or any(
+                host == ats or host.endswith(f".{ats}") for ats in PUBLIC_ATS_HOSTS
+            )
+            if not allowed:
+                continue
+            parts = urlsplit(canonical)
+            signal_text = f"{parts.path} {parts.query} {link.get('text', '')}".casefold()
+            hits = sum(term in signal_text for term in LINK_SIGNAL_TERMS)
+            if not hits or canonical == canonicalize_url(source["url"]):
+                continue
+            ranked.append((hits, canonical))
+    ranked.sort(key=lambda item: (-item[0], item[1]))
+    limit = int(source.get("max_follow_links", 8 if source.get("type") == "industry" else 6))
+    return list(dict.fromkeys(url for _, url in ranked))[:limit]
 
 
 async def crawl_sources(sources: list[dict]) -> tuple[dict[str, str], list[str]]:
@@ -135,15 +191,47 @@ async def crawl_sources(sources: list[dict]) -> tuple[dict[str, str], list[str]]
     failures: list[str] = []
     async with AsyncWebCrawler(config=browser) as crawler:
         results = await crawler.arun_many(urls=urls, config=run)
-    for source, result in zip(sources, results, strict=True):
-        if not result.success:
-            failures.append(f"{source['name']}: {result.error_message or 'crawl failed'}")
-            continue
-        cleaned = clean_markdown(markdown_from_result(result))
-        if len(cleaned) < 100:
-            failures.append(f"{source['name']}: page produced too little usable content")
-            continue
-        crawled[canonicalize_url(source["url"])] = cleaned
+        child_owners: dict[str, dict] = {}
+        for result in results:
+            source = match_source(getattr(result, "url", ""), sources)
+            if not source:
+                failures.append(f"Unmatched crawl result: {getattr(result, 'url', 'unknown URL')}")
+                continue
+            if not result.success:
+                failures.append(f"{source['name']}: {result.error_message or 'crawl failed'}")
+                continue
+            cleaned = clean_markdown(markdown_from_result(result))
+            if len(cleaned) < 100:
+                failures.append(f"{source['name']}: page produced too little usable content")
+                continue
+            source_url = canonicalize_url(source["url"])
+            crawled[source_url] = f"## Crawled page: {getattr(result, 'url', source['url'])}\n{cleaned}"
+            for child_url in discover_links(result, source):
+                child_owners.setdefault(child_url, source)
+
+        if child_owners:
+            child_results = await crawler.arun_many(urls=list(child_owners), config=run)
+            for result in child_results:
+                try:
+                    result_url = canonicalize_url(getattr(result, "url", ""))
+                except ValueError:
+                    continue
+                source = child_owners.get(result_url)
+                if not source:
+                    result_domain = domain_key(result_url)
+                    owners = {item["name"]: item for url, item in child_owners.items() if domain_key(url) == result_domain}
+                    source = next(iter(owners.values())) if len(owners) == 1 else None
+                if not source or not result.success:
+                    if source:
+                        failures.append(f"{source['name']} child page: {result.error_message or 'crawl failed'}")
+                    continue
+                cleaned = clean_markdown(markdown_from_result(result))
+                if len(cleaned) < 100:
+                    continue
+                source_url = canonicalize_url(source["url"])
+                crawled[source_url] = (
+                    f"{crawled.get(source_url, '')}\n\n## Crawled page: {getattr(result, 'url', result_url)}\n{cleaned}"
+                ).strip()
     return crawled, failures
 
 
@@ -190,13 +278,17 @@ lithography, optical metrology, sensors, semiconductor optical systems, or quant
 Prefer exact job posting URLs over generic career-page URLs. Return empty arrays when nothing useful is present.
 Keep every field concise and prioritize exact job links.
 The page is processed in segments. Do not repeat records listed in compact_memory.
+When source.company is provided, use that exact company name for every job from this source.
 JSON shape:
 {"companies":[{"name":"","location":"","description":"","focus_areas":[""],"website":""}],
 "jobs":[{"title":"","company":"","location":"","category":"","seniority":"","status":"active","posting_url":"","posting_date":null}],
 "news":[{"title":"","kind":"","date":"YYYY-MM-DD","category":"","url":""}]}"""
     user = json.dumps(
         {
-            "source": {"name": source["name"], "url": source["url"], "type": source["type"]},
+            "source": {
+                "name": source["name"], "url": source["url"], "type": source["type"],
+                "company": source.get("company"),
+            },
             "page_part": part_label,
             "compact_memory": memory,
             "known_companies": company_names,
@@ -354,6 +446,14 @@ def merge_extraction(dataset: dict, extracted: dict, source: dict, today: str) -
             changes += 1
 
     known_companies = {item[0].casefold(): item[0] for item in dataset["companies"]}
+    source_company = text(source.get("company"))
+    if source_company and extracted["jobs"] and source_company.casefold() not in known_companies:
+        dataset["companies"].append([
+            source_company, text(source.get("location")), text(source.get("description")),
+            text(source.get("focus_areas")), "New", text(source.get("website")) or source["url"],
+        ])
+        known_companies[source_company.casefold()] = source_company
+        changes += 1
     job_keys = {
         (item[1].casefold(), item[0].casefold(), item[2].casefold()): item
         for item in dataset["jobs"]
@@ -361,6 +461,8 @@ def merge_extraction(dataset: dict, extracted: dict, source: dict, today: str) -
     for record in extracted["jobs"]:
         title, company, location = text(record.get("title")), text(record.get("company")), text(record.get("location"))
         posting_url = text(record.get("posting_url"))
+        if source_company and company.casefold() not in known_companies and source_company.casefold() in company.casefold():
+            company = source_company
         if not title or not company or company.casefold() not in known_companies or not posting_url:
             continue
         try:
@@ -477,6 +579,18 @@ def self_test() -> None:
     assert chunks == ["one two", "three four", "five six"]
     assert chunk_is_relevant("Senior optical systems engineer")
     assert not chunk_is_relevant("Corporate legal and payroll information")
+    source_samples = [
+        {"name": "A", "url": "https://careers.example.com/jobs", "type": "company"},
+        {"name": "B", "url": "https://example.org/news", "type": "industry"},
+    ]
+    assert match_source("https://careers.example.com/jobs/123", source_samples)["name"] == "A"
+    class FakeResult:
+        url = "https://careers.example.com/jobs"
+        links = {"internal": [
+            {"href": "/jobs/optical-engineer", "text": "Optical Engineer"},
+            {"href": "/privacy", "text": "Privacy"},
+        ], "external": []}
+    assert discover_links(FakeResult(), source_samples[0]) == ["https://careers.example.com/jobs/optical-engineer"]
     dataset = {
         "updated": "2026-01-01",
         "companies": [[
@@ -559,6 +673,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--max-sources", type=int, default=0)
+    parser.add_argument("--source-match", default="")
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args()
     if args.self_test:
@@ -567,7 +682,7 @@ def main() -> int:
     if not os.getenv("DEEPSEEK_API_KEY", "").strip():
         raise RuntimeError("Add DEEPSEEK_API_KEY as a GitHub Actions repository secret before running updates")
 
-    sources = load_sources(args.max_sources)
+    sources = load_sources(args.max_sources, args.source_match)
     if not sources:
         raise RuntimeError("No automated sources are configured")
     dataset = read_site_data()

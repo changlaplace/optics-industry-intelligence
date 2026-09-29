@@ -17,6 +17,11 @@ on:
         required: false
         default: "0"
         type: string
+      source_match:
+        description: Optional case-insensitive source name filter, such as Nokia
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: write
@@ -39,6 +44,7 @@ jobs:
       UPDATE_TRIGGER: ${{ github.event_name }}
       FORCE_REFRESH: ${{ inputs.force_refresh || 'false' }}
       MAX_SOURCES: ${{ inputs.max_sources || '0' }}
+      SOURCE_MATCH: ${{ inputs.source_match || '' }}
 
     steps:
       - name: Check out repository
@@ -95,6 +101,7 @@ jobs:
           args=()
           if [ "$FORCE_REFRESH" = "true" ]; then args+=(--force); fi
           if [ "$MAX_SOURCES" != "0" ]; then args+=(--max-sources "$MAX_SOURCES"); fi
+          if [ -n "$SOURCE_MATCH" ]; then args+=(--source-match "$SOURCE_MATCH"); fi
           python scripts/update_content.py "${args[@]}"
 
       - name: Validate generated data

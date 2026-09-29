@@ -26,6 +26,8 @@
     {"name":"Nuburu","url":"https://nuburu.net/","type":"company"},
     {"name":"Hyperlight","url":"https://hyperlightcorp.com/","type":"company"},
     {"name":"NIL Technology Careers","url":"https://www.nilt.com/careers/","type":"company"},
+    {"name":"Nokia Optical Jobs","url":"https://jobs.nokia.com/en/sites/CX_1/jobs","type":"company","company":"Nokia","website":"https://www.nokia.com/","location":"Espoo, Finland","description":"Optical networking and telecommunications systems","focus_areas":"Optical networks|Coherent optics|Photonics|Silicon photonics","max_follow_links":12},
+    {"name":"Corning Engineering Jobs","url":"https://corningjobs.corning.com/go/Engineering/7684300/","type":"company","company":"Corning","website":"https://www.corning.com/","location":"Corning, NY","description":"Materials science, optical fiber, photonics, and advanced optics","focus_areas":"Optical fiber|Photonics|Advanced optics|Display materials","max_follow_links":10},
     {"name":"Photonics.com","url":"https://www.photonics.com/","type":"industry"},
     {"name":"Optica Newsroom","url":"https://www.optica.org/en-us/about/newsroom/","type":"industry"},
     {"name":"SPIE News","url":"https://spie.org/news","type":"industry"},
