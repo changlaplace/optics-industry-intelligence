@@ -50,11 +50,46 @@
     });
   }
   const marketMeta = (company) => D.company_meta?.[company[0]] || { tier: 'Emerging specialist', score: 2, basis: 'Focused optics or photonics market presence' };
+  const activeCompanyJobs = D.jobs.filter((job) => !/inactive|closed|expired/i.test(job[5] || ''));
+  const companyJobCounts = activeCompanyJobs.reduce((counts, job) => counts.set(job[1], (counts.get(job[1]) || 0) + 1), new Map());
+  const technologyGroups = [
+    ['Integrated & silicon photonics', /silicon photonic|integrated photonic|photonic integrated|optical interconnect|co-packaged optic/i],
+    ['Optical communications', /optical communic|optical network|fiber optic|transceiver|telecom|wavelength/i],
+    ['Lasers', /laser|ultrafast|femtosecond|excimer/i],
+    ['Imaging & cameras', /imag|camera|computer vision|machine vision|microscopy|lens/i],
+    ['AR/VR & displays', /ar\/vr|\bxr\b|display|augmented reality|virtual reality|micro-?led|\bled\b/i],
+    ['LiDAR & sensing', /lidar|sensor|sensing|detector|photodiode/i],
+    ['Metrology & instruments', /metrology|measurement|instrument|spectro|test equipment|inspection/i],
+    ['Semiconductor & lithography', /semiconductor|lithograph|wafer|reticle|process control/i],
+    ['Quantum photonics', /quantum/i],
+    ['Optical components & materials', /optical component|optics|coating|crystal|optomechan|light source/i],
+  ];
+  const europeTerms = /\b(uk|united kingdom|germany|france|spain|denmark|netherlands|ireland|italy|lithuania|switzerland|belgium|austria|sweden|norway|finland|poland|portugal|russia)\b/i;
+  const asiaPacificTerms = /\b(japan|south korea|korea|taiwan|hong kong|singapore|india|australia|new zealand|malaysia|thailand|vietnam)\b/i;
+  const usState = /(?:^|,\s*)(?:AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY)(?:,|$)/i;
+  function companyRegion(company) {
+    const location = company[1] || '';
+    if (!location.trim()) return 'Location pending';
+    if (/\bchina\b/i.test(location)) return 'China';
+    if (/\bcanada\b/i.test(location)) return 'Canada';
+    if (/\b(?:usa|united states)\b/i.test(location) || usState.test(location)) return 'United States';
+    if (europeTerms.test(location)) return 'Europe';
+    if (asiaPacificTerms.test(location)) return 'Asia-Pacific';
+    return 'Other regions';
+  }
+  function companyTechnologies(company) {
+    const haystack = `${company[2]} ${company[3]}`;
+    const groups = technologyGroups.filter(([, pattern]) => pattern.test(haystack)).map(([name]) => name);
+    return groups.length ? groups : ['General optics & photonics'];
+  }
   const footprintBadge = (company) => {
     const meta = marketMeta(company);
     return `<span class="footprint footprint-${meta.score}" title="${meta.basis}"><i>${meta.score}/5</i>${meta.tier}</span>`;
   };
-  window.companyTile = (company) => `<a class="company-card" href="#/company/${slug(company[0])}"><div class="company-card-top"><div class="initial">${company[0][0]}</div>${footprintBadge(company)}</div><h3>${company[0]}</h3><p>${company[1]}</p><div>${chips(company[3])}</div><div class="activity">${company[4]}</div></a>`;
+  window.companyTile = (company) => {
+    const roles = companyJobCounts.get(company[0]) || 0;
+    return `<a class="company-card" href="#/company/${slug(company[0])}"><div class="company-card-top"><div class="initial">${company[0][0]}</div>${footprintBadge(company)}</div><div class="company-card-insights"><span>${companyRegion(company)}</span><span>${roles ? `${roles} active role${roles === 1 ? '' : 's'}` : 'No indexed roles'}</span></div><h3>${company[0]}</h3><p>${company[1] || 'Location not yet verified'}</p><div>${chips(company[3])}</div><div class="activity">${company[4]}</div></a>`;
+  };
   window.companyCard = (company) => `<a class="card" href="#/company/${slug(company[0])}"><div class="card-kicker">${footprintBadge(company)}</div><h3 class="company-name">${company[0]}</h3><p class="meta">${company[1]} &middot; ${company[2]}</p><div>${chips(company[3])}</div><div class="activity">${company[4]} hiring signal</div></a>`;
   const kilometersBetween = (a, b) => {
     const radians = (value) => value * Math.PI / 180;
@@ -103,8 +138,71 @@
     const items = D.companies.map((company) => ({ name: company[0], location: company[1], point: companyPoint(company), company })).filter((item) => item.point);
     clusterLocations(items).forEach((cluster) => addClusterMarker(map, cluster, '#167f83', (item) => `<a href="#/company/${slug(item.name)}"><b>${item.name}</b><small>${item.location || 'Location pending'}</small></a>`, 'company-map-selection'));
   }
-  const originalCompanies = window.companies;
-  window.companies = () => { originalCompanies(); addCompanyMap(); decorateLinks(); };
+  const companyDirectoryState = { query: '', region: '', technology: '', scale: '', hiring: '', sort: 'footprint-desc', limit: 36 };
+  const companyRegions = ['United States', 'China', 'Europe', 'Asia-Pacific', 'Canada', 'Other regions', 'Location pending'];
+  const htmlEscape = (value) => String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+  const selected = (value, expected) => value === expected ? ' selected' : '';
+  function filteredCompanies() {
+    const state = companyDirectoryState;
+    const query = state.query.trim().toLowerCase();
+    const companies = D.companies.filter((company) => {
+      if (query && !company.join('|').toLowerCase().includes(query)) return false;
+      if (state.region && companyRegion(company) !== state.region) return false;
+      if (state.technology && !companyTechnologies(company).includes(state.technology)) return false;
+      if (state.scale && String(marketMeta(company).score) !== state.scale) return false;
+      const roles = companyJobCounts.get(company[0]) || 0;
+      if (state.hiring === 'roles' && !roles) return false;
+      if (state.hiring === 'active' && !/active/i.test(company[4])) return false;
+      if (state.hiring === 'watch' && !/watch/i.test(company[4])) return false;
+      if (state.hiring === 'none' && roles) return false;
+      return true;
+    });
+    const compareName = (a, b) => a[0].localeCompare(b[0]);
+    return companies.sort((a, b) => {
+      if (state.sort === 'name-desc') return -compareName(a, b);
+      if (state.sort === 'region') return companyRegion(a).localeCompare(companyRegion(b)) || compareName(a, b);
+      if (state.sort === 'hiring-desc') return (companyJobCounts.get(b[0]) || 0) - (companyJobCounts.get(a[0]) || 0) || compareName(a, b);
+      if (state.sort === 'footprint-asc') return marketMeta(a).score - marketMeta(b).score || compareName(a, b);
+      if (state.sort === 'footprint-desc') return marketMeta(b).score - marketMeta(a).score || (companyJobCounts.get(b[0]) || 0) - (companyJobCounts.get(a[0]) || 0) || compareName(a, b);
+      return compareName(a, b);
+    });
+  }
+  function renderCompanyResults() {
+    const companies = filteredCompanies();
+    const visible = companies.slice(0, companyDirectoryState.limit);
+    const list = document.querySelector('#company-list');
+    const summary = document.querySelector('#company-result-summary');
+    const more = document.querySelector('#company-load-more');
+    if (list) list.innerHTML = visible.map(companyTile).join('') || '<div class="empty">No companies match these filters.</div>';
+    if (summary) summary.textContent = `${companies.length} ${companies.length === 1 ? 'company' : 'companies'} · showing ${visible.length}`;
+    if (more) { more.hidden = visible.length >= companies.length; more.textContent = `Show ${Math.min(36, companies.length - visible.length)} more`; }
+    const controlValues = { 'company-region': 'region', 'company-technology': 'technology', 'company-scale': 'scale', 'company-hiring': 'hiring', 'company-sort': 'sort' };
+    Object.entries(controlValues).forEach(([id, key]) => { const element = document.querySelector(`#${id}`); if (element) element.value = companyDirectoryState[key]; });
+    document.querySelectorAll('[data-company-region]').forEach((button) => button.classList.toggle('active', button.dataset.companyRegion === companyDirectoryState.region));
+    decorateLinks(list || document);
+  }
+  window.setCompanyFilter = (key, value) => {
+    companyDirectoryState[key] = value;
+    companyDirectoryState.limit = 36;
+    renderCompanyResults();
+  };
+  window.clearCompanyFilters = () => {
+    Object.assign(companyDirectoryState, { query: '', region: '', technology: '', scale: '', hiring: '', sort: 'footprint-desc', limit: 36 });
+    const search = document.querySelector('#company-search'); if (search) search.value = '';
+    for (const id of ['company-region', 'company-technology', 'company-scale', 'company-hiring']) { const element = document.querySelector(`#${id}`); if (element) element.value = ''; }
+    const sort = document.querySelector('#company-sort'); if (sort) sort.value = 'footprint-desc';
+    renderCompanyResults();
+  };
+  window.loadMoreCompanies = () => { companyDirectoryState.limit += 36; renderCompanyResults(); };
+  window.filterCompanies = (query) => { companyDirectoryState.query = query; companyDirectoryState.limit = 36; const search = document.querySelector('#company-search'); if (search) search.value = query; renderCompanyResults(); };
+  function dataCompanies() {
+    const regionCounts = new Map(companyRegions.map((region) => [region, D.companies.filter((company) => companyRegion(company) === region).length]));
+    const availableRegions = companyRegions.filter((region) => regionCounts.get(region));
+    const technologyOptions = [...technologyGroups.map(([name]) => name), 'General optics & photonics'];
+    app.innerHTML = `${header('Companies', 'Browse the optics ecosystem by region, technology, market footprint, and current hiring evidence. Filters are derived from the repository dataset.')}<section class="section directory company-directory"><aside class="side-filter company-side-filter"><div class="eyebrow">Quick filters</div><h3>Region</h3><button data-company-region="" class="${companyDirectoryState.region ? '' : 'active'}" onclick="setCompanyFilter('region','')">All regions <small>${D.companies.length}</small></button>${availableRegions.map((region) => `<button data-company-region="${region}" onclick="setCompanyFilter('region','${region}')">${region} <small>${regionCounts.get(region)}</small></button>`).join('')}<h3>Technology</h3>${technologyOptions.slice(0, 6).map((technology) => `<button onclick="setCompanyFilter('technology','${technology}')">${technology}</button>`).join('')}</aside><div><div class="company-controls"><label class="company-search"><span>Search</span><input id="company-search" type="search" value="${htmlEscape(companyDirectoryState.query)}" placeholder="Company, city, or technology" oninput="setCompanyFilter('query',this.value)" /></label><label><span>Region</span><select id="company-region" onchange="setCompanyFilter('region',this.value)"><option value="">All regions</option>${availableRegions.map((region) => `<option${selected(companyDirectoryState.region, region)}>${region}</option>`).join('')}</select></label><label><span>Technology</span><select id="company-technology" onchange="setCompanyFilter('technology',this.value)"><option value="">All technologies</option>${technologyOptions.map((technology) => `<option${selected(companyDirectoryState.technology, technology)}>${technology}</option>`).join('')}</select></label><label><span>Approx. scale</span><select id="company-scale" onchange="setCompanyFilter('scale',this.value)"><option value="">All scales</option><option value="5"${selected(companyDirectoryState.scale, '5')}>Global leaders · 5/5</option><option value="4"${selected(companyDirectoryState.scale, '4')}>Established · 4/5</option><option value="3"${selected(companyDirectoryState.scale, '3')}>Growth-stage · 3/5</option><option value="2"${selected(companyDirectoryState.scale, '2')}>Emerging · 2/5</option></select></label><label><span>Hiring</span><select id="company-hiring" onchange="setCompanyFilter('hiring',this.value)"><option value="">Any hiring signal</option><option value="roles"${selected(companyDirectoryState.hiring, 'roles')}>Has indexed roles</option><option value="active"${selected(companyDirectoryState.hiring, 'active')}>Active signal</option><option value="watch"${selected(companyDirectoryState.hiring, 'watch')}>Watch signal</option><option value="none"${selected(companyDirectoryState.hiring, 'none')}>No indexed roles</option></select></label><label><span>Sort</span><select id="company-sort" onchange="setCompanyFilter('sort',this.value)"><option value="footprint-desc"${selected(companyDirectoryState.sort, 'footprint-desc')}>Scale: largest first</option><option value="footprint-asc"${selected(companyDirectoryState.sort, 'footprint-asc')}>Scale: smallest first</option><option value="hiring-desc"${selected(companyDirectoryState.sort, 'hiring-desc')}>Most active roles</option><option value="name"${selected(companyDirectoryState.sort, 'name')}>Name: A–Z</option><option value="name-desc"${selected(companyDirectoryState.sort, 'name-desc')}>Name: Z–A</option><option value="region"${selected(companyDirectoryState.sort, 'region')}>Region</option></select></label></div><div class="company-results-head"><strong id="company-result-summary"></strong><button type="button" onclick="clearCompanyFilters()">Clear filters</button></div><div id="company-list" class="company-grid"></div><button id="company-load-more" class="company-load-more" type="button" onclick="loadMoreCompanies()">Show more</button><p class="company-scale-note">Scale sorting uses the transparent 1–5 editorial market-footprint signal shown on each card, not an employee-count estimate.</p></div></section>`;
+    renderCompanyResults();
+  }
+  window.companies = () => { dataCompanies(); addCompanyMap(); decorateLinks(); };
   const originalCompany = window.company;
   window.company = (name) => {
     originalCompany(name); const record = D.companies.find((entry) => slug(entry[0]) === name); const top = document.querySelector('.company-page-top > div');
