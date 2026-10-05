@@ -9,6 +9,7 @@
   ],
   "discovery_priorities": {
     "regions": [
+      "United States",
       "China",
       "North America",
       "Europe",
@@ -26,6 +27,11 @@
       "optical metrology"
     ],
     "company_leads": [
+      "IPG Photonics",
+      "Thorlabs",
+      "Metalenz",
+      "SiLC Technologies",
+      "Xscape Photonics",
       "Huawei / \u534e\u4e3a",
       "\u5b66\u5411\u79d1\u6280"
     ]
@@ -92,6 +98,11 @@
       "name": "EBO MSA Members",
       "url": "https://ebomsa.org/",
       "max_profile_links": 10
+    },
+    {
+      "name": "optics.org Buyers Guide - US optics suppliers",
+      "url": "https://optics.org/buyers-guide",
+      "max_profile_links": 80
     }
   ],
   "tracked_urls": [
@@ -244,6 +255,428 @@
       "max_follow_links": 12
     },
     {
+      "name": "IPG Photonics Careers",
+      "url": "https://www.ipgphotonics.com/company/careers",
+      "type": "company",
+      "company": "IPG Photonics",
+      "website": "https://www.ipgphotonics.com/",
+      "location": "Marlborough, MA",
+      "description": "US manufacturer of high-power fiber lasers and laser systems.",
+      "focus_areas": "Fiber lasers|Laser systems|Laser diodes|Industrial photonics",
+      "max_follow_links": 12,
+      "linkedin_url": "https://www.linkedin.com/company/ipg-photonics"
+    },
+    {
+      "name": "Thorlabs Careers",
+      "url": "https://www.thorlabs.com/careers",
+      "type": "company",
+      "company": "Thorlabs",
+      "website": "https://www.thorlabs.com/",
+      "location": "Newton, NJ",
+      "description": "US photonics manufacturer spanning optical components, lasers, imaging, and instrumentation.",
+      "focus_areas": "Optical components|Lasers|Imaging|Photonics instrumentation",
+      "max_follow_links": 12
+    },
+    {
+      "name": "MKS Instruments Careers",
+      "url": "https://d1.mks.com/careers",
+      "type": "company",
+      "company": "MKS Instruments",
+      "website": "https://www.mks.com/",
+      "location": "Andover, MA",
+      "description": "US provider of lasers, photonics, vacuum, and semiconductor process systems.",
+      "focus_areas": "Lasers|Photonics|Optical metrology|Semiconductor equipment",
+      "max_follow_links": 12
+    },
+    {
+      "name": "Edmund Optics Careers",
+      "url": "https://www.edmundoptics.com/company/careers/",
+      "type": "company",
+      "company": "Edmund Optics",
+      "website": "https://www.edmundoptics.com/",
+      "location": "Barrington, NJ",
+      "description": "US manufacturer and supplier of imaging, optics, and photonics components.",
+      "focus_areas": "Optical components|Imaging|Photonics|Optical design",
+      "max_follow_links": 10
+    },
+    {
+      "name": "Optimax Systems Careers",
+      "url": "https://www.optimaxsi.com/careers",
+      "type": "company",
+      "company": "Optimax Systems",
+      "website": "https://www.optimaxsi.com/",
+      "location": "Ontario, NY",
+      "description": "US manufacturer of precision optics for aerospace, defense, and research.",
+      "focus_areas": "Precision optics|Optical fabrication|Metrology|Optical coatings",
+      "max_follow_links": 10
+    },
+    {
+      "name": "nLIGHT Careers",
+      "url": "https://www.nlight.net/careers/",
+      "type": "company",
+      "company": "nLIGHT",
+      "website": "https://www.nlight.net/",
+      "location": "Camas, WA",
+      "description": "US developer of high-power semiconductor and fiber lasers.",
+      "focus_areas": "Fiber lasers|Semiconductor lasers|Directed energy|Industrial lasers",
+      "max_follow_links": 10
+    },
+    {
+      "name": "LightPath Technologies Careers",
+      "url": "https://www.lightpath.com/careers",
+      "type": "company",
+      "company": "LightPath Technologies",
+      "website": "https://www.lightpath.com/",
+      "location": "Orlando, FL",
+      "description": "US manufacturer of infrared optics, molded optics, and photonic assemblies.",
+      "focus_areas": "Infrared optics|Molded optics|Optical assemblies|Thermal imaging",
+      "max_follow_links": 10
+    },
+    {
+      "name": "Metalenz Careers",
+      "url": "https://metalenz.com/careers/",
+      "type": "company",
+      "company": "Metalenz",
+      "website": "https://metalenz.com/",
+      "location": "Boston, MA",
+      "description": "US metasurface-optics company commercializing semiconductor-scale optical sensing.",
+      "focus_areas": "Metasurfaces|Meta-optics|3D sensing|Semiconductor optics",
+      "max_follow_links": 10
+    },
+    {
+      "name": "Lumotive Jobs",
+      "url": "https://jobs.lever.co/lumotive",
+      "type": "company",
+      "company": "Lumotive",
+      "website": "https://lumotive.com/",
+      "location": "Redmond, WA",
+      "description": "US optical-semiconductor company developing programmable metasurface beam steering.",
+      "focus_areas": "Metasurfaces|Beam steering|LiDAR|Optical switching",
+      "max_follow_links": 14
+    },
+    {
+      "name": "SiLC Technologies Careers",
+      "url": "https://silc.com/join-us/",
+      "type": "company",
+      "company": "SiLC Technologies",
+      "website": "https://silc.com/",
+      "location": "Monrovia, CA",
+      "description": "US silicon-photonics company developing coherent 4D vision and FMCW LiDAR.",
+      "focus_areas": "Silicon photonics|FMCW LiDAR|Coherent sensing|Machine vision",
+      "max_follow_links": 12
+    },
+    {
+      "name": "Voyant Photonics Careers",
+      "url": "https://voyantphotonics.com/careers/",
+      "type": "company",
+      "company": "Voyant Photonics",
+      "website": "https://voyantphotonics.com/",
+      "location": "New York, NY",
+      "description": "US startup building compact silicon-photonic FMCW LiDAR sensors.",
+      "focus_areas": "Silicon photonics|FMCW LiDAR|Integrated photonics|Machine perception",
+      "max_follow_links": 12
+    },
+    {
+      "name": "Xscape Photonics Careers",
+      "url": "https://www.xscapephotonics.com/join-us",
+      "type": "company",
+      "company": "Xscape Photonics",
+      "website": "https://www.xscapephotonics.com/",
+      "location": "Fort Lee, NJ",
+      "description": "US silicon-photonics startup developing optical interconnects for AI infrastructure.",
+      "focus_areas": "Silicon photonics|Optical interconnects|Comb lasers|AI infrastructure",
+      "max_follow_links": 12,
+      "linkedin_url": "https://www.linkedin.com/company/xscape-photonics-inc"
+    },
+    {
+      "name": "OpenLight Careers",
+      "url": "https://openlightphotonics.com/careers",
+      "type": "company",
+      "company": "OpenLight",
+      "website": "https://openlightphotonics.com/",
+      "location": "Santa Barbara, CA",
+      "description": "US integrated-photonics company providing an open silicon photonics platform with on-chip lasers.",
+      "focus_areas": "Silicon photonics|Integrated lasers|Photonic integrated circuits|Optical interconnects",
+      "max_follow_links": 10
+    },
+    {
+      "name": "Quintessent Careers",
+      "url": "https://www.quintessent.com/careers",
+      "type": "company",
+      "company": "Quintessent",
+      "website": "https://www.quintessent.com/",
+      "location": "Santa Barbara, CA",
+      "description": "US startup developing heterogeneous photonic integrated circuits and optical interconnects.",
+      "focus_areas": "Integrated photonics|Optical interconnects|Semiconductor lasers|Photonic packaging",
+      "max_follow_links": 10
+    },
+    {
+      "name": "Broadcom Photonics Jobs",
+      "url": "https://broadcom.wd1.myworkdayjobs.com/External_Career",
+      "type": "company",
+      "company": "Broadcom",
+      "website": "https://www.broadcom.com/",
+      "location": "Palo Alto, CA",
+      "description": "US semiconductor company active in silicon photonics and optical connectivity.",
+      "focus_areas": "Silicon photonics|Optical communications|Optical interconnects|Semiconductors",
+      "max_follow_links": 16
+    },
+    {
+      "name": "Marvell Photonics Jobs",
+      "url": "https://marvell.wd1.myworkdayjobs.com/MarvellCareers",
+      "type": "company",
+      "company": "Marvell",
+      "website": "https://www.marvell.com/",
+      "location": "Santa Clara, CA",
+      "description": "US semiconductor company developing optical DSPs and silicon-photonic connectivity.",
+      "focus_areas": "Silicon photonics|Optical DSP|Optical communications|Semiconductors",
+      "max_follow_links": 16
+    },
+    {
+      "name": "Intel Photonics Jobs",
+      "url": "https://jobs.intel.com/en/search-jobs",
+      "type": "company",
+      "company": "Intel",
+      "website": "https://www.intel.com/",
+      "location": "Santa Clara, CA",
+      "description": "US semiconductor company with silicon-photonics design and manufacturing programs.",
+      "focus_areas": "Silicon photonics|Optical interconnects|Semiconductor manufacturing|Photonics packaging",
+      "max_follow_links": 16
+    },
+    {
+      "name": "GlobalFoundries Careers",
+      "url": "https://gf.com/careers/",
+      "type": "company",
+      "company": "GlobalFoundries",
+      "website": "https://gf.com/",
+      "location": "Malta, NY",
+      "description": "US-headquartered semiconductor foundry with silicon-photonics and optical packaging platforms.",
+      "focus_areas": "Silicon photonics|Semiconductor foundry|Optical packaging|Photonic integrated circuits",
+      "max_follow_links": 14
+    },
+    {
+      "name": "Ciena Careers",
+      "url": "https://ciena.wd5.myworkdayjobs.com/Careers",
+      "type": "company",
+      "company": "Ciena",
+      "website": "https://www.ciena.com/",
+      "location": "Hanover, MD",
+      "description": "US optical-networking company developing coherent transport and photonic systems.",
+      "focus_areas": "Optical networking|Coherent optics|Photonics|Optical communications",
+      "max_follow_links": 16
+    },
+    {
+      "name": "Acacia Careers",
+      "url": "https://acacia-inc.com/acacia-advantage/careers/",
+      "type": "company",
+      "company": "Acacia Communications",
+      "website": "https://acacia-inc.com/",
+      "location": "Maynard, MA",
+      "description": "Cisco optical-systems business developing coherent optics and silicon-photonic communications.",
+      "focus_areas": "Coherent optics|Silicon photonics|Optical communications|Optical DSP",
+      "max_follow_links": 12
+    },
+    {
+      "name": "Credo Careers",
+      "url": "https://credosemi.com/about-credo/careers/",
+      "type": "company",
+      "company": "Credo Semiconductor",
+      "website": "https://credosemi.com/",
+      "location": "San Jose, CA",
+      "description": "US connectivity semiconductor company active in optical DSP and silicon photonics.",
+      "focus_areas": "Silicon photonics|Optical DSP|High-speed connectivity|Semiconductors",
+      "max_follow_links": 12
+    },
+    {
+      "name": "MACOM Careers",
+      "url": "https://www.macom.com/about-macom/careers",
+      "type": "company",
+      "company": "MACOM",
+      "website": "https://www.macom.com/",
+      "location": "Lowell, MA",
+      "description": "US semiconductor company supplying optical, RF, microwave, and data-center components.",
+      "focus_areas": "Optical semiconductors|Optical communications|Lasers|Photodetectors",
+      "max_follow_links": 12
+    },
+    {
+      "name": "Ouster Jobs",
+      "url": "https://ouster.applytojob.com/apply",
+      "type": "company",
+      "company": "Ouster",
+      "website": "https://ouster.com/",
+      "location": "San Francisco, CA",
+      "description": "US digital LiDAR company serving automotive, robotics, industrial, and smart-infrastructure markets.",
+      "focus_areas": "LiDAR|Optical sensing|Machine perception|Imaging",
+      "max_follow_links": 16
+    },
+    {
+      "name": "Aeva Careers",
+      "url": "https://www.aeva.com/careers/",
+      "type": "company",
+      "company": "Aeva",
+      "website": "https://www.aeva.com/",
+      "location": "Mountain View, CA",
+      "description": "US sensing company developing frequency-modulated continuous-wave 4D LiDAR.",
+      "focus_areas": "FMCW LiDAR|Silicon photonics|Optical sensing|Machine perception",
+      "max_follow_links": 14
+    },
+    {
+      "name": "AEye Careers",
+      "url": "https://www.aeye.ai/careers/",
+      "type": "company",
+      "company": "AEye",
+      "website": "https://www.aeye.ai/",
+      "location": "Pleasanton, CA",
+      "description": "US adaptive LiDAR company developing software-defined sensing systems.",
+      "focus_areas": "LiDAR|Optical sensing|Autonomous systems|Machine perception",
+      "max_follow_links": 12
+    },
+    {
+      "name": "Kopin Careers",
+      "url": "https://www.kopin.com/about/careers/",
+      "type": "company",
+      "company": "Kopin",
+      "website": "https://www.kopin.com/",
+      "location": "Westborough, MA",
+      "description": "US developer of microdisplays and optical modules for AR, defense, and industrial systems.",
+      "focus_areas": "Microdisplays|AR optics|Display optics|Optical modules",
+      "max_follow_links": 10
+    },
+    {
+      "name": "Vuzix Careers",
+      "url": "https://www.vuzix.com/pages/careers",
+      "type": "company",
+      "company": "Vuzix",
+      "website": "https://www.vuzix.com/",
+      "location": "West Henrietta, NY",
+      "description": "US smart-glasses company developing waveguides, displays, and wearable optical systems.",
+      "focus_areas": "AR optics|Waveguides|Display optics|Wearable imaging",
+      "max_follow_links": 10
+    },
+    {
+      "name": "DigiLens Careers",
+      "url": "https://www.digilens.com/careers/",
+      "type": "company",
+      "company": "DigiLens",
+      "website": "https://www.digilens.com/",
+      "location": "Sunnyvale, CA",
+      "description": "US developer of holographic waveguide displays and XR optical systems.",
+      "focus_areas": "AR optics|Holographic waveguides|Display optics|XR",
+      "max_follow_links": 10
+    },
+    {
+      "name": "Lightwave Logic Careers",
+      "url": "https://www.lightwavelogic.com/careers",
+      "type": "company",
+      "company": "Lightwave Logic",
+      "website": "https://www.lightwavelogic.com/",
+      "location": "Englewood, CO",
+      "description": "US developer of electro-optic polymers for high-speed photonic modulators.",
+      "focus_areas": "Electro-optic materials|Photonic modulators|Optical communications|Integrated photonics",
+      "max_follow_links": 10
+    },
+    {
+      "name": "Aeluma Careers",
+      "url": "https://www.aeluma.com/careers",
+      "type": "company",
+      "company": "Aeluma",
+      "website": "https://www.aeluma.com/",
+      "location": "Goleta, CA",
+      "description": "US semiconductor company developing compound-semiconductor photonics on large-diameter silicon.",
+      "focus_areas": "Compound semiconductors|Silicon photonics|Photodetectors|Optical communications",
+      "max_follow_links": 10
+    },
+    {
+      "name": "Onto Innovation Careers",
+      "url": "https://ontoinnovation.com/careers/",
+      "type": "company",
+      "company": "Onto Innovation",
+      "website": "https://ontoinnovation.com/",
+      "location": "Wilmington, MA",
+      "description": "US semiconductor-equipment company providing optical metrology and inspection systems.",
+      "focus_areas": "Optical metrology|Semiconductor inspection|Imaging|Process control",
+      "max_follow_links": 12
+    },
+    {
+      "name": "Veeco Careers",
+      "url": "https://careers.veeco.com/",
+      "type": "company",
+      "company": "Veeco Instruments",
+      "website": "https://www.veeco.com/",
+      "location": "Plainview, NY",
+      "description": "US semiconductor-equipment company supporting photonics, optical coatings, and laser manufacturing.",
+      "focus_areas": "Photonics manufacturing|Optical coatings|Semiconductor equipment|Metrology",
+      "max_follow_links": 14
+    },
+    {
+      "name": "4D Technology Careers",
+      "url": "https://4dtechnology.com/about-4d-technology/jobs/",
+      "type": "company",
+      "company": "4D Technology",
+      "website": "https://4dtechnology.com/",
+      "location": "Tucson, AZ",
+      "description": "US developer of interferometric optical metrology and surface-measurement systems.",
+      "focus_areas": "Interferometry|Optical metrology|Wavefront sensing|Surface measurement",
+      "max_follow_links": 8
+    },
+    {
+      "name": "Meadowlark Optics Careers",
+      "url": "https://www.meadowlark.com/careers/",
+      "type": "company",
+      "company": "Meadowlark Optics",
+      "website": "https://www.meadowlark.com/",
+      "location": "Frederick, CO",
+      "description": "US employee-owned manufacturer of polarization optics and spatial light modulators.",
+      "focus_areas": "Polarization optics|Spatial light modulators|Optical metrology|Photonics",
+      "max_follow_links": 10
+    },
+    {
+      "name": "Esco Optics Careers",
+      "url": "https://escooptics.com/pages/careers",
+      "type": "company",
+      "company": "Esco Optics",
+      "website": "https://escooptics.com/",
+      "location": "Oak Ridge, NJ",
+      "description": "US manufacturer of custom optical components for research, defense, and OEM systems.",
+      "focus_areas": "Optical fabrication|Precision optics|Optical components|Optical coatings",
+      "max_follow_links": 10
+    },
+    {
+      "name": "Inrad Optics Careers",
+      "url": "https://inradoptics.com/contact-us/careers",
+      "type": "company",
+      "company": "Inrad Optics",
+      "website": "https://inradoptics.com/",
+      "location": "Northvale, NJ",
+      "description": "US manufacturer of crystalline materials and precision optical components.",
+      "focus_areas": "Optical materials|Precision optics|Crystals|Optical fabrication",
+      "max_follow_links": 10
+    },
+    {
+      "name": "Excelitas Photonics Jobs",
+      "url": "https://jobs.excelitas.com/?locale=en_US",
+      "type": "company",
+      "company": "Excelitas Technologies",
+      "website": "https://www.excelitas.com/",
+      "location": "Pittsburgh, PA",
+      "description": "US-headquartered provider of sensing, detection, imaging, optics, and specialty illumination.",
+      "focus_areas": "Photonics|Optical sensing|Imaging|Specialty illumination",
+      "max_follow_links": 16,
+      "linkedin_url": "https://www.linkedin.com/company/excelitas-technologies"
+    },
+    {
+      "name": "Syntec Optics Careers",
+      "url": "https://syntecoptics.com/careers/",
+      "type": "company",
+      "company": "Syntec Optics",
+      "website": "https://syntecoptics.com/",
+      "location": "Rochester, NY",
+      "description": "US optics manufacturer specializing in polymer optics, micro-optics, and optical assemblies.",
+      "focus_areas": "Polymer optics|Micro-optics|Optical manufacturing|Optical assemblies",
+      "max_follow_links": 12,
+      "linkedin_url": "https://www.linkedin.com/company/syntec-optics"
+    },
+    {
       "name": "Photonics.com",
       "url": "https://www.photonics.com/",
       "type": "industry"
@@ -257,27 +690,6 @@
       "name": "SPIE News",
       "url": "https://spie.org/news",
       "type": "industry"
-    },
-    {
-      "name": "LinkedIn",
-      "url": "https://www.linkedin.com/",
-      "type": "discovery",
-      "access": "manual review only"
-    },
-    {
-      "name": "Greenhouse",
-      "url": "https://www.greenhouse.io/",
-      "type": "public ATS"
-    },
-    {
-      "name": "Lever",
-      "url": "https://www.lever.co/",
-      "type": "public ATS"
-    },
-    {
-      "name": "Ashby",
-      "url": "https://www.ashbyhq.com/",
-      "type": "public ATS"
     },
     {
       "name": "Brillnics Careers",
