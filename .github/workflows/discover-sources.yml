@@ -70,10 +70,13 @@ jobs:
       - name: Extract updates from tracked sources
         env:
           UPDATE_TRIGGER: workflow_dispatch
-        run: python scripts/update_content.py
+        run: |
+          python scripts/sync_source_companies.py
+          python scripts/update_content.py
       - name: Validate result
         run: |
           python scripts/discover_sources.py --self-test
+          python scripts/sync_source_companies.py --self-test
           node scripts/validate-data.mjs
           node --check dist/app.js
       - name: Commit discovered sources and extracted updates

@@ -1,0 +1,47 @@
+name: Sync source registry to company index
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "data/sources.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: optics-content-update
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Synchronize complete company sources
+        run: python scripts/sync_source_companies.py
+      - name: Validate static data
+        run: |
+          python scripts/sync_source_companies.py --self-test
+          node scripts/validate-data.mjs
+          node --check dist/app.js
+      - name: Commit synchronized index
+        run: |
+          if git diff --quiet -- dist; then
+            echo "Company index already matches the source registry."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist
+          git commit -m "chore(data): sync company index from sources"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

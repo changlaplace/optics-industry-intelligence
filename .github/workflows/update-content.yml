@@ -99,6 +99,7 @@ jobs:
       - name: Crawl, extract, and merge
         if: steps.cadence.outputs.due == 'true'
         run: |
+          python scripts/sync_source_companies.py
           args=()
           if [ "$FORCE_REFRESH" = "true" ]; then args+=(--force); fi
           if [ "$MAX_SOURCES" != "0" ]; then args+=(--max-sources "$MAX_SOURCES"); fi
@@ -110,6 +111,7 @@ jobs:
         run: |
           node scripts/validate-data.mjs
           node --check dist/app.js
+          python scripts/sync_source_companies.py --self-test
           python scripts/update_content.py --self-test
 
       - name: Commit changed data
