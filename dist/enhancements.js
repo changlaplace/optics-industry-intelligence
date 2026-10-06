@@ -243,12 +243,16 @@
   window.people = () => { originalPeople(); addPeopleMap(); const list = document.querySelector('.people-list'); if (list) list.innerHTML = D.people.map(peopleCard).join(''); decorateLinks(); };
   function sourceDirectory() {
     const entries = new Map();
-    D.companies.forEach((company) => entries.set(company[5], { label: `${company[0]} careers`, url: company[5], scope: 'Company + Jobs' }));
+    const scopes = { company: 'Company + Jobs', company_news: 'Company + News', industry: 'News' };
+    (D.source_records || []).forEach((source) => entries.set(source[1], {
+      label: source[0], url: source[1], scope: scopes[source[2]] || 'Source', lastIndexed: source[4] || 'Not checked yet'
+    }));
+    D.companies.forEach((company) => { if (!entries.has(company[5])) entries.set(company[5], { label: `${company[0]} careers`, url: company[5], scope: 'Company + Jobs' }); });
     D.news.forEach((news) => { if (!entries.has(news[4])) entries.set(news[4], { label: new URL(news[4]).hostname.replace('www.', ''), url: news[4], scope: 'News' }); });
     entries.set('https://www.linkedin.com/', { label: 'linkedin.com', url: 'https://www.linkedin.com/', scope: 'People' });
     return [...entries.values()].sort((a, b) => a.label.localeCompare(b.label));
   }
-  function sourceEntries() { return sourceDirectory().map((source) => `<div class="source-entry"><a href="${source.url}" target="_blank" rel="noreferrer"><span>${source.label}</span></a><button type="button" onclick="requestSourceRefresh('${source.label.replace(/'/g, '&#39;')}', '${source.url}', '${source.scope}')">Request update</button><small>${source.scope} · Last indexed: ${D.updated}</small></div>`).join(''); }
+  function sourceEntries() { return sourceDirectory().map((source) => `<div class="source-entry"><a href="${source.url}" target="_blank" rel="noreferrer"><span>${source.label}</span></a><button type="button" onclick="requestSourceRefresh('${source.label.replace(/'/g, '&#39;')}', '${source.url}', '${source.scope}')">Request update</button><small>${source.scope} · Last indexed: ${source.lastIndexed || D.updated}</small></div>`).join(''); }
   function learningBlogs() {
     const reading = [
       ['RP Photonics Encyclopedia', 'A technical reference for laser, fiber, and photonics concepts.', 'https://www.rp-photonics.com/encyclopedia.html'],

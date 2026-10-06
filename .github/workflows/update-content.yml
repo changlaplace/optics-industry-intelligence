@@ -105,6 +105,7 @@ jobs:
           if [ "$MAX_SOURCES" != "0" ]; then args+=(--max-sources "$MAX_SOURCES"); fi
           if [ -n "$SOURCE_MATCH" ]; then args+=(--source-match "$SOURCE_MATCH"); fi
           python scripts/update_content.py "${args[@]}"
+          python scripts/sync_source_companies.py
 
       - name: Validate generated data
         if: steps.cadence.outputs.due == 'true'

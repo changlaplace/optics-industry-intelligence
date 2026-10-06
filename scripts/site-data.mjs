@@ -18,7 +18,7 @@ if (start < 0 || end < 0) throw new Error('Unable to locate the D dataset in dis
 
 function validate(data) {
   if (!data || typeof data !== 'object') throw new Error('Dataset must be an object');
-  for (const key of ['companies', 'jobs', 'people', 'news', 'sources', 'technologies']) {
+  for (const key of ['companies', 'jobs', 'people', 'news', 'sources', 'source_records', 'technologies']) {
     if (!Array.isArray(data[key])) throw new Error(`Dataset field ${key} must be an array`);
   }
   if (typeof data.updated !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(data.updated)) {
@@ -48,7 +48,9 @@ if (command === 'export') {
   renameSync(temporary, appPath);
   const version = createHash('sha256').update(serialized).digest('hex').slice(0, 12);
   const index = readFileSync(indexPath, 'utf8');
-  const nextIndex = index.replace(/<script src="app\.js(?:\?v=[^"]*)?"><\/script>/, `<script src="app.js?v=${version}"></script>`);
+  const nextIndex = index
+    .replace(/<script src="app\.js(?:\?v=[^"]*)?"><\/script>/, `<script src="app.js?v=${version}"></script>`)
+    .replace(/<span>(?:Initial research set|Repository dataset) &middot; Updated [^<]+<\/span>/, `<span>Repository dataset &middot; Updated ${data.updated}</span>`);
   if (nextIndex === index) throw new Error('Unable to update the app.js cache version in dist/index.html');
   const temporaryIndex = `${indexPath}.tmp`;
   writeFileSync(temporaryIndex, nextIndex, 'utf8');

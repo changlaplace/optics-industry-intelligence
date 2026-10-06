@@ -11,7 +11,7 @@ const end = endMatch ? start + startMarker.length + endMatch.index : -1;
 if (start < 0 || end < 0) throw new Error('Unable to locate the D dataset');
 
 const data = vm.runInNewContext(`(${source.slice(start + startMarker.length, end)})`, Object.create(null), { timeout: 1000 });
-for (const key of ['companies', 'jobs', 'people', 'news', 'sources', 'technologies']) {
+for (const key of ['companies', 'jobs', 'people', 'news', 'sources', 'source_records', 'technologies']) {
   if (!Array.isArray(data[key])) throw new Error(`Dataset field ${key} must be an array`);
 }
 if (!/^\d{4}-\d{2}-\d{2}$/.test(data.updated)) throw new Error('Dataset updated date is invalid');

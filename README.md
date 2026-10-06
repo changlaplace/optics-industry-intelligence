@@ -10,6 +10,7 @@ OpticSignal is a public, static MVP for tracking optics and photonics companies,
 - `dist/app.js`: initial structured entity data plus rendering and search.
 - `dist/enhancements.js`: remote-source icons, clustered company/people maps, company footprint signals, and the About page.
 - `data/sources.json`: versioned source registry and ingestion policy.
+- `scripts/sync_source_companies.py`: keeps complete source records, company profiles, official URLs, and per-source check dates synchronized with the static dataset without an AI call.
 - `scripts/import-template.json`: future ingestion payload shape.
 - `scripts/validate-data.mjs`: lightweight publish-time dataset check.
 - `scripts/ingestion-index.mjs`: canonical URL, record-key, and freshness helpers for future agent ingestion.

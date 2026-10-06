@@ -73,6 +73,7 @@ jobs:
         run: |
           python scripts/sync_source_companies.py
           python scripts/update_content.py
+          python scripts/sync_source_companies.py
       - name: Validate result
         run: |
           python scripts/discover_sources.py --self-test

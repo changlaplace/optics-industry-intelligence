@@ -15,6 +15,7 @@ from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES_PATH = ROOT / "data" / "sources.json"
+STATE_PATH = ROOT / "data" / "update-state.json"
 BRIDGE_PATH = ROOT / "scripts" / "site-data.mjs"
 
 GLOBAL_LEADERS = {
@@ -95,8 +96,8 @@ def footprint(name: str, source: dict) -> dict:
     }
 
 
-def sync(registry: dict, dataset: dict) -> int:
-    added = 0
+def sync(registry: dict, dataset: dict, state: dict | None = None) -> int:
+    changes = 0
     companies = dataset["companies"]
     company_meta = dataset.setdefault("company_meta", {})
     for source in registry.get("tracked_urls", []):
@@ -105,30 +106,63 @@ def sync(registry: dict, dataset: dict) -> int:
         source_url = str(source.get("url") or website).strip()
         if source.get("type") != "company" or not name or not website or not source_url:
             continue
-        if any(same_company(name, row[0]) for row in companies):
-            continue
+        existing = next((row for row in companies if same_company(name, row[0])), None)
         website_domain = domain(website)
-        if website_domain and any(domain(row[5]) == website_domain for row in companies):
-            continue
+        if not existing and website_domain:
+            existing = next((row for row in companies if domain(row[5]) == website_domain), None)
         focus = source.get("focus_areas", "")
         if isinstance(focus, list):
             focus = "|".join(str(item).strip() for item in focus if str(item).strip())
         focus = str(focus).strip() or "Optics|Photonics"
         description = str(source.get("description", "")).strip() or "Public optics or photonics company source."
-        companies.append([
-            name,
-            str(source.get("location", "")).strip(),
-            description,
-            focus,
-            "Source indexed",
-            source_url,
-        ])
+        location = str(source.get("location", "")).strip()
+        if existing:
+            if location and not existing[1]:
+                existing[1] = location
+                changes += 1
+            if description and not existing[2]:
+                existing[2] = description
+                changes += 1
+            combined_focus = list(dict.fromkeys([item for item in existing[3].split("|") + focus.split("|") if item]))[:8]
+            if "|".join(combined_focus) != existing[3]:
+                existing[3] = "|".join(combined_focus)
+                changes += 1
+            if existing[5] != source_url:
+                existing[5] = source_url
+                changes += 1
+            meta = footprint(name, source)
+            if company_meta.get(existing[0]) != meta:
+                company_meta[existing[0]] = meta
+                changes += 1
+            continue
+        companies.append([name, location, description, focus, "Source indexed", source_url])
         company_meta[name] = footprint(name, source)
-        added += 1
-    if added:
+        changes += 1
+
+    state_sources = (state or {}).get("sources", {})
+    source_records = []
+    for source in registry.get("tracked_urls", []):
+        url = str(source.get("url", "")).strip()
+        if not url:
+            continue
+        status = state_sources.get(url) or state_sources.get(url.rstrip("/")) or {}
+        processed = str(status.get("processed_at", ""))[:10]
+        source_records.append([
+            str(source.get("name") or source.get("company") or domain(url)).strip(),
+            url,
+            str(source.get("type", "source")).strip(),
+            str(source.get("company", "")).strip(),
+            processed,
+        ])
+    source_records.sort(key=lambda record: (record[2], record[0].casefold()))
+    if dataset.get("source_records") != source_records:
+        dataset["source_records"] = source_records
+        changes += 1
+
+    if changes:
         companies.sort(key=lambda row: row[0].casefold())
         dataset["updated"] = date.today().isoformat()
-    return added
+    return changes
 
 
 def self_test() -> None:
@@ -141,7 +175,7 @@ def self_test() -> None:
         "focus_areas": "Precision optics|Metrology",
     }]}
     dataset = {"companies": [], "company_meta": {}, "updated": "2026-01-01"}
-    assert sync(sample, dataset) == 1
+    assert sync(sample, dataset) > 0
     assert sync(sample, dataset) == 0
     assert dataset["company_meta"]["Acme Optics"]["score"] == 2
     print("Source-to-company synchronization checks passed.")
@@ -152,11 +186,16 @@ def main() -> None:
         self_test()
         return
     registry = json.loads(SOURCES_PATH.read_text(encoding="utf-8"))
+    state = json.loads(STATE_PATH.read_text(encoding="utf-8")) if STATE_PATH.exists() else {}
     dataset = read_dataset()
-    added = sync(registry, dataset)
-    if added:
+    before = len(dataset["companies"])
+    changes = sync(registry, dataset, state)
+    if changes:
         write_dataset(dataset)
-    print(f"Synchronized {added} new companies from the source registry; total is {len(dataset['companies'])}.")
+    print(
+        f"Applied {changes} source-registry changes; added {len(dataset['companies']) - before} companies; "
+        f"total is {len(dataset['companies'])}."
+    )
 
 
 if __name__ == "__main__":
