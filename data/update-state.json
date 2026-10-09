@@ -1,46 +1,46 @@
 {
   "version": 2,
-  "last_scheduled_run_at": "2026-10-03T17:25:54+00:00",
+  "last_scheduled_run_at": "2026-10-09T19:20:04+00:00",
   "sources": {
     "https://www.apple.com/careers": {
       "name": "Apple Careers",
-      "content_hash": "809deb4553b8177bace0b75a1653d6134fddcac78083e7b55ee6433d239ee0e1",
-      "processed_at": "2026-10-03T17:24:14+00:00"
+      "content_hash": "35f12396ee313816f54561edcaf5a83796af2b5826d96ef43e39eeed607d731d",
+      "processed_at": "2026-10-09T19:09:51+00:00"
     },
     "https://www.google.com/about/careers": {
       "name": "Google Careers",
-      "content_hash": "c6146c0793e168455420184cbab6e60d68e8063ee8e0df8ed6c0e93699284ea2",
-      "processed_at": "2026-10-03T17:24:30+00:00"
+      "content_hash": "830edde1233bb3a6381083f5127a105e404d086f060dbab18fff1275fa54e4ad",
+      "processed_at": "2026-10-09T19:12:01+00:00"
     },
     "https://jobs.careers.microsoft.com/": {
       "name": "Microsoft Careers",
-      "content_hash": "bcf3ff160dc89f8c6e5b7d0d461a0a5e4e43a98ae7a0711023ef7f0a1b436b90",
-      "processed_at": "2026-10-03T17:23:15+00:00"
+      "content_hash": "2e22f35f1d69ae0a1c0b3317afe10d82fa1827ac897ad8e0c1aa2637cadb9e3b",
+      "processed_at": "2026-10-09T19:06:06+00:00"
     },
     "https://www.amazon.jobs/": {
       "name": "Amazon Jobs",
-      "content_hash": "50651d4c4e6b0bbd46199c276ad073ecf59c080403e6b01584325f1939050772",
-      "processed_at": "2026-10-03T17:23:58+00:00"
+      "content_hash": "26c4d61e3f7e37f43eab35d1e13c6325c89cc7201cef17673dcb520cb621922a",
+      "processed_at": "2026-10-09T19:09:50+00:00"
     },
     "https://careers.snap.com/": {
       "name": "Snap Careers",
-      "content_hash": "9c06658133b74699c3d2b28a3006e9bddf6280735aad4136004b6cb167aa7e01",
-      "processed_at": "2026-10-03T17:22:26+00:00"
+      "content_hash": "7c3cf30536a9034ce9461683805c8d12142dc2c531415c9de9e929c65d7cc2c9",
+      "processed_at": "2026-10-09T19:02:43+00:00"
     },
     "https://www.asml.com/en/careers": {
       "name": "ASML Careers",
-      "content_hash": "95c98695cef92afd3f5384834abc79f2c1d82a46aceb8b76034966971cb084c2",
-      "processed_at": "2026-10-03T17:24:14+00:00"
+      "content_hash": "5066a5ed586229068bd9860b85ad42bc5874c06328d3885975a8c9d8c127d968",
+      "processed_at": "2026-10-09T19:10:03+00:00"
     },
     "https://www.zeiss.com/careers.html": {
       "name": "ZEISS Careers",
-      "content_hash": "c0d18971b9fbf1b28184df3b2b2c60363cc469a1f3c85f52e7de7a6662a25444",
-      "processed_at": "2026-10-03T17:25:36+00:00"
+      "content_hash": "0302fea8c2b797860552b73055b3f7a275914930570f64534f16f82097bf1111",
+      "processed_at": "2026-10-09T19:20:04+00:00"
     },
     "https://careers.kla.com/": {
       "name": "KLA Careers",
-      "content_hash": "4446aaba7bbece2c8f262d681a725ca8540797aa5a8aa97a5bd27a95c04d4761",
-      "processed_at": "2026-10-03T17:22:36+00:00"
+      "content_hash": "ba31138ae7102c4cfc347eb48b59751cd921b89e72d63a9c541f738b678f4e53",
+      "processed_at": "2026-10-09T19:02:38+00:00"
     },
     "https://careers.appliedmaterials.com/": {
       "name": "Applied Materials Careers",
@@ -49,8 +49,8 @@
     },
     "https://www.coherent.com/company/careers": {
       "name": "Coherent Careers",
-      "content_hash": "35411edd359323e14537f1f703b8436abf1a675e479753560d393b90cef2fb76",
-      "processed_at": "2026-10-03T17:24:30+00:00"
+      "content_hash": "03bc927ca576af2b1b1dec8701125ea6aac9f9c1e84a14ed5b0eb480a7227f8d",
+      "processed_at": "2026-10-09T19:10:20+00:00"
     },
     "https://careers.lumentum.com/": {
       "name": "Lumentum Careers",
@@ -64,8 +64,8 @@
     },
     "https://lightmatter.co/careers": {
       "name": "Lightmatter Careers",
-      "content_hash": "fe13aa0ce8e352183abd5fef72ef49545723d8996bbda6259f4bad257d81594c",
-      "processed_at": "2026-10-03T17:23:02+00:00"
+      "content_hash": "c30d28fb06d1498c93e69fe42778b73b62d8615eabb4c57943a1d66aa4aa9bac",
+      "processed_at": "2026-10-09T19:06:40+00:00"
     },
     "https://lightelligence.ai/careers": {
       "name": "Lightelligence Careers",
@@ -74,13 +74,13 @@
     },
     "https://ayarlabs.com/careers": {
       "name": "Ayar Labs Careers",
-      "content_hash": "8527fbde7b1f52aa9f6a411e20500409dad4e7a1242ac3ff61cb31021cadf74a",
-      "processed_at": "2026-10-03T17:22:02+00:00"
+      "content_hash": "70e8107f25e95d6c1091047ac0157a4e235ed512186a2f478c3c07c7efbc449a",
+      "processed_at": "2026-10-09T19:01:38+00:00"
     },
     "https://www.psiquantum.com/careers": {
       "name": "PsiQuantum Careers",
-      "content_hash": "e89804a4754e5bfea2a9fe4eabe21684322cf07afc91332aaf5666a97a94e220",
-      "processed_at": "2026-10-03T17:25:25+00:00"
+      "content_hash": "2b75f2dc72155dd9e55d4b502c3b0bf148b3420be5ee74a7c7d5f32f92c7054b",
+      "processed_at": "2026-10-09T19:18:49+00:00"
     },
     "https://www.magicleap.com/careers": {
       "name": "Magic Leap Careers",
@@ -89,8 +89,8 @@
     },
     "https://nuburu.net/": {
       "name": "Nuburu",
-      "content_hash": "50cdfcf1f86d878452bee1812b123253e67b913d7398a00f31cb476f91ccc064",
-      "processed_at": "2026-10-03T17:23:25+00:00"
+      "content_hash": "fad6808c151cd036551a1e7a1e37e2c1309c710d5610ade603e2424abac68ad2",
+      "processed_at": "2026-10-09T19:07:37+00:00"
     },
     "https://www.nilt.com/careers": {
       "name": "NIL Technology Careers",
@@ -104,23 +104,23 @@
     },
     "https://www.optica.org/en-us/about/newsroom": {
       "name": "Optica Newsroom",
-      "content_hash": "b44f51c434b83e3eb09093a8e148664ed4ee6adb2a721af310822366923333cf",
-      "processed_at": "2026-10-03T17:25:20+00:00"
+      "content_hash": "cae3a991cc7d4ff13afdc57d14f18df9e344d520447529b6f029838c950751ad",
+      "processed_at": "2026-10-09T19:14:53+00:00"
     },
     "https://spie.org/news": {
       "name": "SPIE News",
-      "content_hash": "4a5d262b9e5600f5aa64f12947108ee3d09a9928d8333e91a2b5fcf1979319ae",
-      "processed_at": "2026-10-03T17:23:54+00:00"
+      "content_hash": "8223f66fe3cfecd0f38d2131d25e656030fdc23c0e8c1f6b250e1df534126876",
+      "processed_at": "2026-10-09T19:08:51+00:00"
     },
     "https://www.nvidia.com/en-us/about-nvidia/careers": {
       "name": "NVIDIA Careers",
-      "content_hash": "d882793d28bdb6535b7b0a60f767f2994992115256d99cc3a1fb30a25db8f6d7",
-      "processed_at": "2026-10-03T17:24:54+00:00"
+      "content_hash": "67cb449bfae2bbae1c48715b8c4bc59753ac344810af065f5a7218701574f670",
+      "processed_at": "2026-10-09T19:14:26+00:00"
     },
     "https://www.anduril.com/careers": {
       "name": "Anduril Careers",
-      "content_hash": "23618761e9d12805f3d50a34d28d86d523acf28dcf5ff08053646b9a09d8b2aa",
-      "processed_at": "2026-10-03T17:23:55+00:00"
+      "content_hash": "5cbcfbfb034202320ad08324fa3c5294ca352735ab5680be33ae692851e941fa",
+      "processed_at": "2026-10-09T19:09:51+00:00"
     },
     "https://hyperlightcorp.com/": {
       "name": "Hyperlight",
@@ -129,28 +129,28 @@
     },
     "https://careers.ti.com/en/sites/CX/jobs": {
       "name": "Texas Instruments Photonics Jobs",
-      "content_hash": "41178b4b5711e2744facbff367387008021b5b72c577f9a2ca2a7404ec2e3272",
-      "processed_at": "2026-10-03T17:22:28+00:00"
+      "content_hash": "57b60f5f3d2a719d25f9128c3bbdb4fa9949dc0ce03169beb55079aaeb2d014a",
+      "processed_at": "2026-10-09T19:02:46+00:00"
     },
     "https://corningjobs.corning.com/go/Engineering/7684300": {
       "name": "Corning Engineering Jobs",
-      "content_hash": "ac8d5d7cfff9dd6276ca1d5687e8b615a03094b761f36cf07631215083afbc3b",
-      "processed_at": "2026-10-03T17:22:20+00:00"
+      "content_hash": "68af6e31bcc605be150a93c1edf5aa755f7c021bc3e06e072773d8207e99b395",
+      "processed_at": "2026-10-09T19:02:58+00:00"
     },
     "https://career.huawei.com/en": {
       "name": "Huawei Careers",
-      "content_hash": "f889aa320a58ba3cb30b58e83b807bc931cbf53926feee1f7f251495ccbf9722",
-      "processed_at": "2026-10-03T17:22:36+00:00"
+      "content_hash": "37f44508ec11d313f593279635e2e9318c473853a604ba9dc3678cdc21fe9ea2",
+      "processed_at": "2026-10-09T19:01:39+00:00"
     },
     "https://tinyphoton.com/we/jobs": {
       "name": "Tinyphoton (\u5c0f\u5149\u5b50) Careers",
-      "content_hash": "ac1d08eb3adb467a98361505859d5eaa9ea4bc51943ce08f7ff5000e9b6fe504",
-      "processed_at": "2026-09-29T18:45:00+00:00"
+      "content_hash": "6f7974912798b611937303a4d7d3ae09140674221c26c2d104be8a4284923bb7",
+      "processed_at": "2026-10-09T19:08:57+00:00"
     },
     "https://www.accelink.com/en": {
       "name": "Accelink Technologies Careers",
-      "content_hash": "2176ce4484e4becebd743aaea54584ee5c0cba68a50b2fcd920c8f42db255960",
-      "processed_at": "2026-10-03T17:23:44+00:00"
+      "content_hash": "1f5aba9b1f1faf6828d799b01fee2edfa89bdc58109bb7ac58ad2e56f0dfb534",
+      "processed_at": "2026-10-09T19:09:22+00:00"
     },
     "https://luminwave.com.cn/": {
       "name": "LuminWave (\u6d1b\u5fae\u79d1\u6280) Careers",
@@ -159,8 +159,8 @@
     },
     "https://www.brillnics.com/career": {
       "name": "Brillnics Careers",
-      "content_hash": "c9b43f6e3a82893b647062b869a29dfaf0035c2dadd12f4c874cee4cc98a42df",
-      "processed_at": "2026-10-03T17:24:16+00:00"
+      "content_hash": "4e630417ebff699995d66c09c95fadf0bc3d92f628ed9447ecf78188e1cf5f0b",
+      "processed_at": "2026-10-09T19:10:07+00:00"
     },
     "https://www.huawei.com/en/news": {
       "name": "Huawei News",
@@ -174,24 +174,444 @@
     },
     "https://www.metacareers.com/": {
       "name": "Meta Careers",
-      "content_hash": "68e6705d6733214b14210f9ada1f0f09e4f1b5f13b4b006666417fbfb1ae6504",
-      "processed_at": "2026-10-03T17:24:54+00:00"
+      "content_hash": "ee4be55d86311835c8a57049da63693b26c98c50a4d0f46c30de504964017392",
+      "processed_at": "2026-10-09T19:14:13+00:00"
     },
     "https://www.oeabt.com/": {
       "name": "Oeabt (\u57fa\u5ea7\u5149\u5b66) Careers",
-      "content_hash": "99728dae092da693d57309e61bc6ac8966910a81eec6f41109f3040c13cce47c",
-      "processed_at": "2026-10-03T17:25:48+00:00"
+      "content_hash": "4792706d1012bc64972a5f8c7dc252ad521aacbd7b4f04e20a568c6242ec7654",
+      "processed_at": "2026-10-09T19:15:05+00:00"
     },
     "https://www.sunnyaiot.com/": {
       "name": "Sunny Optical Intelligent Optics (\u821c\u5b87\u667a\u80fd\u5149\u5b66) Careers",
-      "content_hash": "39510754fc95a8519832754424c37efa609f74b9af62a50ac7c0feb182438d21",
-      "processed_at": "2026-10-03T17:25:54+00:00"
+      "content_hash": "5ab3e809d4e3debea9bccd52606073e7d02125635c745eb9027f3cce609d364a",
+      "processed_at": "2026-10-09T19:19:29+00:00"
     },
     "https://www.cspctech.com/": {
       "name": "CSPC (\u56fd\u79d1\u5149\u82af) Careers",
       "content_hash": "d9c5db394feb388045dd8994fdb3b3e3f18ea47804c7dd35753066808e5a83f3",
       "processed_at": "2026-10-03T17:24:47+00:00"
+    },
+    "https://acacia-inc.com/acacia-advantage/careers": {
+      "name": "Acacia Careers",
+      "content_hash": "59ebdd69604c316ad8a754f0d9c73644352c295ed79c2dfdb2059eb0d5afffe8",
+      "processed_at": "2026-10-09T18:59:26+00:00"
+    },
+    "https://abrisatechnologies.com/about/careers": {
+      "name": "Abrisa Technologies Careers",
+      "content_hash": "85961a14704b9a993d09f7a6b1823768c46a2c7ce2aec982a419ac50fb594224",
+      "processed_at": "2026-10-09T18:59:43+00:00"
+    },
+    "https://4dtechnology.com/about-4d-technology/jobs": {
+      "name": "4D Technology Careers",
+      "content_hash": "86733e5be9f4a0a495baa5a277348b7e6ea1a3ffffb373c15cafaca388f44ed0",
+      "processed_at": "2026-10-09T18:59:45+00:00"
+    },
+    "https://arete.com/careers": {
+      "name": "Arete Careers",
+      "content_hash": "7e3ecb3ea52e7cac4bf3a14d9b9413453becf73ee860254600de8be3a213c910",
+      "processed_at": "2026-10-09T18:59:47+00:00"
+    },
+    "https://atom-computing.com/careers": {
+      "name": "Atom Computing Careers",
+      "content_hash": "90fccb2ceedbbaf994c14081e0de656c05d9a31a0c820c9bd267f05870b2a094",
+      "processed_at": "2026-10-09T19:00:47+00:00"
+    },
+    "https://alluxa.com/careers/apply-now": {
+      "name": "Alluxa Careers",
+      "content_hash": "0a2b1513b53e7e73ad12766bcd09a950c82c3fd49289c3ec33859c247ddc7e0d",
+      "processed_at": "2026-10-09T19:01:25+00:00"
+    },
+    "https://careers.bio-rad.com/jobs/search": {
+      "name": "Bio-Rad Scientific Careers",
+      "content_hash": "73ed22839d396d7ea3f830fd78f74cd6b96e48c3914b44366d31e8313c27cf45",
+      "processed_at": "2026-10-09T19:01:39+00:00"
+    },
+    "https://careers.evidentscientific.com/": {
+      "name": "Evident Scientific Careers",
+      "content_hash": "72ab87a8ccd3ae93a746a0946aa91ace75008ea8014d24abc925299bd7e01fb4",
+      "processed_at": "2026-10-09T19:01:39+00:00"
+    },
+    "https://careers.l3harris.com/en/search_jobs/optical/4832/1/search-jobs": {
+      "name": "L3Harris Optical Jobs",
+      "content_hash": "5c800fca03d9f884ab27ef6b33e3b36e19cc91f0948360274df066ead3934775",
+      "processed_at": "2026-10-09T19:02:20+00:00"
+    },
+    "https://careers.cisco.com/global/en/c/product-and-engineering-jobs": {
+      "name": "Cisco Optical Engineering Jobs",
+      "content_hash": "7c307cdbd5d81206fcdd689abd4b36e801020dddae7ed469e342ad773372f2e9",
+      "processed_at": "2026-10-09T19:02:20+00:00"
+    },
+    "https://careers.leonardodrs.com/go/Engineering-and-Engineering-Support/9728600": {
+      "name": "Leonardo DRS Engineering Careers",
+      "content_hash": "de5f1bbd4d4aba8cb0355f77883b1dd8c098fe255625d2ea4e317b49518e0529",
+      "processed_at": "2026-10-09T19:02:32+00:00"
+    },
+    "https://escooptics.com/pages/careers": {
+      "name": "Esco Optics Careers",
+      "content_hash": "3eed032a6595241b857afc4c7aa0d283e87642d3ac00b962699677dbcf2453ed",
+      "processed_at": "2026-10-09T19:03:15+00:00"
+    },
+    "https://gf.com/careers": {
+      "name": "GlobalFoundries Careers",
+      "content_hash": "b0cc8124b264dfdcc8c4edbaa8ed2e364f5da9e4529d086a1e96a5aa223ba61a",
+      "processed_at": "2026-10-09T19:03:44+00:00"
+    },
+    "https://careers.veeco.com/": {
+      "name": "Veeco Careers",
+      "content_hash": "b11b2b0a875f3acaec9a6f76c7a9dea7ae09ae4bfb1e6303d944378937fb98ea",
+      "processed_at": "2026-10-09T19:03:51+00:00"
+    },
+    "https://credosemi.com/about-credo/careers": {
+      "name": "Credo Careers",
+      "content_hash": "a09ef4e4e46a6279f6ccecc2a7a380c55ffbe8c4c611dd82c808d5c050b8e67f",
+      "processed_at": "2026-10-09T19:04:36+00:00"
+    },
+    "https://infleqtion.com/careers": {
+      "name": "Infleqtion Careers",
+      "content_hash": "ae560a2b6c5dbe28bfb3a63060baf0197ae642b86414b1b9f53d6e915ee736b4",
+      "processed_at": "2026-10-09T19:04:55+00:00"
+    },
+    "https://idexcorporation.jobs/": {
+      "name": "IDEX Health and Science Jobs",
+      "content_hash": "f30f6d260cc1df0e3ef0fa229fd8d4df1392ca6700d6c69efcdf4267fa742cce",
+      "processed_at": "2026-10-09T19:04:57+00:00"
+    },
+    "https://inradoptics.com/contact-us/careers": {
+      "name": "Inrad Optics Careers",
+      "content_hash": "3c6a4c2fb48920e990e02ee6e2d23564a34ef07eabbad7fabee40c33ff450dad",
+      "processed_at": "2026-10-09T19:04:59+00:00"
+    },
+    "https://job-boards.greenhouse.io/ionq": {
+      "name": "IonQ Jobs",
+      "content_hash": "8a8a052ef5b368159e6b48902822c92824ffbffdc4234ec0f30ad238599c60c1",
+      "processed_at": "2026-10-09T19:05:13+00:00"
+    },
+    "https://jmloptical.com/careers": {
+      "name": "JML Optical Careers",
+      "content_hash": "eab87e0f9812bc05b00aaec65e30c2e74aca3df326b0a322b7300ea8a83aa21e",
+      "processed_at": "2026-10-09T19:05:26+00:00"
+    },
+    "https://jobs.ametek.com/go/Zygo/8890600": {
+      "name": "ZYGO Optical Jobs",
+      "content_hash": "ecbafda1d054eecd36a3d1794f2af6e032e985c045a25f260c3acfe8472c6925",
+      "processed_at": "2026-10-09T19:05:55+00:00"
+    },
+    "https://jobs.baesystems.com/global/en/search-results": {
+      "name": "BAE Systems US Engineering Jobs",
+      "content_hash": "aee05420ddefb9b48f320948dffe07c725925eed4b7c9a601deaa1c52dead4b6",
+      "processed_at": "2026-10-09T19:05:55+00:00"
+    },
+    "https://jobs.danaher.com/global/en/leica-microsystems": {
+      "name": "Leica Microsystems Jobs",
+      "content_hash": "c29827011cd9a73993adbca08ece3d4283d768e157d0aa23ccc04822dfa5c1a5",
+      "processed_at": "2026-10-09T19:06:08+00:00"
+    },
+    "https://jobs.excelitas.com/?locale=en_US": {
+      "name": "Excelitas Photonics Jobs",
+      "content_hash": "49999fe204e250058952e947e607913381a697ab80e200da0e433d7a7c6bab13",
+      "processed_at": "2026-10-09T19:06:16+00:00"
+    },
+    "https://jobs.lever.co/lumotive": {
+      "name": "Lumotive Jobs",
+      "content_hash": "3c0ddfa48c82227982f85e72aa24fab7edb44e6c99525f334676b280210a207e",
+      "processed_at": "2026-10-09T19:06:23+00:00"
+    },
+    "https://jobs.keysight.com/talent": {
+      "name": "Keysight Optical Jobs",
+      "content_hash": "800a4e0a03132bc02f6b633701edfb9295fb08b2a5e338d4c7a7680064f59627",
+      "processed_at": "2026-10-09T19:06:23+00:00"
+    },
+    "https://lacroixoptics.com/careers": {
+      "name": "LaCroix Precision Optics Careers",
+      "content_hash": "1c383e1fe535d1b300253a29ba6541e6f0c5a3d7f0cf951314f4d414cb5bad83",
+      "processed_at": "2026-10-09T19:06:39+00:00"
+    },
+    "https://novanta.com/careers-culture": {
+      "name": "Novanta Careers",
+      "content_hash": "cc29e6423670377bf18df650b67413ef2cd8281213edb013bb1cb69fdfe53e22",
+      "processed_at": "2026-10-09T19:07:18+00:00"
+    },
+    "https://metalenz.com/careers": {
+      "name": "Metalenz Careers",
+      "content_hash": "eeadc1df74c5ff495a682f69f08db08a55ea4d8c598810d1d56b14b0a993a512",
+      "processed_at": "2026-10-09T19:07:27+00:00"
+    },
+    "https://openlightphotonics.com/careers": {
+      "name": "OpenLight Careers",
+      "content_hash": "f0ea1c2856402ad1d61732897fa9aebbfb4557b6b01bed623a336dcf62eb73bb",
+      "processed_at": "2026-10-09T19:07:38+00:00"
+    },
+    "https://ontoinnovation.com/careers": {
+      "name": "Onto Innovation Careers",
+      "content_hash": "9456a219b9840011976e649e096bda5117f6fd557ad1a1dd388e71c29310ae99",
+      "processed_at": "2026-10-09T19:07:51+00:00"
+    },
+    "https://oem.flir.com/about/careers": {
+      "name": "Teledyne FLIR OEM Careers",
+      "content_hash": "9ec270dc21f10927694ee13f419434bb5d2f3a94f9b8cd85068bd5260f178b42",
+      "processed_at": "2026-10-09T19:08:05+00:00"
+    },
+    "https://ouster.applytojob.com/apply": {
+      "name": "Ouster Jobs",
+      "content_hash": "e1b2cc63c0424f19fcf9853fed76c2614b0d1a23799569a43f8aec32bf4b4c29",
+      "processed_at": "2026-10-09T19:08:10+00:00"
+    },
+    "https://qedtech.com/about-qed/careers": {
+      "name": "QED Technologies Careers",
+      "content_hash": "54d1fd8d11e832ade550cecd1969f6d51898adb4d46e92c2bf33d5b6a096de26",
+      "processed_at": "2026-10-09T19:08:13+00:00"
+    },
+    "https://perkinsprecision.com/about/careers": {
+      "name": "Perkins Precision Developments Careers",
+      "content_hash": "79e5f63be6dcec4fe0778470bbadcb4c124ac251258b0ccafe086fd2017aa42d",
+      "processed_at": "2026-10-09T19:08:23+00:00"
+    },
+    "https://reynardcorp.com/careers-open-positions": {
+      "name": "Reynard Corporation Careers",
+      "content_hash": "ff298b12866513367dcff71dff6a078c0dd10ffa0e234f97d939f7900c82cc30",
+      "processed_at": "2026-10-09T19:08:24+00:00"
+    },
+    "https://silc.com/join-us": {
+      "name": "SiLC Technologies Careers",
+      "content_hash": "5275209ebe26aabedd397917be9b587e4ddb61b7ebd7d9a4ac1efa40b7e8227a",
+      "processed_at": "2026-10-09T19:08:35+00:00"
+    },
+    "https://sydor.com/apprenticeship": {
+      "name": "Sydor Optics Apprenticeship and Careers",
+      "content_hash": "76c30e60b376559619b12cd2fab7bdbea5a7dabcdc56cb8d5a7762f527f57f94",
+      "processed_at": "2026-10-09T19:08:36+00:00"
+    },
+    "https://laserstar.net/careers": {
+      "name": "LaserStar Technologies Careers",
+      "content_hash": "7285107df256ec220240ebb7faa596b3d01a06bf33e1ec41387747bde88e282d",
+      "processed_at": "2026-10-09T19:08:53+00:00"
+    },
+    "https://syntecoptics.com/careers": {
+      "name": "Syntec Optics Careers",
+      "content_hash": "0054f2a09d7c05869df175d978a26dd31ed0c82f5d2f9b861156dc3b3ae03c81",
+      "processed_at": "2026-10-09T19:08:58+00:00"
+    },
+    "https://voyantphotonics.com/careers": {
+      "name": "Voyant Photonics Careers",
+      "content_hash": "caf43c400404151a92f25748d7504a2b647f666a993ce1a79bff8913e8856181",
+      "processed_at": "2026-10-09T19:09:07+00:00"
+    },
+    "https://toweroptical.com/career-opportunities": {
+      "name": "Tower Optical Careers",
+      "content_hash": "c17c98d49f465c163b75ff342449f1d66af5d4fc9051d51c1d71de9e5c1adce3",
+      "processed_at": "2026-10-09T19:09:24+00:00"
+    },
+    "https://www.accesslaser.com/careers": {
+      "name": "Access Laser Careers",
+      "content_hash": "4d00ce1eff81608ae7a8368addde1b399301f859372257b6e13b8f893cac43af",
+      "processed_at": "2026-10-09T19:09:45+00:00"
+    },
+    "https://www.aeluma.com/careers": {
+      "name": "Aeluma Careers",
+      "content_hash": "469627d45d1775a54e986074cc8892d758cb5631a3c6c2f5ac5b7d70a8b9579c",
+      "processed_at": "2026-10-09T19:09:46+00:00"
+    },
+    "https://www.aeye.ai/careers": {
+      "name": "AEye Careers",
+      "content_hash": "e43c21466e24128b611d931f17af03b866b9ba308408d265b829a8958d857588",
+      "processed_at": "2026-10-09T19:09:48+00:00"
+    },
+    "https://www.aeva.com/careers": {
+      "name": "Aeva Careers",
+      "content_hash": "3836d2592220e37827363cbf7602ea5915b1981c98b9ce4f65881923330526ac",
+      "processed_at": "2026-10-09T19:09:58+00:00"
+    },
+    "https://rpmclasers.com/careers": {
+      "name": "RPMC Lasers Careers",
+      "content_hash": "d8c326298a5573aa6a9dafecae2d02205c6e6b1f702f665bf30a0c6b509c5757",
+      "processed_at": "2026-10-09T19:10:05+00:00"
+    },
+    "https://www.bruker.com/en/careers.html": {
+      "name": "Bruker Careers",
+      "content_hash": "de0d330aa9de8a6ae093425790eede6cca35ff2dd64d2cf381c038db55641ccc",
+      "processed_at": "2026-10-09T19:10:22+00:00"
+    },
+    "https://www.digilens.com/careers": {
+      "name": "DigiLens Careers",
+      "content_hash": "aea6e7774018c864f8f39eed1d3503a186ae4611c8acf21429bbe907f5e9d144",
+      "processed_at": "2026-10-09T19:10:24+00:00"
+    },
+    "https://www.edmundoptics.com/company/careers": {
+      "name": "Edmund Optics Careers",
+      "content_hash": "c9cbca81dc581b6e4d42dc487f60c151e5d1711409bbe8d78afb4d3c5de479ef",
+      "processed_at": "2026-10-09T19:11:56+00:00"
+    },
+    "https://www.ga.com/careers": {
+      "name": "General Atomics Careers",
+      "content_hash": "5fef12de46190b7de7804cb52e946917691c844f5455bda5f3ddb1f4885129dd",
+      "processed_at": "2026-10-09T19:12:01+00:00"
+    },
+    "https://www.hamamatsu.com/us/en/our-company/hamamatsu-careers.html": {
+      "name": "Hamamatsu Photonics USA Careers",
+      "content_hash": "82378be64a9690c0e554ec4667908c2d8bd111eb2717f4414b11bcd53d14aea6",
+      "processed_at": "2026-10-09T19:12:13+00:00"
+    },
+    "https://www.kopin.com/about/careers": {
+      "name": "Kopin Careers",
+      "content_hash": "3e3d895a0a1d8196b0f408389e7debc7ade9f0b99442712546e8447090e79263",
+      "processed_at": "2026-10-09T19:12:23+00:00"
+    },
+    "https://www.ipgphotonics.com/company/careers": {
+      "name": "IPG Photonics Careers",
+      "content_hash": "080455fa3abb85df9406e10be961adafc24f3356c63e550ac62f8fc229b2f2f3",
+      "processed_at": "2026-10-09T19:12:35+00:00"
+    },
+    "https://www.inphenix.com/careers": {
+      "name": "InPhenix Careers",
+      "content_hash": "7a354a12e4a3d4746732951bbc4d2bf893187a1b51a0f677e2de4210be32b6fa",
+      "processed_at": "2026-10-09T19:13:04+00:00"
+    },
+    "https://www.laserphotonics.com/careers": {
+      "name": "Laser Photonics Careers",
+      "content_hash": "c917340cfe9d4230306b4176d0dc4b7e593723d7e6484a55fe643cd18ec58c8f",
+      "processed_at": "2026-10-09T19:13:38+00:00"
+    },
+    "https://www.lightpath.com/careers": {
+      "name": "LightPath Technologies Careers",
+      "content_hash": "0cb04d5dab5b56a1ce4c70da8611051720032cb5e1fb791daaa63360eba71294",
+      "processed_at": "2026-10-09T19:13:52+00:00"
+    },
+    "https://www.lightwavelogic.com/careers": {
+      "name": "Lightwave Logic Careers",
+      "content_hash": "a778fd814d6f6958f1f19870fe6f64892978520bbe9c4c7a21643ddbb7dc3b51",
+      "processed_at": "2026-10-09T19:13:52+00:00"
+    },
+    "https://www.lensar.com/careers": {
+      "name": "LENSAR Careers",
+      "content_hash": "05a82ae885df92650464db362be7b087e46d744d8e71a740dd0fec85a7ee8a77",
+      "processed_at": "2026-10-09T19:13:53+00:00"
+    },
+    "https://www.lockheedmartinjobs.com/category/electro-optical-engineering-jobs/694/57607/1": {
+      "name": "Lockheed Martin Electro-Optical Jobs",
+      "content_hash": "c0bdb2af7c19c925bba8b1ee105797d6d60f0ef7b795efcc8605868f2703914d",
+      "processed_at": "2026-10-09T19:13:54+00:00"
+    },
+    "https://www.lunainc.com/careers": {
+      "name": "Luna Innovations Careers",
+      "content_hash": "befede4a1c5ec9a21442f38b5b6ea4337ba098b6dc455204722e8e7ed186ff0c",
+      "processed_at": "2026-10-09T19:13:54+00:00"
+    },
+    "https://www.macom.com/about-macom/careers": {
+      "name": "MACOM Careers",
+      "content_hash": "db24a6807c8a1d697e5469203f22aa4c6760c026cca556a732e156d84f3be131",
+      "processed_at": "2026-10-09T19:14:00+00:00"
+    },
+    "https://www.mza.com/careers": {
+      "name": "MZA Associates Careers",
+      "content_hash": "6080be92505ab07f2d44b042fef2c1fefcd92fb67b9ee70196fed8e22befbfcd",
+      "processed_at": "2026-10-09T19:14:02+00:00"
+    },
+    "https://www.materion.com/careers": {
+      "name": "Materion Careers",
+      "content_hash": "e62c7bbf36ad38e226181235fd52814e0882ee9cb955ff0dc5269ab568889877",
+      "processed_at": "2026-10-09T19:14:09+00:00"
+    },
+    "https://www.nlight.net/careers": {
+      "name": "nLIGHT Careers",
+      "content_hash": "8534a554e065965b694f012f53db9f53182507791a7ac8ca2ecf3f246ac2d8aa",
+      "processed_at": "2026-10-09T19:14:20+00:00"
+    },
+    "https://www.northropgrumman.com/careers/optical": {
+      "name": "Northrop Grumman Optical Careers",
+      "content_hash": "f75d9b44ad74151104f2c9dd9881f180e6acd342eea183bd4b21ebb1c49f69ca",
+      "processed_at": "2026-10-09T19:14:21+00:00"
+    },
+    "https://www.meadowlark.com/careers": {
+      "name": "Meadowlark Optics Careers",
+      "content_hash": "e90249dc40273a5841d1c2057ab2f5864c2fa35cbe45fa10eb6879d74698a01b",
+      "processed_at": "2026-10-09T19:14:25+00:00"
+    },
+    "https://www.optikos.com/company/careers": {
+      "name": "Optikos Careers",
+      "content_hash": "2587b7bbc75c0cab70833344195924274a1666fb399c6d8d2b1f4f4e4901d174",
+      "processed_at": "2026-10-09T19:14:29+00:00"
+    },
+    "https://www.optimaxsi.com/careers": {
+      "name": "Optimax Systems Careers",
+      "content_hash": "bfd6cf8f879d76fec8a757778e208dba00697edc02e5b1b487437f7221fb66ca",
+      "processed_at": "2026-10-09T19:15:08+00:00"
+    },
+    "https://www.optipro.com/about/careers": {
+      "name": "OptiPro Systems Careers",
+      "content_hash": "f429dd71653ad53d3fa0196e8fb67eed50b9bc4ddcdc455d9af01b4e9914f85e",
+      "processed_at": "2026-10-09T19:15:13+00:00"
+    },
+    "https://www.pfgoptics.com/pfg-optics-careers": {
+      "name": "PFG Precision Optics Careers",
+      "content_hash": "6f8735de3a7dec1b0bbc8be78c6d5b8d1c35438e2b095732ad1e83e716246f0f",
+      "processed_at": "2026-10-09T19:15:21+00:00"
+    },
+    "https://www.onsemi.com/company/careers": {
+      "name": "onsemi Imaging Careers",
+      "content_hash": "256fd822d621708b27ba050f9f4344dc5f3126ce184522c1d139d5ed336be788",
+      "processed_at": "2026-10-09T19:16:32+00:00"
+    },
+    "https://www.ovt.com/careers": {
+      "name": "OmniVision Careers",
+      "content_hash": "0cdb01d2ef1f9c880d928c16661024279b7de11fb4ded3d311aacbcff56bf16e",
+      "processed_at": "2026-10-09T19:18:25+00:00"
+    },
+    "https://www.photonix.com/employment-opportunities": {
+      "name": "Photonics Industries Careers",
+      "content_hash": "50e2bcbdcfca5db64b41bb4fedc45fdeee546f07a9527a84b77129125d608202",
+      "processed_at": "2026-10-09T19:18:29+00:00"
+    },
+    "https://www.quintessent.com/careers": {
+      "name": "Quintessent Careers",
+      "content_hash": "875114b5280958e5e9a008fbda3087929a0ca66f45167440cc9f7a43a1a8ca6b",
+      "processed_at": "2026-10-09T19:18:33+00:00"
+    },
+    "https://www.quera.com/careers": {
+      "name": "QuEra Careers",
+      "content_hash": "06497f87850de24d419184260226ddbe0aec9184e27613caebe2c169936d2e92",
+      "processed_at": "2026-10-09T19:18:44+00:00"
+    },
+    "https://www.powertechnology.com/careers": {
+      "name": "Power Technology Careers",
+      "content_hash": "be79459b85c5ebf576856b5f89180cc2a622c035fd3a2cfed534d2e4842d7a8d",
+      "processed_at": "2026-10-09T19:19:05+00:00"
+    },
+    "https://www.qunnect.inc/contact": {
+      "name": "Qunnect Careers and Company",
+      "content_hash": "c3acf3ac45275cd09b794f3a577e559f058d4d05adef1486f2df65dae95cae81",
+      "processed_at": "2026-10-09T19:19:07+00:00"
+    },
+    "https://www.teledyneimaging.com/en/company/careers": {
+      "name": "Teledyne Imaging Careers",
+      "content_hash": "366d0b65dec398e2859483bdeb563f306affcfe93af493ff49c3dfe1544b8574",
+      "processed_at": "2026-10-09T19:19:11+00:00"
+    },
+    "https://www.thorlabs.com/careers": {
+      "name": "Thorlabs Careers",
+      "content_hash": "1eb1f031ddf1f45e1f918f9b75284b70997657c530b3c52f9022b38e78288dde",
+      "processed_at": "2026-10-09T19:19:11+00:00"
+    },
+    "https://www.sheaumann.com/company/careers": {
+      "name": "Sheaumann Laser Careers",
+      "content_hash": "407b19829b83fe0e06050f832755d7d5ec3f31bc7bc35c87c8e636456f223a33",
+      "processed_at": "2026-10-09T19:19:23+00:00"
+    },
+    "https://www.rpoptics.com/careers": {
+      "name": "Rochester Precision Optics Careers",
+      "content_hash": "0214b16c6e5ea10a182891a43acb971e735af1f25c59c49564451c1cdcd2c826",
+      "processed_at": "2026-10-09T19:19:24+00:00"
+    },
+    "https://www.vuzix.com/pages/careers": {
+      "name": "Vuzix Careers",
+      "content_hash": "9a631ae1d41b5d3495fd20e9a2698d48179d4e35ed49c481885c7067c5784ae3",
+      "processed_at": "2026-10-09T19:19:29+00:00"
+    },
+    "https://www.xscapephotonics.com/join-us": {
+      "name": "Xscape Photonics Careers",
+      "content_hash": "0dc85bd70b7fd794cb0de54c9534b6305ad290515d5254542413795db68e7638",
+      "processed_at": "2026-10-09T19:19:54+00:00"
     }
   },
-  "last_successful_run_at": "2026-10-03T17:25:54+00:00"
+  "last_successful_run_at": "2026-10-09T19:20:04+00:00"
 }
